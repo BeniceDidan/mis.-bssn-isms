@@ -1,0 +1,239 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* Manual dark mode: toggled by adding/removing .dark on <html> (see the
+   no-flash inline script + Alpine darkMode state in layouts/app.blade.php),
+   not by OS preference alone — lets the topbar toggle override it. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* "Spring" easing (slight overshoot) for the liquid-glass theme's
+       hover/entrance motion — plain ease-out reads as too flat/minor. */
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Slow-drifting color blobs behind the frosted-glass panels — glass only
+   reads as "glass" when there's something varied to blur behind it. */
+@keyframes blob-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -40px) scale(1.08); }
+    66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+.blob-float {
+    animation: blob-float 16s ease-in-out infinite;
+}
+
+.blob-float-delay {
+    animation: blob-float 20s ease-in-out infinite;
+    animation-delay: -7s;
+}
+
+.blob-float-slow {
+    animation: blob-float 26s ease-in-out infinite;
+    animation-delay: -14s;
+}
+
+/* Gentle bob for the floating network/signal icons on the login page —
+   deliberately small and slow so it reads as "ambient", not distracting
+   from the form. The JS-driven parallax shift is layered on a separate
+   wrapper element so it doesn't fight with this transform. */
+@keyframes icon-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+}
+
+.icon-float {
+    animation: icon-float 6s ease-in-out infinite;
+}
+
+/* Expanding/fading rings behind the login logo — a quiet "broadcasting a
+   signal" cue that fits Kominfo's communications mandate without needing
+   the visitor to do anything. */
+@keyframes signal-pulse {
+    0% { transform: scale(0.9); opacity: 0.55; }
+    100% { transform: scale(1.9); opacity: 0; }
+}
+
+.signal-pulse {
+    animation: signal-pulse 2.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+/* Slow dashed ring orbiting the login logo — a "scanning for signal" cue
+   layered on top of the expanding pulse rings for extra depth. */
+.radar-sweep {
+    animation: spin 9s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* One-shot pop-in for the floating background icons on page load — plays
+   once (both = hold start/end state outside its range) and then hands off
+   to icon-float's continuous loop on the same element's parent, so the two
+   never fight over the transform. */
+@keyframes icon-intro {
+    0% { opacity: 0; transform: scale(0.4) rotate(-12deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.icon-intro {
+    animation: icon-intro 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Reusable frosted-glass surface. */
+.glass-panel {
+    background-color: rgb(255 255 255 / 0.65);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgb(255 255 255 / 0.4);
+}
+
+.glass-panel-dark {
+    background-color: rgb(15 23 42 / 0.75);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+/* Dark mode: the frosted glass itself goes from a white pane to a dark
+   slate one — same blur/saturate treatment, so it's still recognizably
+   "liquid glass", just tinted for a dark surface underneath. The sidebar
+   (.glass-panel-dark) already is dark in both themes, so it's untouched. */
+.dark .glass-panel {
+    background-color: rgb(15 23 42 / 0.55);
+    border-color: rgb(255 255 255 / 0.08);
+}
+
+.dark .blob-float,
+.dark .blob-float-delay,
+.dark .blob-float-slow {
+    opacity: 0.55;
+}
+
+/* Blanket retint of the plain gray/white utility classes used directly in
+   Blade views (table headers, form borders, card text) rather than via
+   .glass-panel — there are far too many call sites across every module to
+   add dark: variants to each one individually, so this reaches all of them
+   from one place. Unlayered, so it wins over Tailwind's own (layered)
+   utilities regardless of source order — same trick .glass-panel already
+   relies on. */
+.dark .text-gray-900 { color: rgb(241 245 249); }
+.dark .text-gray-800 { color: rgb(226 232 240); }
+.dark .text-gray-700 { color: rgb(203 213 225); }
+.dark .text-gray-600 { color: rgb(148 163 184); }
+.dark .text-gray-500 { color: rgb(148 163 184); }
+.dark .text-gray-400 { color: rgb(100 116 139); }
+.dark .text-gray-300 { color: rgb(71 85 105); }
+
+.dark .bg-white { background-color: rgb(15 23 42); }
+.dark .bg-white\/95 { background-color: rgb(15 23 42 / 0.95); }
+.dark .bg-white\/90 { background-color: rgb(15 23 42 / 0.9); }
+.dark .bg-white\/80 { background-color: rgb(15 23 42 / 0.78); }
+.dark .bg-white\/70 { background-color: rgb(15 23 42 / 0.62); }
+.dark .bg-white\/60 { background-color: rgb(15 23 42 / 0.55); }
+.dark .bg-white\/50 { background-color: rgb(15 23 42 / 0.5); }
+.dark .bg-white\/40 { background-color: rgb(15 23 42 / 0.4); }
+.dark .bg-white\/30 { background-color: rgb(15 23 42 / 0.35); }
+
+.dark .border-white\/60 { border-color: rgb(255 255 255 / 0.12); }
+.dark .border-white\/50 { border-color: rgb(255 255 255 / 0.1); }
+.dark .border-white\/40 { border-color: rgb(255 255 255 / 0.08); }
+.dark .border-white\/30 { border-color: rgb(255 255 255 / 0.08); }
+.dark .divide-white\/40 { border-color: rgb(255 255 255 / 0.08); }
+
+.dark .border-gray-300 { border-color: rgb(71 85 105); }
+.dark .border-gray-200 { border-color: rgb(51 65 85); }
+.dark .bg-gray-50 { background-color: rgb(30 41 59); }
+.dark .bg-gray-100 { background-color: rgb(30 41 59); }
+.dark .bg-gray-200 { background-color: rgb(51 65 85); }
+.dark .bg-gray-300 { background-color: rgb(71 85 105); }
+
+/* Form fields (every FormModal across all 8 modules) aren't covered by the
+   class overrides above — they're plain <input>/<select>/<textarea> with
+   no explicit bg-white class, styled by Tailwind Forms' element-selector
+   reset instead, which stays untouched by a .dark ancestor by default and
+   left them with a transparent fill and near-black text on a dark panel. */
+.dark input:not([type='checkbox']):not([type='radio']),
+.dark select,
+.dark textarea {
+    background-color: rgb(255 255 255 / 0.05);
+    color: rgb(226 232 240);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: rgb(100 116 139);
+}
+
+.dark select option {
+    background-color: rgb(30 41 59);
+    color: rgb(226 232 240);
+}
+
+/* Per-module ornament animation (see components/module-ornament.blade.php)
+   — a single hand-composed illustration per management, not a tiled
+   texture, so each module reads as art-directed rather than a formula
+   applied 8 times with the color swapped. */
+@keyframes ornament-reveal {
+    0% { opacity: 0; transform: scale(0.7) rotate(-10deg); }
+    100% { opacity: 0.16; transform: scale(1) rotate(var(--ornament-rotate, -6deg)); }
+}
+
+.ornament-reveal {
+    animation: ornament-reveal 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes ornament-line-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.85; }
+}
+
+.ornament-line-pulse {
+    animation: ornament-line-pulse 3.2s ease-in-out infinite;
+}
+
+/* Slow, ambient continuous rotation for the radar sweep / cycle arrows —
+   deliberately much slower than the login page's radar-sweep (9s), since
+   this sits behind real content all day and must never read as busy. */
+@keyframes ornament-slow-spin {
+    to { transform: rotate(360deg); }
+}
+
+.ornament-slow-spin {
+    animation: ornament-slow-spin 50s linear infinite;
+}
+
+@keyframes ornament-drift {
+    0%, 100% { transform: translateX(0); opacity: 0.7; }
+    50% { transform: translateX(10px); opacity: 1; }
+}
+
+.ornament-drift {
+    animation: ornament-drift 4.5s ease-in-out infinite;
+}
+
+/* Material-style click "wave" for icon buttons, applied via the x-ripple
+   Alpine directive registered in app.js. */
+.ripple-effect {
+    position: absolute;
+    border-radius: 9999px;
+    background-color: currentColor;
+    opacity: 0.35;
+    transform: scale(0);
+    pointer-events: none;
+    animation: ripple-wave 550ms ease-out forwards;
+}
+
+@keyframes ripple-wave {
+    to {
+        transform: scale(2.2);
+        opacity: 0;
+    }
+}
