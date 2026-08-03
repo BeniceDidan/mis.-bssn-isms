@@ -30,6 +30,10 @@
         @endif
     </div>
 
+    @if (auth()->user()?->admin_module === 'aset')
+        <livewire:admin-verification-queue />
+    @endif
+
     <livewire:assets.asset-stats />
     <livewire:assets.asset-table />
     <livewire:assets.asset-form-modal />

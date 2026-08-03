@@ -30,6 +30,10 @@
         @endif
     </div>
 
+    @if (auth()->user()?->admin_module === 'perubahan')
+        <livewire:admin-verification-queue />
+    @endif
+
     <livewire:changes.change-stats />
     <livewire:changes.change-table />
     <livewire:changes.change-form-modal />

@@ -107,7 +107,7 @@ class HrRiskFormModal extends Component
         $payload = $this->nullifyBlankEnums($payload, ['inherent_risk_level']);
         $payload['dynamic_data'] = $dynamicData;
         $payload['personnel_ref'] = $this->ensurePersonnelRef($payload['personnel_ref'] ?? null);
-        $payload['verification_status'] = auth()->user()?->isAdmin() ? 'tervalidasi' : 'menunggu_verifikasi';
+        $payload['verification_status'] = auth()->user()?->canAutoVerify('sdm') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->recordId) {
             HrRisk::findOrFail($this->recordId)->update($payload);

@@ -173,8 +173,13 @@
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
-                        <input type="text" wire:model="personnel_ref" placeholder="Dikosongkan = digenerate otomatis" class="w-full rounded-md border-gray-300 text-sm focus:border-sky-500 focus:ring-sky-500 transition-colors duration-150">
-                        <p class="mt-1 text-[11px] text-gray-400">Isi kode yang sama di record lain (modul apa pun) untuk menautkannya secara pasti sebagai orang/pihak ketiga yang sama.</p>
+                        <input type="text" list="asset-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih dari SDM yang sudah ada, atau ketik kode baru" class="w-full rounded-md border-gray-300 text-sm focus:border-sky-500 focus:ring-sky-500 transition-colors duration-150">
+                        <datalist id="asset-personnel-suggestions">
+                            @foreach ($hrRisks as $hrRisk)
+                                <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
+                            @endforeach
+                        </datalist>
+                        <p class="mt-1 text-[11px] text-gray-400">Ketik untuk melihat saran SDM yang sudah diinput, atau kode yang sama di modul lain untuk menautkannya secara pasti sebagai orang/pihak ketiga yang sama.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">

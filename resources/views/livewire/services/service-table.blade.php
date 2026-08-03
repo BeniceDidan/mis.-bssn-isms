@@ -209,9 +209,21 @@
                     </div>
 
                     <div class="border-t border-white/40 px-5 py-4">
-                        <p class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
-                            <x-heroicon-o-ticket class="h-3.5 w-3.5" /> Log Operasional Terbaru
-                        </p>
+                        <div class="mb-2 flex items-center justify-between">
+                            <p class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                <x-heroicon-o-ticket class="h-3.5 w-3.5" /> Log Operasional Terbaru
+                            </p>
+                            @if (auth()->user()?->canWrite())
+                                <button
+                                    x-data
+                                    x-ripple
+                                    @click="$dispatch('open-service-ticket-form', { serviceId: {{ $viewingRecord->id }} })"
+                                    class="flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-[11px] font-medium text-sky-700 transition-all duration-200 hover:scale-105 hover:bg-sky-100"
+                                >
+                                    <x-heroicon-o-plus class="h-3 w-3" /> Tambah
+                                </button>
+                            @endif
+                        </div>
                         @if ($viewingRecord->tickets->isNotEmpty())
                             <div class="space-y-2">
                                 @foreach ($viewingRecord->tickets as $ticket)
@@ -241,9 +253,21 @@
                     </div>
 
                     <div class="border-t border-white/40 px-5 py-4">
-                        <p class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
-                            <x-heroicon-o-chart-bar class="h-3.5 w-3.5" /> Evaluasi Kinerja
-                        </p>
+                        <div class="mb-2 flex items-center justify-between">
+                            <p class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                                <x-heroicon-o-chart-bar class="h-3.5 w-3.5" /> Evaluasi Kinerja
+                            </p>
+                            @if (auth()->user()?->canWrite())
+                                <button
+                                    x-data
+                                    x-ripple
+                                    @click="$dispatch('open-service-evaluation-form', { serviceId: {{ $viewingRecord->id }} })"
+                                    class="flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-[11px] font-medium text-sky-700 transition-all duration-200 hover:scale-105 hover:bg-sky-100"
+                                >
+                                    <x-heroicon-o-plus class="h-3 w-3" /> Tambah
+                                </button>
+                            @endif
+                        </div>
                         @if ($viewingRecord->evaluations->isNotEmpty())
                             <div class="space-y-2">
                                 @foreach ($viewingRecord->evaluations as $evaluation)

@@ -88,6 +88,21 @@ class ServiceTable extends Component
         // no-op
     }
 
+    /**
+     * Ticket/evaluation forms save directly (they're not part of the
+     * Service model itself), so the open detail panel's already-loaded
+     * $viewingRecord->tickets/evaluations won't reflect a new one without
+     * this explicit reload.
+     */
+    #[On('service-ticket-saved')]
+    #[On('service-evaluation-saved')]
+    public function refreshDetail(): void
+    {
+        if ($this->viewingRecord) {
+            $this->viewDetail($this->viewingRecord->id);
+        }
+    }
+
     public function render()
     {
         $records = Service::query()

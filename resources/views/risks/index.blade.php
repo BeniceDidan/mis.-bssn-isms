@@ -21,6 +21,10 @@
         @endif
     </div>
 
+    @if (auth()->user()?->admin_module === 'risiko')
+        <livewire:admin-verification-queue />
+    @endif
+
     <livewire:risks.risk-stats />
     <livewire:risks.risk-table />
     <livewire:risks.risk-form-modal />

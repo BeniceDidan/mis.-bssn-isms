@@ -89,40 +89,6 @@
             @endif
         @endforeach
 
-        @if (auth()->user()?->isAdmin() && \Illuminate\Support\Facades\Route::has('verifikasi'))
-            @php
-                $pendingCount = collect([
-                        \App\Models\Asset::class, \App\Models\Risk::class, \App\Models\Change::class,
-                        \App\Models\DataInformation::class, \App\Models\HrRisk::class, \App\Models\KnowledgeAsset::class,
-                        \App\Models\Service::class,
-                        \App\Models\KnowledgeExpert::class, \App\Models\KnowledgeActivity::class,
-                        \App\Models\KnowledgeRisk::class, \App\Models\SecurityProgram::class,
-                    ])
-                    ->sum(fn ($modelClass) => $modelClass::where('verification_status', 'menunggu_verifikasi')->count());
-                $isVerifikasiActive = request()->routeIs('verifikasi');
-            @endphp
-            <div class="my-2 border-t border-white/10 pt-2">
-                <a
-                    href="{{ route('verifikasi') }}"
-                    x-ripple
-                    @class([
-                        'group relative flex items-center justify-between gap-3 overflow-hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 ease-spring',
-                        'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-900/50 scale-[1.02]' => $isVerifikasiActive,
-                        'text-slate-300 hover:translate-x-1.5 hover:scale-[1.02] hover:bg-white/10 hover:text-white' => ! $isVerifikasiActive,
-                    ])
-                >
-                    <span class="flex items-center gap-3">
-                        <x-heroicon-o-clipboard-document-check class="h-5 w-5 shrink-0 transition-transform duration-300 ease-spring group-hover:scale-125 group-hover:-rotate-6" />
-                        Verifikasi
-                    </span>
-                    @if ($pendingCount > 0)
-                        <span class="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                            {{ $pendingCount }}
-                        </span>
-                    @endif
-                </a>
-            </div>
-        @endif
     </nav>
 
     <div class="border-t border-white/10 px-4 py-3 text-[11px] text-slate-400">

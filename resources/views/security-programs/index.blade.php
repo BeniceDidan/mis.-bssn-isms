@@ -30,6 +30,10 @@
         @endif
     </div>
 
+    @if (auth()->user()?->admin_module === 'keamanan')
+        <livewire:admin-verification-queue />
+    @endif
+
     <livewire:security-programs.security-program-stats />
     <livewire:security-programs.security-program-table />
     <livewire:security-programs.security-program-form-modal />

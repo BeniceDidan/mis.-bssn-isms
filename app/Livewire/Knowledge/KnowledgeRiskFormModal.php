@@ -6,6 +6,7 @@ use App\Enums\Level;
 use App\Livewire\Concerns\GeneratesPersonnelRef;
 use App\Livewire\Concerns\GuardsWriteAccess;
 use App\Livewire\Concerns\NormalizesEnumInputs;
+use App\Models\HrRisk;
 use App\Models\KnowledgeAsset;
 use App\Models\KnowledgeRisk;
 use App\Services\KnowledgeRiskLevelService;
@@ -107,7 +108,7 @@ class KnowledgeRiskFormModal extends Component
         $payload['personnel_ref'] = $this->ensurePersonnelRef($payload['personnel_ref'] ?? null);
         $payload['skor_risiko_bawaan'] = $payload['dampak'] * $payload['kemungkinan'];
         $payload['tingkat_risiko_bawaan'] = $this->derivedLevel()?->value;
-        $payload['verification_status'] = auth()->user()?->isAdmin() ? 'tervalidasi' : 'menunggu_verifikasi';
+        $payload['verification_status'] = auth()->user()?->canAutoVerify('pengetahuan') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->recordId) {
             KnowledgeRisk::findOrFail($this->recordId)->update($payload);
@@ -129,6 +130,7 @@ class KnowledgeRiskFormModal extends Component
     {
         return view('livewire.knowledge.knowledge-risk-form-modal', [
             'assets' => KnowledgeAsset::orderBy('title')->get(['id', 'title', 'legacy_code']),
+            'hrRisks' => HrRisk::whereNotNull('personnel_ref')->where('personnel_ref', '!=', '')->orderBy('subject')->get(['id', 'subject', 'record_code', 'personnel_ref']),
             'levels' => Level::cases(),
         ]);
     }

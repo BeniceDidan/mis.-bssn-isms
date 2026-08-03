@@ -401,10 +401,10 @@
     <div class="glass-panel rounded-2xl p-6 shadow-lg">
         <h2 class="text-base font-semibold text-gray-900">7. Alur Verifikasi &amp; Peran Pengguna</h2>
         <p class="mt-1 text-sm text-gray-500">
-            Hanya ada dua peran: Admin dan User. Setiap catatan yang dibuat atau diubah User tidak langsung
-            tersimpan final — semuanya melewati satu alur persetujuan yang sama dulu di seluruh modul aktif,
-            termasuk 3 tab baru Manajemen Pengetahuan (Peta Keahlian, Aktivitas Berbagi, Risiko KM) dan
-            Manajemen Keamanan Informasi.
+            Ada dua peran: Admin dan User. Setiap catatan yang dibuat atau diubah User tidak langsung
+            tersimpan final — semuanya melewati alur persetujuan dulu. Tidak ada satu Admin pusat yang
+            menyetujui semua modul sekaligus — setiap Admin ditugaskan ke tepat satu dari 8 modul, dan
+            hanya bisa melihat serta memutuskan antrean modul itu saja.
         </p>
 
         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -413,8 +413,8 @@
                 <p class="mt-1 text-xs text-gray-600">Input/ubah data di semua modul. Setiap simpan (baru atau edit ulang) otomatis berstatus "Menunggu Verifikasi".</p>
             </div>
             <div class="rounded-xl border border-white/40 bg-white/40 p-3">
-                <p class="text-sm font-semibold text-gray-900">Admin</p>
-                <p class="mt-1 text-xs text-gray-600">Satu-satunya yang melihat menu "Verifikasi" — antrian gabungan dari seluruh modul sekaligus. Setujui (ACC) atau tolak dengan catatan koreksi.</p>
+                <p class="text-sm font-semibold text-gray-900">Admin (per modul)</p>
+                <p class="mt-1 text-xs text-gray-600">Tidak ada menu "Verifikasi" terpisah — panel Verifikasi muncul langsung di halaman modulnya sendiri (mis. Admin Modul Risiko melihatnya di halaman Manajemen Risiko), berisi antrean modul itu saja. Setujui (ACC) atau tolak dengan catatan koreksi.</p>
             </div>
         </div>
 

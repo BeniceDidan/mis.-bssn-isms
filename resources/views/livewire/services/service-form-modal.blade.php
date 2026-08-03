@@ -56,8 +56,13 @@
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
-                        <input type="text" wire:model="personnel_ref" placeholder="Dikosongkan = digenerate otomatis" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
-                        <p class="mt-1 text-[11px] text-gray-400">Isi kode yang sama di record lain (modul apa pun) untuk menautkannya secara pasti sebagai orang/pihak ketiga yang sama.</p>
+                        <input type="text" list="service-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih dari SDM yang sudah ada, atau ketik kode baru" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
+                        <datalist id="service-personnel-suggestions">
+                            @foreach ($hrRisks as $hrRisk)
+                                <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
+                            @endforeach
+                        </datalist>
+                        <p class="mt-1 text-[11px] text-gray-400">Ketik untuk melihat saran SDM yang sudah diinput, atau kode yang sama di modul lain untuk menautkannya secara pasti sebagai orang/pihak ketiga yang sama.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -87,12 +92,17 @@
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Aset TIK Terkait</label>
-                        <select wire:model="asset_ids" multiple size="5" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:border-sky-400 focus:ring-sky-400">
-                            @foreach ($assets as $asset)
-                                <option value="{{ $asset->id }}">{{ $asset->asset_code }} — {{ $asset->name }}</option>
-                            @endforeach
-                        </select>
-                        <p class="mt-1 text-xs text-gray-400">Tahan Ctrl (atau Cmd) untuk memilih lebih dari satu aset.</p>
+                        <p class="mb-1.5 text-xs text-gray-400">Centang satu atau lebih aset yang dipakai layanan ini — ini yang menghubungkan Layanan ke Aset.</p>
+                        <div class="max-h-48 space-y-1 overflow-y-auto rounded-lg border border-white/60 bg-white/50 p-2">
+                            @forelse ($assets as $asset)
+                                <label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors duration-150 hover:bg-sky-50">
+                                    <input type="checkbox" wire:model="asset_ids" value="{{ $asset->id }}" class="rounded border-gray-300 text-sky-600 transition-colors duration-150 focus:ring-sky-500">
+                                    <span class="text-gray-700">{{ $asset->asset_code }} — {{ $asset->name }}</span>
+                                </label>
+                            @empty
+                                <p class="px-2 py-1.5 text-sm text-gray-400">Belum ada aset yang bisa dipilih.</p>
+                            @endforelse
+                        </div>
                     </div>
 
                     <div class="border-t border-white/40 pt-4">

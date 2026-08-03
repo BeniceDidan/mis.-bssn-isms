@@ -183,7 +183,7 @@ class RiskFormModal extends Component
         $payload['dynamic_data'] = $dynamicData;
         $payload['personnel_ref'] = $this->ensurePersonnelRef($payload['personnel_ref'] ?? null);
         $payload['risk_level'] = $this->deriveRiskLevel($payload['personnel_ref']);
-        $payload['verification_status'] = auth()->user()?->isAdmin() ? 'tervalidasi' : 'menunggu_verifikasi';
+        $payload['verification_status'] = auth()->user()?->canAutoVerify('risiko') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->riskId) {
             Risk::findOrFail($this->riskId)->update($payload);
@@ -205,6 +205,7 @@ class RiskFormModal extends Component
     {
         return view('livewire.risks.risk-form-modal', [
             'assets' => Asset::orderBy('name')->get(['id', 'name', 'asset_code']),
+            'hrRisks' => HrRisk::whereNotNull('personnel_ref')->where('personnel_ref', '!=', '')->orderBy('subject')->get(['id', 'subject', 'record_code', 'personnel_ref']),
             'categories' => RiskCategory::cases(),
             'levels' => Level::cases(),
             'treatmentStrategies' => TreatmentStrategy::cases(),

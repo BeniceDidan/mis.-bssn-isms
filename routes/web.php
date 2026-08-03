@@ -33,7 +33,6 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/knowledge', 'knowledge.index')->name('knowledge.index');
     Route::view('/services', 'services.index')->name('services.index');
     Route::view('/security-programs', 'security-programs.index')->name('security-programs.index');
-    Route::view('/verifikasi', 'verifikasi')->name('verifikasi');
 
     Route::view('/profile', 'profile.edit')->name('profile.edit');
     Route::view('/panduan', 'guide.index')->name('guide.index');

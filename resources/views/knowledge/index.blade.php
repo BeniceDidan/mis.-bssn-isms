@@ -67,6 +67,10 @@
             @endforeach
         </div>
 
+        @if (auth()->user()?->admin_module === 'pengetahuan')
+            <livewire:admin-verification-queue />
+        @endif
+
         <div x-show="tab === 'aset'" x-cloak class="space-y-4">
             <livewire:knowledge.knowledge-stats />
             <livewire:knowledge.knowledge-table />

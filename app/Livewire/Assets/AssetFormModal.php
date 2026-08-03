@@ -7,6 +7,7 @@ use App\Enums\Level;
 use App\Livewire\Concerns\GeneratesPersonnelRef;
 use App\Livewire\Concerns\GuardsWriteAccess;
 use App\Models\Asset;
+use App\Models\HrRisk;
 use App\Services\KritikalitasService;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -186,7 +187,7 @@ class AssetFormModal extends Component
         // atau koreksi): a non-admin's save always goes back into the
         // queue, even edits to an already-approved asset, so the admin
         // sees every change again. Admin saves are self-verifying.
-        $payload['verification_status'] = auth()->user()?->isAdmin() ? 'tervalidasi' : 'menunggu_verifikasi';
+        $payload['verification_status'] = auth()->user()?->canAutoVerify('aset') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->assetId) {
             Asset::findOrFail($this->assetId)->update($payload);
@@ -209,6 +210,7 @@ class AssetFormModal extends Component
         return view('livewire.assets.asset-form-modal', [
             'categories' => AssetCategory::cases(),
             'levels' => Level::cases(),
+            'hrRisks' => HrRisk::whereNotNull('personnel_ref')->where('personnel_ref', '!=', '')->orderBy('subject')->get(['id', 'subject', 'record_code', 'personnel_ref']),
         ]);
     }
 }

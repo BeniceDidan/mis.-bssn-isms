@@ -30,6 +30,10 @@
         @endif
     </div>
 
+    @if (auth()->user()?->admin_module === 'sdm')
+        <livewire:admin-verification-queue />
+    @endif
+
     <livewire:hr-risks.hr-risk-stats />
     <livewire:hr-risks.hr-risk-table />
     <livewire:hr-risks.hr-risk-form-modal />

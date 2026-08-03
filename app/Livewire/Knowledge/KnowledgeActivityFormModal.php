@@ -4,6 +4,7 @@ namespace App\Livewire\Knowledge;
 
 use App\Livewire\Concerns\GeneratesPersonnelRef;
 use App\Livewire\Concerns\GuardsWriteAccess;
+use App\Models\HrRisk;
 use App\Models\KnowledgeActivity;
 use App\Models\KnowledgeExpert;
 use Livewire\Attributes\On;
@@ -75,7 +76,7 @@ class KnowledgeActivityFormModal extends Component
             ? KnowledgeExpert::find($payload['narasumber_id'])?->nama_pegawai
             : null;
         $payload['personnel_ref'] = $this->ensurePersonnelRef($payload['personnel_ref'] ?? null);
-        $payload['verification_status'] = auth()->user()?->isAdmin() ? 'tervalidasi' : 'menunggu_verifikasi';
+        $payload['verification_status'] = auth()->user()?->canAutoVerify('pengetahuan') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->recordId) {
             KnowledgeActivity::findOrFail($this->recordId)->update($payload);
@@ -97,6 +98,7 @@ class KnowledgeActivityFormModal extends Component
     {
         return view('livewire.knowledge.knowledge-activity-form-modal', [
             'experts' => KnowledgeExpert::orderBy('nama_pegawai')->get(['id', 'nama_pegawai']),
+            'hrRisks' => HrRisk::whereNotNull('personnel_ref')->where('personnel_ref', '!=', '')->orderBy('subject')->get(['id', 'subject', 'record_code', 'personnel_ref']),
         ]);
     }
 }

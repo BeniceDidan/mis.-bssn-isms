@@ -30,6 +30,10 @@
         @endif
     </div>
 
+    @if (auth()->user()?->admin_module === 'data_informasi')
+        <livewire:admin-verification-queue />
+    @endif
+
     <livewire:data-information.data-information-stats />
     <livewire:data-information.data-information-table />
     <livewire:data-information.data-information-form-modal />

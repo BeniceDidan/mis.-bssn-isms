@@ -4,6 +4,7 @@ namespace App\Livewire\Knowledge;
 
 use App\Livewire\Concerns\GeneratesPersonnelRef;
 use App\Livewire\Concerns\GuardsWriteAccess;
+use App\Models\HrRisk;
 use App\Models\KnowledgeExpert;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -67,7 +68,7 @@ class KnowledgeExpertFormModal extends Component
 
         $payload = $this->validate();
         $payload['personnel_ref'] = $this->ensurePersonnelRef($payload['personnel_ref'] ?? null);
-        $payload['verification_status'] = auth()->user()?->isAdmin() ? 'tervalidasi' : 'menunggu_verifikasi';
+        $payload['verification_status'] = auth()->user()?->canAutoVerify('pengetahuan') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->recordId) {
             KnowledgeExpert::findOrFail($this->recordId)->update($payload);
@@ -87,6 +88,8 @@ class KnowledgeExpertFormModal extends Component
 
     public function render()
     {
-        return view('livewire.knowledge.knowledge-expert-form-modal');
+        return view('livewire.knowledge.knowledge-expert-form-modal', [
+            'hrRisks' => HrRisk::whereNotNull('personnel_ref')->where('personnel_ref', '!=', '')->orderBy('subject')->get(['id', 'subject', 'record_code', 'personnel_ref']),
+        ]);
     }
 }

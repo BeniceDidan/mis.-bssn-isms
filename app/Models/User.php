@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'username', 'email', 'password', 'role'])]
+#[Fillable(['name', 'username', 'email', 'password', 'role', 'admin_module'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -31,15 +31,34 @@ class User extends Authenticatable
     }
 
     /**
-     * Only two roles exist: 'admin' verifies submitted data (see
+     * Two roles exist: 'admin' verifies submitted data (see
      * AdminVerificationQueue) and 'user' submits it for review. Both can
      * create/edit/archive/import everywhere — they only differ on whether
-     * a save needs a second pair of eyes before it counts as final (see
-     * AssetFormModal::save() and friends, keyed off isAdmin()).
+     * a save needs a second pair of eyes before it counts as final. There
+     * is deliberately no blanket "super admin" — an admin's verification
+     * power is scoped to exactly one module via admin_module (see
+     * canAutoVerify() and App\Support\AdminModules).
      */
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Whether a save in $moduleKey (one of App\Support\AdminModules::LABELS)
+     * made by this user should be immediately final ('tervalidasi') instead
+     * of going into that module's verification queue. Every FormModal's
+     * save() calls this with its own hardcoded module key instead of the
+     * old blanket isAdmin() check.
+     */
+    public function canAutoVerify(string $moduleKey): bool
+    {
+        return $this->isAdmin() && $this->admin_module === $moduleKey;
+    }
+
+    public function adminModuleLabel(): ?string
+    {
+        return \App\Support\AdminModules::label($this->admin_module);
     }
 
     /**

@@ -30,9 +30,15 @@
         @endif
     </div>
 
+    @if (auth()->user()?->admin_module === 'layanan')
+        <livewire:admin-verification-queue />
+    @endif
+
     <livewire:services.service-stats />
     <livewire:services.service-table />
     <livewire:services.service-form-modal />
+    <livewire:services.service-ticket-form-modal />
+    <livewire:services.service-evaluation-form-modal />
     <livewire:services.service-importer />
 
     @if (request()->boolean('create'))

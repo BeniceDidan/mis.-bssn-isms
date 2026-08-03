@@ -2,40 +2,21 @@
 
 namespace App\Livewire;
 
-use App\Models\Asset;
-use App\Models\Change;
-use App\Models\DataInformation;
-use App\Models\HrRisk;
-use App\Models\KnowledgeActivity;
-use App\Models\KnowledgeAsset;
-use App\Models\KnowledgeExpert;
-use App\Models\KnowledgeRisk;
-use App\Models\Risk;
-use App\Models\SecurityProgram;
-use App\Models\Service;
 use App\Models\Verification;
+use App\Support\AdminModules;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 /**
- * Unified admin inbox for the BPMN "Pemeriksaan data -> ACC/Koreksi" step
- * across all 6 modules — one review queue instead of six near-identical
- * per-module pages. Each of the 6 models is a separate table, so this
- * fetches each model's pending rows separately and merges them in PHP
- * (the row counts here are small — dozens, not millions — so this is
- * simpler and plenty fast compared to a raw SQL UNION across 6 tables).
+ * Admin inbox for the BPMN "Pemeriksaan data -> ACC/Koreksi" step —
+ * scoped to whichever single module the logged-in admin is assigned to
+ * (User::admin_module), since there is deliberately no blanket
+ * super-admin. See App\Support\AdminModules for the module -> models map.
  */
 class AdminVerificationQueue extends Component
 {
-    private const MODELS = [
-        Asset::class, Risk::class, Change::class, DataInformation::class, HrRisk::class,
-        KnowledgeAsset::class, Service::class,
-        KnowledgeExpert::class, KnowledgeActivity::class, KnowledgeRisk::class,
-        SecurityProgram::class,
-    ];
-
     public ?string $decidingModuleKey = null;
 
     public ?int $decidingId = null;
@@ -49,11 +30,17 @@ class AdminVerificationQueue extends Component
         abort_unless(auth()->user()?->isAdmin(), 403);
     }
 
+    /** @return array<int, class-string> */
+    private function scopedModels(): array
+    {
+        return AdminModules::modelsFor(auth()->user()?->admin_module);
+    }
+
     private function pendingItems(): Collection
     {
         $items = collect();
 
-        foreach (self::MODELS as $modelClass) {
+        foreach ($this->scopedModels() as $modelClass) {
             $key = array_search($modelClass, Relation::morphMap(), true) ?: $modelClass;
 
             $modelClass::where('verification_status', 'menunggu_verifikasi')
@@ -106,6 +93,7 @@ class AdminVerificationQueue extends Component
 
         $modelClass = Relation::morphMap()[$this->decidingModuleKey] ?? null;
         abort_unless($modelClass !== null, 404);
+        abort_unless(in_array($modelClass, $this->scopedModels(), true), 403);
 
         $record = $modelClass::findOrFail($this->decidingId);
         $record->update(['verification_status' => $this->decision]);

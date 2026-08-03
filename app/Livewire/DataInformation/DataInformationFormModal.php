@@ -9,6 +9,7 @@ use App\Livewire\Concerns\GuardsWriteAccess;
 use App\Livewire\Concerns\NormalizesEnumInputs;
 use App\Models\Asset;
 use App\Models\DataInformation;
+use App\Models\HrRisk;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -124,7 +125,7 @@ class DataInformationFormModal extends Component
         $payload = $this->nullifyBlankEnums($payload, ['risk_type', 'inherent_risk_level']);
         $payload['dynamic_data'] = $dynamicData;
         $payload['personnel_ref'] = $this->ensurePersonnelRef($payload['personnel_ref'] ?? null);
-        $payload['verification_status'] = auth()->user()?->isAdmin() ? 'tervalidasi' : 'menunggu_verifikasi';
+        $payload['verification_status'] = auth()->user()?->canAutoVerify('data_informasi') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->recordId) {
             DataInformation::findOrFail($this->recordId)->update($payload);
@@ -146,6 +147,7 @@ class DataInformationFormModal extends Component
     {
         return view('livewire.data-information.data-information-form-modal', [
             'assets' => Asset::orderBy('name')->get(['id', 'name', 'asset_code']),
+            'hrRisks' => HrRisk::whereNotNull('personnel_ref')->where('personnel_ref', '!=', '')->orderBy('subject')->get(['id', 'subject', 'record_code', 'personnel_ref']),
             'types' => ChangeType::cases(),
             'levels' => Level::cases(),
         ]);

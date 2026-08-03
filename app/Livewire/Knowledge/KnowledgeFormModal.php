@@ -7,6 +7,7 @@ use App\Livewire\Concerns\GeneratesPersonnelRef;
 use App\Livewire\Concerns\GuardsWriteAccess;
 use App\Livewire\Concerns\NormalizesEnumInputs;
 use App\Models\Asset;
+use App\Models\HrRisk;
 use App\Models\KnowledgeAsset;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
@@ -151,7 +152,7 @@ class KnowledgeFormModal extends Component
         $payload = $this->nullifyBlankEnums($payload, ['knowledge_type']);
         $payload['dynamic_data'] = $dynamicData;
         $payload['personnel_ref'] = $this->ensurePersonnelRef($payload['personnel_ref'] ?? null);
-        $payload['verification_status'] = auth()->user()?->isAdmin() ? 'tervalidasi' : 'menunggu_verifikasi';
+        $payload['verification_status'] = auth()->user()?->canAutoVerify('pengetahuan') ? 'tervalidasi' : 'menunggu_verifikasi';
         $payload['document_path'] = $this->existingDocumentPath;
         $payload['document_original_name'] = $this->existingDocumentName;
 
@@ -186,6 +187,7 @@ class KnowledgeFormModal extends Component
     {
         return view('livewire.knowledge.knowledge-form-modal', [
             'assets' => Asset::orderBy('name')->get(['id', 'name', 'asset_code']),
+            'hrRisks' => HrRisk::whereNotNull('personnel_ref')->where('personnel_ref', '!=', '')->orderBy('subject')->get(['id', 'subject', 'record_code', 'personnel_ref']),
             'types' => KnowledgeType::cases(),
         ]);
     }

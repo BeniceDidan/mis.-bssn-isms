@@ -1,6 +1,35 @@
-<div class="space-y-4" x-data="{ toast: null }" x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)">
+<div
+    class="space-y-4"
+    x-data="{ toast: null, open: {{ $pending->isNotEmpty() ? 'true' : 'false' }} }"
+    x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)"
+>
+    <button
+        type="button"
+        x-ripple
+        @click="open = !open"
+        class="glass-panel flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left shadow-lg transition-all duration-300 ease-spring hover:bg-white/80"
+    >
+        <span class="flex items-center gap-2 text-sm font-semibold text-gray-900">
+            <x-heroicon-o-clipboard-document-check class="h-5 w-5 text-amber-600" />
+            Verifikasi — {{ auth()->user()?->adminModuleLabel() }}
+            @if ($pending->isNotEmpty())
+                <span class="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">{{ $pending->count() }}</span>
+            @endif
+        </span>
+        <x-heroicon-o-chevron-down class="h-4 w-4 text-gray-400 transition-transform duration-300 ease-spring" x-bind:class="open ? 'rotate-180' : ''" />
+    </button>
 
-    <div class="glass-panel overflow-hidden rounded-2xl shadow-lg">
+    <div
+        x-show="open"
+        x-transition:enter="transition ease-out duration-250"
+        x-transition:enter-start="opacity-0 -translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        x-cloak
+        class="glass-panel overflow-hidden rounded-2xl shadow-lg"
+    >
         <div class="max-h-[70vh] overflow-auto">
             <table class="min-w-full divide-y divide-white/40 text-sm">
                 <thead class="sticky top-0 z-10 bg-white/70 backdrop-blur-xl">
@@ -63,7 +92,7 @@
                     @empty
                         <tr>
                             <td colspan="5" class="px-4 py-10 text-center text-sm text-gray-500">
-                                Tidak ada data yang menunggu verifikasi di modul manapun saat ini.
+                                Tidak ada data yang menunggu verifikasi di modul ini saat ini.
                             </td>
                         </tr>
                     @endforelse

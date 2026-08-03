@@ -5,6 +5,7 @@ namespace App\Livewire\Services;
 use App\Livewire\Concerns\GeneratesPersonnelRef;
 use App\Livewire\Concerns\GuardsWriteAccess;
 use App\Models\Asset;
+use App\Models\HrRisk;
 use App\Models\Service;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -118,7 +119,7 @@ class ServiceFormModal extends Component
         $payload = collect($validated)->except(['dynamicRows', 'asset_ids'])->toArray();
         $payload['dynamic_data'] = $dynamicData;
         $payload['personnel_ref'] = $this->ensurePersonnelRef($payload['personnel_ref'] ?? null);
-        $payload['verification_status'] = auth()->user()?->isAdmin() ? 'tervalidasi' : 'menunggu_verifikasi';
+        $payload['verification_status'] = auth()->user()?->canAutoVerify('layanan') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->recordId) {
             $service = Service::findOrFail($this->recordId);
@@ -144,6 +145,7 @@ class ServiceFormModal extends Component
     {
         return view('livewire.services.service-form-modal', [
             'assets' => Asset::orderBy('name')->get(['id', 'name', 'asset_code']),
+            'hrRisks' => HrRisk::whereNotNull('personnel_ref')->where('personnel_ref', '!=', '')->orderBy('subject')->get(['id', 'subject', 'record_code', 'personnel_ref']),
         ]);
     }
 }
