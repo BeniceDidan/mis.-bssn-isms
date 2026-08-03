@@ -52,7 +52,7 @@
                 wire:model="login"
                 autofocus
                 autocomplete="username"
-                class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
+                class="w-full rounded-lg border border-white/80 bg-white/70 px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
             >
             @error('login') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
@@ -63,7 +63,7 @@
                 type="password"
                 wire:model="password"
                 autocomplete="current-password"
-                class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
+                class="w-full rounded-lg border border-white/80 bg-white/70 px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
             >
             @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
