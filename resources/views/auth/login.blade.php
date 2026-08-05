@@ -10,101 +10,130 @@
 
     <style>[x-cloak] { display: none !important; }</style>
 </head>
-<body class="relative flex h-full items-center justify-center overflow-hidden bg-gradient-to-br from-sky-100 via-white to-indigo-100 font-sans antialiased">
+<body class="relative h-full overflow-hidden bg-gradient-to-br from-sky-100 via-white to-indigo-100 font-sans antialiased">
     <div class="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
         <div class="blob-float absolute -left-24 -top-24 h-96 w-96 rounded-full bg-sky-300/50 blur-3xl"></div>
         <div class="blob-float-delay absolute -right-20 top-1/4 h-80 w-80 rounded-full bg-purple-300/40 blur-3xl"></div>
         <div class="blob-float-slow absolute bottom-0 left-1/3 h-96 w-96 rounded-full bg-teal-200/50 blur-3xl"></div>
     </div>
 
-    {{-- Interactive particle field — see interactiveBackground() in app.js.
-         Sits above the blurred blobs (for texture) but below the login
-         card (z-10), and doesn't intercept clicks. --}}
+    {{-- Interactive particle field — see interactiveBackground() in app.js. --}}
     <div class="pointer-events-none fixed inset-0 -z-10" x-data="interactiveBackground()">
         <canvas x-ref="canvas" class="h-full w-full"></canvas>
     </div>
 
-    {{-- Floating Kominfo/telecom-domain icons — signal, jaringan, keamanan
-         data — so the background reads as "communications & informatics"
-         rather than an empty gradient. Three nested layers per icon, each
-         owning its own transform so they don't fight each other: outer =
-         JS-driven parallax shift (parallaxField() in app.js, "depth" is
-         just the px multiplier baked into each :style), middle = one-shot
-         pop-in on page load (icon-intro), inner = the continuous slow bob
-         (icon-float). Each chip also has pointer-events-auto so it reacts
-         to a direct hover, unlike the fully click-through parent layer.
-         Scattered around the edges so nothing sits behind the card. --}}
-    <div
-        class="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-        x-data="parallaxField()"
-        @mousemove.window="onMove($event)"
-    >
-        <div class="absolute left-[6%] top-[10%] hidden sm:block" :style="`transform: translate(${mx * 30}px, ${my * 30}px)`">
-            <div class="icon-intro" style="animation-delay: 0.05s">
-                <div class="icon-float pointer-events-auto flex h-16 w-16 cursor-default items-center justify-center rounded-2xl border border-white/60 bg-white/40 text-sky-600/70 shadow-lg shadow-sky-900/5 backdrop-blur-sm transition-all duration-300 ease-spring hover:scale-110 hover:bg-white/70 hover:text-sky-700" style="animation-delay: 0s">
-                    <x-heroicon-o-signal class="h-8 w-8" />
+    <div class="relative z-10 flex h-full items-center justify-center p-4">
+        <div
+            class="flex h-full w-full max-w-5xl overflow-hidden rounded-3xl bg-white/90 shadow-2xl lg:h-[640px] lg:max-h-[85vh]"
+            x-data="{ shown: false }"
+            x-init="setTimeout(() => shown = true, 50)"
+        >
+            {{-- Left pane: illustration, hidden below lg so the form gets
+                 full width on mobile — same behavior as before the redesign. --}}
+            <div
+                x-show="shown"
+                x-transition:enter="transition ease-spring duration-700"
+                x-transition:enter-start="opacity-0 -translate-x-16"
+                x-transition:enter-end="opacity-100 translate-x-0"
+                class="relative hidden w-1/2 shrink-0 flex-col justify-between overflow-hidden bg-gradient-to-br from-sky-500 via-indigo-600 to-purple-600 p-10 lg:flex"
+            >
+                {{-- A few contained floating accent icons — same icon-float
+                     bob used elsewhere on this page, just scoped to this
+                     panel instead of scattered across the whole viewport. --}}
+                <div class="absolute left-6 top-24 opacity-80 icon-float" style="animation-delay: -1s">
+                    <x-heroicon-o-lock-closed class="h-6 w-6 text-white/70" />
                 </div>
-            </div>
-        </div>
+                <div class="absolute right-10 top-16 opacity-80 icon-float" style="animation-delay: -3s">
+                    <x-heroicon-o-server-stack class="h-7 w-7 text-white/70" />
+                </div>
+                <div class="absolute bottom-24 left-10 opacity-80 icon-float" style="animation-delay: -4.5s">
+                    <x-heroicon-o-cpu-chip class="h-6 w-6 text-white/70" />
+                </div>
 
-        <div class="absolute right-[8%] top-[8%]" :style="`transform: translate(${mx * 45}px, ${my * 45}px)`">
-            <div class="icon-intro" style="animation-delay: 0.15s">
-                <div class="icon-float pointer-events-auto flex h-20 w-20 cursor-default items-center justify-center rounded-2xl border border-white/60 bg-white/40 text-indigo-600/70 shadow-lg shadow-indigo-900/5 backdrop-blur-sm transition-all duration-300 ease-spring hover:scale-110 hover:bg-white/70 hover:text-indigo-700" style="animation-delay: -1.5s">
-                    <x-heroicon-o-wifi class="h-10 w-10" />
+                <div class="relative z-10">
+                    <h2 class="text-2xl font-semibold text-white">BSSN ISMS</h2>
+                    <p class="mt-2 max-w-[24ch] text-sm text-sky-100/90">
+                        Sistem manajemen keamanan informasi &mdash; aset, risiko, dan layanan TIK dalam satu tempat.
+                    </p>
                 </div>
-            </div>
-        </div>
 
-        <div class="absolute bottom-[14%] left-[9%]" :style="`transform: translate(${mx * 25}px, ${my * 25}px)`">
-            <div class="icon-intro" style="animation-delay: 0.3s">
-                <div class="icon-float pointer-events-auto flex h-24 w-24 cursor-default items-center justify-center rounded-2xl border border-white/60 bg-white/40 text-teal-600/70 shadow-lg shadow-teal-900/5 backdrop-blur-sm transition-all duration-300 ease-spring hover:scale-110 hover:bg-white/70 hover:text-teal-700" style="animation-delay: -3s">
-                    <x-heroicon-o-globe-asia-australia class="h-12 w-12" />
-                </div>
-            </div>
-        </div>
+                {{-- Original shield + lock + connected-nodes illustration —
+                     stands in for the reference GIF's character art, themed
+                     to cybersecurity instead. Nodes get a slow independent
+                     bob (icon-float) so the whole scene feels alive without
+                     any new keyframes. --}}
+                <div class="relative z-10 flex flex-1 items-center justify-center">
+                    <svg viewBox="0 0 400 400" class="h-56 w-56 drop-shadow-2xl" role="img" aria-label="Ilustrasi keamanan siber">
+                        <circle cx="200" cy="190" r="150" fill="white" opacity="0.07" />
 
-        <div class="absolute bottom-[10%] right-[7%]" :style="`transform: translate(${mx * 35}px, ${my * 35}px)`">
-            <div class="icon-intro" style="animation-delay: 0.2s">
-                <div class="icon-float pointer-events-auto flex h-[4.5rem] w-[4.5rem] cursor-default items-center justify-center rounded-2xl border border-white/60 bg-white/40 text-sky-700/70 shadow-lg shadow-sky-900/5 backdrop-blur-sm transition-all duration-300 ease-spring hover:scale-110 hover:bg-white/70 hover:text-sky-800" style="animation-delay: -2s">
-                    <x-heroicon-o-server-stack class="h-9 w-9" />
-                </div>
-            </div>
-        </div>
+                        <g class="icon-float" style="animation-delay: -2s; transform-origin: 70px 90px;">
+                            <line x1="140" y1="102" x2="72" y2="90" stroke="white" stroke-opacity="0.35" stroke-width="2" />
+                            <circle cx="70" cy="90" r="15" fill="white" fill-opacity="0.12" />
+                            <circle cx="70" cy="90" r="7" fill="white" />
+                        </g>
+                        <g class="icon-float" style="animation-delay: -0.5s; transform-origin: 330px 90px;">
+                            <line x1="260" y1="102" x2="328" y2="90" stroke="white" stroke-opacity="0.35" stroke-width="2" />
+                            <circle cx="330" cy="90" r="15" fill="white" fill-opacity="0.12" />
+                            <circle cx="330" cy="90" r="7" fill="white" />
+                        </g>
+                        <g class="icon-float" style="animation-delay: -3.5s; transform-origin: 70px 302px;">
+                            <line x1="116" y1="272" x2="72" y2="300" stroke="white" stroke-opacity="0.35" stroke-width="2" />
+                            <circle cx="70" cy="302" r="15" fill="white" fill-opacity="0.12" />
+                            <circle cx="70" cy="302" r="7" fill="white" />
+                        </g>
+                        <g class="icon-float" style="animation-delay: -5s; transform-origin: 330px 302px;">
+                            <line x1="284" y1="272" x2="328" y2="300" stroke="white" stroke-opacity="0.35" stroke-width="2" />
+                            <circle cx="330" cy="302" r="15" fill="white" fill-opacity="0.12" />
+                            <circle cx="330" cy="302" r="7" fill="white" />
+                        </g>
 
-        <div class="absolute left-[3%] top-[45%] hidden md:block" :style="`transform: translate(${mx * 50}px, ${my * 50}px)`">
-            <div class="icon-intro" style="animation-delay: 0.4s">
-                <div class="icon-float pointer-events-auto flex h-14 w-14 cursor-default items-center justify-center rounded-2xl border border-white/60 bg-white/40 text-emerald-600/70 shadow-lg shadow-emerald-900/5 backdrop-blur-sm transition-all duration-300 ease-spring hover:scale-110 hover:bg-white/70 hover:text-emerald-700" style="animation-delay: -4s">
-                    <x-heroicon-o-shield-check class="h-7 w-7" />
-                </div>
-            </div>
-        </div>
+                        <path
+                            d="M200 60 L300 100 L300 210 Q300 300 200 350 Q100 300 100 210 L100 100 Z"
+                            fill="white"
+                            fill-opacity="0.97"
+                            stroke="white"
+                            stroke-opacity="0.5"
+                            stroke-width="2"
+                        />
 
-        <div class="absolute right-[5%] top-[42%] hidden md:block" :style="`transform: translate(${mx * 40}px, ${my * 40}px)`">
-            <div class="icon-intro" style="animation-delay: 0.35s">
-                <div class="icon-float pointer-events-auto flex h-16 w-16 cursor-default items-center justify-center rounded-2xl border border-white/60 bg-white/40 text-indigo-600/70 shadow-lg shadow-indigo-900/5 backdrop-blur-sm transition-all duration-300 ease-spring hover:scale-110 hover:bg-white/70 hover:text-indigo-700" style="animation-delay: -0.8s">
-                    <x-heroicon-o-cpu-chip class="h-8 w-8" />
+                        <path d="M180 195 V170 a20 20 0 0 1 40 0 V195" fill="none" stroke="#0369a1" stroke-width="10" stroke-linecap="round" />
+                        <rect x="168" y="195" width="64" height="52" rx="10" fill="#0369a1" />
+                        <circle cx="200" cy="215" r="6.5" fill="white" />
+                        <rect x="196.5" y="219" width="7" height="13" rx="2" fill="white" />
+                    </svg>
                 </div>
-            </div>
-        </div>
 
-        <div class="absolute left-[22%] top-[6%] hidden sm:block" :style="`transform: translate(${mx * 20}px, ${my * 20}px)`">
-            <div class="icon-intro" style="animation-delay: 0.25s">
-                <div class="icon-float pointer-events-auto flex h-14 w-14 cursor-default items-center justify-center rounded-2xl border border-white/60 bg-white/40 text-sky-500/70 shadow-lg shadow-sky-900/5 backdrop-blur-sm transition-all duration-300 ease-spring hover:scale-110 hover:bg-white/70 hover:text-sky-600" style="animation-delay: -2.6s">
-                    <x-heroicon-o-cloud class="h-7 w-7" />
-                </div>
-            </div>
-        </div>
+                <p class="relative z-10 text-xs text-sky-100/70">Badan Siber dan Sandi Negara</p>
 
-        <div class="absolute bottom-[6%] right-[20%] hidden sm:block" :style="`transform: translate(${mx * 55}px, ${my * 55}px)`">
-            <div class="icon-intro" style="animation-delay: 0.1s">
-                <div class="icon-float pointer-events-auto flex h-14 w-14 cursor-default items-center justify-center rounded-2xl border border-white/60 bg-white/40 text-purple-600/70 shadow-lg shadow-purple-900/5 backdrop-blur-sm transition-all duration-300 ease-spring hover:scale-110 hover:bg-white/70 hover:text-purple-700" style="animation-delay: -1.2s">
-                    <x-heroicon-o-radio class="h-7 w-7" />
-                </div>
+                {{-- Wavy divider — the signature shape from the reference,
+                     recreated as a plain formulaic SVG wave (not traced),
+                     layered on top of the seam so it's purely decorative
+                     and can't affect layout even if it ever renders oddly. --}}
+                <svg
+                    class="pointer-events-none absolute -right-px top-0 h-full w-8"
+                    viewBox="0 0 60 800"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M0 0 L30 0 Q48 50 30 100 Q12 150 30 200 Q48 250 30 300 Q12 350 30 400 Q48 450 30 500 Q12 550 30 600 Q48 650 30 700 Q12 750 30 800 L0 800 Z"
+                        fill="#4f46e5"
+                    />
+                </svg>
+            </div>
+
+            {{-- Right pane: the actual login form, untouched. --}}
+            <div
+                x-show="shown"
+                x-transition:enter="transition ease-spring duration-700"
+                x-transition:enter-start="opacity-0 translate-x-16"
+                x-transition:enter-end="opacity-100 translate-x-0"
+                class="flex w-full items-center justify-center overflow-y-auto p-6 lg:w-1/2"
+            >
+                <livewire:auth.login />
             </div>
         </div>
     </div>
-
-    <livewire:auth.login />
 
     @livewireScripts
 </body>
