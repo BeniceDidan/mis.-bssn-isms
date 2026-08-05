@@ -40,7 +40,7 @@
                 x-transition:enter-start="opacity-0 -translate-x-16"
                 x-transition:enter-end="opacity-100 translate-x-0"
                 :class="mode === 'signin' ? '' : 'lg:translate-x-full'"
-                class="relative hidden w-1/2 shrink-0 flex-col justify-between overflow-hidden bg-gradient-to-br from-sky-500 via-indigo-600 to-purple-600 p-10 transition-transform duration-700 ease-spring lg:flex lg:absolute lg:inset-y-0 lg:left-0"
+                class="relative hidden w-1/2 shrink-0 flex-col justify-between overflow-hidden bg-gradient-to-br from-sky-500 via-indigo-600 to-purple-600 p-10 transition-transform duration-[850ms] ease-spring lg:flex lg:absolute lg:inset-y-0 lg:left-0"
             >
                 {{-- A few contained floating accent icons — same icon-float
                      bob used elsewhere on this page, just scoped to this
@@ -68,7 +68,7 @@
                      bob (icon-float) so the whole scene feels alive without
                      any new keyframes. --}}
                 <div class="relative z-10 flex flex-1 items-center justify-center">
-                    <svg viewBox="0 0 400 400" class="h-56 w-56 drop-shadow-2xl" role="img" aria-label="Ilustrasi keamanan siber">
+                    <svg viewBox="0 0 400 400" class="icon-float h-56 w-56 drop-shadow-2xl" style="animation-duration: 5s;" role="img" aria-label="Ilustrasi keamanan siber">
                         <circle cx="200" cy="190" r="150" fill="white" opacity="0.07" />
 
                         <g class="icon-float" style="animation-delay: -2s; transform-origin: 70px 90px;">
@@ -136,12 +136,12 @@
                 x-transition:enter-start="opacity-0 translate-x-16"
                 x-transition:enter-end="opacity-100 translate-x-0"
                 :class="mode === 'signin' ? '' : 'lg:-translate-x-full'"
-                class="relative flex w-full items-center justify-center overflow-y-auto p-6 transition-transform duration-700 ease-spring lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2"
+                class="relative flex w-full items-center justify-center overflow-y-auto p-6 transition-transform delay-[40ms] duration-[850ms] ease-spring lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2"
             >
-                <div x-show="mode === 'signin'" x-transition:enter="transition ease-out duration-300 delay-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                <div x-show="mode === 'signin'" x-transition:enter="transition ease-spring duration-500 delay-75" x-transition:enter-start="opacity-0 translate-y-3 scale-[0.97]" x-transition:enter-end="opacity-100 translate-y-0 scale-100">
                     <livewire:auth.login />
                 </div>
-                <div x-show="mode === 'forgot'" x-cloak x-transition:enter="transition ease-out duration-300 delay-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                <div x-show="mode === 'forgot'" x-cloak x-transition:enter="transition ease-spring duration-500 delay-75" x-transition:enter-start="opacity-0 translate-y-3 scale-[0.97]" x-transition:enter-end="opacity-100 translate-y-0 scale-100">
                     <livewire:auth.forgot-password />
                 </div>
             </div>
