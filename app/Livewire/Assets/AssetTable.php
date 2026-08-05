@@ -6,6 +6,8 @@ use App\Enums\AssetCategory;
 use App\Enums\Level;
 use App\Livewire\Concerns\GuardsWriteAccess;
 use App\Models\Asset;
+use App\Models\HrRisk;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -32,6 +34,9 @@ class AssetTable extends Component
     public string $sortDirection = 'desc';
 
     public ?Asset $viewingAsset = null;
+
+    /** @var Collection<int, HrRisk> SDM records sharing this asset's Kode Personil — the reverse of HrRiskTable's cross-module panel, see viewDetail(). */
+    public ?Collection $relatedSdm = null;
 
     /**
      * Entangling the full $viewingAsset model into Alpine for the slide-over's
@@ -87,6 +92,15 @@ class AssetTable extends Component
             ->with(['services' => fn ($q) => $q->latest('services.created_at')->limit(5)])
             ->with(['verifications' => fn ($q) => $q->with('user')->limit(3)])
             ->findOrFail($assetId);
+
+        // Mirrors HrRiskTable::findCrossModuleLinks() from the other
+        // direction — exact Kode Personil match only, same as everywhere
+        // else in the app (no name-guessing).
+        $personnelRef = $this->viewingAsset->personnel_ref;
+        $this->relatedSdm = $personnelRef
+            ? HrRisk::all()->filter(fn (HrRisk $hr) => $hr->personnel_ref === $personnelRef)->values()
+            : collect();
+
         $this->detailOpen = true;
     }
 

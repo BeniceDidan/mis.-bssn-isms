@@ -305,6 +305,20 @@
 
                         <div class="space-y-4">
                             <div>
+                                <p class="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                                    <x-heroicon-o-users class="h-3.5 w-3.5" /> SDM ({{ $relatedSdm->count() }})
+                                </p>
+                                @forelse ($relatedSdm as $relatedPerson)
+                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-slate-50/70 px-3 py-2 text-xs transition-all duration-200 hover:translate-x-1 hover:bg-slate-100/70">
+                                        <span class="truncate text-gray-700">{{ $relatedPerson->subject }}</span>
+                                        <span class="ml-2 shrink-0 font-mono text-slate-500">{{ $relatedPerson->record_code }}</span>
+                                    </div>
+                                @empty
+                                    <p class="text-xs text-gray-400">{{ $viewingAsset->personnel_ref ? 'Belum ada SDM dengan Kode Personil yang sama.' : 'Aset ini belum diisi Kode Personil.' }}</p>
+                                @endforelse
+                            </div>
+
+                            <div>
                                 <p class="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-purple-600">
                                     <x-heroicon-o-exclamation-triangle class="h-3.5 w-3.5" /> Risiko ({{ $viewingAsset->risks->count() }})
                                 </p>
