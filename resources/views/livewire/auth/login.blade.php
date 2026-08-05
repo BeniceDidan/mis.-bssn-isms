@@ -38,6 +38,12 @@
         <p class="text-sm text-gray-500">Masuk untuk mengelola aset, risiko, dan keamanan informasi</p>
     </div>
 
+    @if (session('status'))
+        <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            {{ session('status') }}
+        </div>
+    @endif
+
     <form
         wire:submit="authenticate"
         x-data="tiltCard()"
@@ -68,10 +74,15 @@
             @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
 
-        <label class="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
-            <input type="checkbox" wire:model="remember" class="rounded border-gray-300 text-sky-600 transition-colors duration-150 focus:ring-sky-500">
-            Ingat saya
-        </label>
+        <div class="flex items-center justify-between">
+            <label class="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+                <input type="checkbox" wire:model="remember" class="rounded border-gray-300 text-sky-600 transition-colors duration-150 focus:ring-sky-500">
+                Ingat saya
+            </label>
+            <button type="button" @click="mode = 'forgot'" class="text-sm font-medium text-sky-600 transition-colors duration-150 hover:text-sky-700">
+                Lupa kata sandi?
+            </button>
+        </div>
 
         <button
             x-ripple

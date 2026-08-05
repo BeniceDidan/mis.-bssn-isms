@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ResetPasswordNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -71,5 +72,15 @@ class User extends Authenticatable
     public function canWrite(): bool
     {
         return true;
+    }
+
+    /**
+     * Overrides CanResetPassword's default, which sends Laravel's built-in
+     * Markdown-rendered notification — see ResetPasswordNotification for
+     * why that path is avoided here.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

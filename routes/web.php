@@ -7,6 +7,7 @@ Route::redirect('/', '/dashboard');
 
 Route::middleware('guest')->group(function () {
     Route::view('/login', 'auth.login')->name('login');
+    Route::view('/reset-password/{token}', 'auth.reset-password')->name('password.reset');
 });
 
 Route::post('/logout', function () {

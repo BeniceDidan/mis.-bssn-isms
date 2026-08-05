@@ -24,18 +24,23 @@
 
     <div class="relative z-10 flex h-full items-center justify-center p-4">
         <div
-            class="flex h-full w-full max-w-5xl overflow-hidden rounded-3xl bg-white/90 shadow-2xl lg:h-[640px] lg:max-h-[85vh]"
-            x-data="{ shown: false }"
+            class="relative flex h-full w-full max-w-5xl overflow-hidden rounded-3xl bg-white/90 shadow-2xl lg:h-[640px] lg:max-h-[85vh]"
+            x-data="{ shown: false, mode: 'signin' }"
             x-init="setTimeout(() => shown = true, 50)"
         >
-            {{-- Left pane: illustration, hidden below lg so the form gets
-                 full width on mobile — same behavior as before the redesign. --}}
+            {{-- Left pane: illustration. Hidden below lg so mobile keeps a
+                 plain full-width form. At lg+ it also slides to swap sides
+                 with the form pane when `mode` toggles (mirrors the
+                 reference GIF's Sign In / Sign Up swap — here it's
+                 Sign In / Lupa Kata Sandi since this app has no self-serve
+                 sign-up). --}}
             <div
                 x-show="shown"
                 x-transition:enter="transition ease-spring duration-700"
                 x-transition:enter-start="opacity-0 -translate-x-16"
                 x-transition:enter-end="opacity-100 translate-x-0"
-                class="relative hidden w-1/2 shrink-0 flex-col justify-between overflow-hidden bg-gradient-to-br from-sky-500 via-indigo-600 to-purple-600 p-10 lg:flex"
+                :class="mode === 'signin' ? '' : 'lg:translate-x-full'"
+                class="relative hidden w-1/2 shrink-0 flex-col justify-between overflow-hidden bg-gradient-to-br from-sky-500 via-indigo-600 to-purple-600 p-10 transition-transform duration-700 ease-spring lg:flex lg:absolute lg:inset-y-0 lg:left-0"
             >
                 {{-- A few contained floating accent icons — same icon-float
                      bob used elsewhere on this page, just scoped to this
@@ -122,15 +127,23 @@
                 </svg>
             </div>
 
-            {{-- Right pane: the actual login form, untouched. --}}
+            {{-- Right pane: swaps between the login form and the forgot-
+                 password form via `mode` — both components are untouched
+                 internally, this only controls which one is visible. --}}
             <div
                 x-show="shown"
                 x-transition:enter="transition ease-spring duration-700"
                 x-transition:enter-start="opacity-0 translate-x-16"
                 x-transition:enter-end="opacity-100 translate-x-0"
-                class="flex w-full items-center justify-center overflow-y-auto p-6 lg:w-1/2"
+                :class="mode === 'signin' ? '' : 'lg:-translate-x-full'"
+                class="relative flex w-full items-center justify-center overflow-y-auto p-6 transition-transform duration-700 ease-spring lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2"
             >
-                <livewire:auth.login />
+                <div x-show="mode === 'signin'" x-transition:enter="transition ease-out duration-300 delay-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                    <livewire:auth.login />
+                </div>
+                <div x-show="mode === 'forgot'" x-cloak x-transition:enter="transition ease-out duration-300 delay-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                    <livewire:auth.forgot-password />
+                </div>
             </div>
         </div>
     </div>
