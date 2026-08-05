@@ -71,23 +71,32 @@
                     <svg viewBox="0 0 400 400" class="icon-float h-56 w-56 drop-shadow-2xl" style="animation-duration: 5s;" role="img" aria-label="Ilustrasi keamanan siber">
                         <circle cx="200" cy="190" r="150" fill="white" opacity="0.07" />
 
+                        {{-- Idle motion so the panel never looks frozen:
+                             expanding pulse rings + a slow dashed sweep,
+                             same pair already used around the login logo,
+                             plus marching dashes along each node line to
+                             read as "signal flowing in". --}}
+                        <circle cx="200" cy="190" r="105" fill="none" stroke="white" stroke-opacity="0.35" stroke-width="2" class="signal-pulse" style="transform-origin: 200px 190px;" />
+                        <circle cx="200" cy="190" r="105" fill="none" stroke="white" stroke-opacity="0.35" stroke-width="2" class="signal-pulse" style="transform-origin: 200px 190px; animation-delay: -1.3s;" />
+                        <circle cx="200" cy="190" r="135" fill="none" stroke="white" stroke-opacity="0.25" stroke-width="1.5" stroke-dasharray="3 9" class="radar-sweep" style="transform-origin: 200px 190px;" />
+
                         <g class="icon-float" style="animation-delay: -2s; transform-origin: 70px 90px;">
-                            <line x1="140" y1="102" x2="72" y2="90" stroke="white" stroke-opacity="0.35" stroke-width="2" />
+                            <line class="line-flow" x1="140" y1="102" x2="72" y2="90" stroke="white" stroke-opacity="0.45" stroke-width="2" />
                             <circle cx="70" cy="90" r="15" fill="white" fill-opacity="0.12" />
                             <circle cx="70" cy="90" r="7" fill="white" />
                         </g>
                         <g class="icon-float" style="animation-delay: -0.5s; transform-origin: 330px 90px;">
-                            <line x1="260" y1="102" x2="328" y2="90" stroke="white" stroke-opacity="0.35" stroke-width="2" />
+                            <line class="line-flow" x1="260" y1="102" x2="328" y2="90" stroke="white" stroke-opacity="0.45" stroke-width="2" style="animation-delay: -0.4s;" />
                             <circle cx="330" cy="90" r="15" fill="white" fill-opacity="0.12" />
                             <circle cx="330" cy="90" r="7" fill="white" />
                         </g>
                         <g class="icon-float" style="animation-delay: -3.5s; transform-origin: 70px 302px;">
-                            <line x1="116" y1="272" x2="72" y2="300" stroke="white" stroke-opacity="0.35" stroke-width="2" />
+                            <line class="line-flow" x1="116" y1="272" x2="72" y2="300" stroke="white" stroke-opacity="0.45" stroke-width="2" style="animation-delay: -0.8s;" />
                             <circle cx="70" cy="302" r="15" fill="white" fill-opacity="0.12" />
                             <circle cx="70" cy="302" r="7" fill="white" />
                         </g>
                         <g class="icon-float" style="animation-delay: -5s; transform-origin: 330px 302px;">
-                            <line x1="284" y1="272" x2="328" y2="300" stroke="white" stroke-opacity="0.35" stroke-width="2" />
+                            <line class="line-flow" x1="284" y1="272" x2="328" y2="300" stroke="white" stroke-opacity="0.45" stroke-width="2" style="animation-delay: -1.1s;" />
                             <circle cx="330" cy="302" r="15" fill="white" fill-opacity="0.12" />
                             <circle cx="330" cy="302" r="7" fill="white" />
                         </g>
