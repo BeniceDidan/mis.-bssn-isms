@@ -26,12 +26,12 @@
                     <h2 class="text-lg font-semibold text-gray-900">
                         {{ $changeId ? 'Ubah Perubahan' : 'Perubahan Baru' }}
                     </h2>
-                    <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-white/60 hover:text-gray-600">
+                    <button type="button" wire:click="close" data-tour="modal-close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-white/60 hover:text-gray-600">
                         <x-heroicon-o-x-mark class="h-5 w-5" />
                     </button>
                 </div>
 
-                <div class="space-y-4 px-6 py-5">
+                <div class="space-y-4 px-6 py-5" data-tour="form-body">
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Judul / Usulan Modifikasi</label>
                         <input type="text" wire:model="title" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
@@ -142,7 +142,7 @@
                         </div>
                     </div>
 
-                    <div>
+                    <div data-tour="personnel-field">
                         <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
                         <input type="text" list="change-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih dari SDM yang sudah ada, atau ketik kode baru" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
                         <datalist id="change-personnel-suggestions">

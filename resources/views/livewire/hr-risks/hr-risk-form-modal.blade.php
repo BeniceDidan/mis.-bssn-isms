@@ -26,12 +26,12 @@
                     <h2 class="text-lg font-semibold text-gray-900">
                         {{ $recordId ? 'Ubah Risiko SDM' : 'Risiko SDM Baru' }}
                     </h2>
-                    <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-white/60 hover:text-gray-600">
+                    <button type="button" wire:click="close" data-tour="modal-close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-white/60 hover:text-gray-600">
                         <x-heroicon-o-x-mark class="h-5 w-5" />
                     </button>
                 </div>
 
-                <div class="space-y-4 px-6 py-5">
+                <div class="space-y-4 px-6 py-5" data-tour="form-body">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Subjek (Pegawai/Pihak Ketiga)</label>
@@ -85,7 +85,7 @@
                         </div>
                     </div>
 
-                    <div>
+                    <div data-tour="personnel-field">
                         <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
                         <input type="text" wire:model="personnel_ref" placeholder="Dikosongkan = digenerate otomatis" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
                         <p class="mt-1 text-[11px] text-gray-400">Isi kode yang sama di record lain (modul apa pun) untuk menautkannya secara pasti sebagai orang/pihak ketiga yang sama.</p>

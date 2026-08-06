@@ -1,10 +1,12 @@
-import { startTour, resumeTourIfActive } from './tour';
+import { startTour, startModuleTour, resumeTourIfActive } from './tour';
 
-// Exposed globally so the topbar's plain onclick="startTour()" can reach it
-// without needing its own Alpine component. Module scripts run after HTML
-// parsing (like defer), so DOMContentLoaded may have already fired by the
-// time this executes — check readyState instead of blindly listening.
+// Exposed globally so the topbar's plain onclick="startTour()" (and each
+// module page's "Tutorial Modul Ini" button) can reach these without needing
+// their own Alpine component. Module scripts run after HTML parsing (like
+// defer), so DOMContentLoaded may have already fired by the time this
+// executes — check readyState instead of blindly listening.
 window.startTour = startTour;
+window.startModuleTour = startModuleTour;
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', resumeTourIfActive);
 } else {

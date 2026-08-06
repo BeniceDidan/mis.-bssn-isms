@@ -22,8 +22,18 @@
                 <h1 class="text-xl font-semibold text-gray-900">Manajemen Pengetahuan</h1>
                 <p class="text-sm text-gray-500">Register aset pengetahuan, peta keahlian, aktivitas berbagi, dan risiko KM</p>
             </div>
-            @if (auth()->user()?->canWrite())
-                <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2">
+                <button
+                    type="button"
+                    x-ripple
+                    onclick="window.startModuleTour && window.startModuleTour('pengetahuan')"
+                    title="Tutorial Modul Ini"
+                    class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-amber-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-amber-50 active:scale-95"
+                >
+                    <x-heroicon-o-play class="h-3.5 w-3.5" />
+                    Tutorial Modul Ini
+                </button>
+                @if (auth()->user()?->canWrite())
                     <button
                         x-ripple
                         @click="$dispatch('open-knowledge-importer')"
@@ -41,8 +51,8 @@
                         <x-heroicon-o-plus class="h-4 w-4" />
                         Tambah Baru
                     </button>
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
 
         {{-- The BSSN design guide frames these 4 sheets as "komponen utama

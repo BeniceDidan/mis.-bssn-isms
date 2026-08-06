@@ -8,8 +8,18 @@
             <h1 class="text-xl font-semibold text-gray-900">Manajemen Layanan</h1>
             <p class="text-sm text-gray-500">Katalog layanan SPBE, log operasional, dan evaluasi kinerja</p>
         </div>
-        @if (auth()->user()?->canWrite())
-            <div class="flex items-center gap-2" x-data>
+        <div class="flex items-center gap-2" x-data>
+            <button
+                type="button"
+                x-ripple
+                onclick="window.startModuleTour && window.startModuleTour('layanan')"
+                title="Tutorial Modul Ini"
+                class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-sky-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-sky-50 active:scale-95"
+            >
+                <x-heroicon-o-play class="h-3.5 w-3.5" />
+                Tutorial Modul Ini
+            </button>
+            @if (auth()->user()?->canWrite())
                 <button
                     x-ripple
                     @click="$dispatch('open-service-importer')"
@@ -27,8 +37,8 @@
                     <x-heroicon-o-plus class="h-4 w-4" />
                     Layanan Baru
                 </button>
-            </div>
-        @endif
+            @endif
+        </div>
     </div>
 
     @if (auth()->user()?->admin_module === 'layanan')
