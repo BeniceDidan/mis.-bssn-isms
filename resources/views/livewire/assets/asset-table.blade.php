@@ -298,7 +298,7 @@
                          here, so the cross-module flow (Risiko → Perubahan →
                          Data Informasi → Pengetahuan) is visible from the
                          asset itself instead of only inside each module. --}}
-                    <div class="border-t border-white/40 px-5 py-4">
+                    <div class="border-t border-white/40 px-5 py-4" data-tour="related-panel">
                         <p class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
                             <x-heroicon-o-link class="h-3.5 w-3.5" /> Riwayat Terkait
                         </p>

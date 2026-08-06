@@ -69,13 +69,14 @@
         </p>
     </div>
 
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4" data-tour="tiles-grid">
         @foreach ($modules as $index => $module)
             @php $colors = $colorClasses[$module['color']]; @endphp
 
             @if ($module['enabled'])
                 <a
                     href="{{ route($module['route']) }}"
+                    @if ($index === 0) data-tour="tile-sdm" @endif
                     x-data="{ shown: false }" x-init="setTimeout(() => shown = true, {{ $index * 60 }})"
                     x-show="shown"
                     x-transition:enter="transition ease-spring duration-500"

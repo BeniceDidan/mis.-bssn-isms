@@ -34,6 +34,7 @@
                     </button>
                     <button
                         x-ripple
+                        data-tour="add-button"
                         @click="$dispatch(createEvent())"
                         class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-3 py-2 text-sm font-medium text-white shadow-lg shadow-amber-500/30 transition-all duration-300 ease-spring hover:scale-105 hover:shadow-amber-500/50 active:scale-95"
                     >

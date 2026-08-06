@@ -52,6 +52,20 @@
             <x-heroicon-o-question-mark-circle class="h-5 w-5" />
         </a>
 
+        {{-- Repeatable, not a once-at-first-login modal — this is the only
+             entry point, so it has to always be reachable, not tucked away
+             behind a "seen it" flag anywhere. --}}
+        <button
+            type="button"
+            x-ripple
+            onclick="window.startTour && window.startTour()"
+            title="Mulai Tutorial"
+            class="hidden items-center gap-1.5 rounded-full border border-sky-200/80 bg-sky-50/80 px-3 py-1.5 text-xs font-medium text-sky-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-sky-100 active:scale-95 sm:flex"
+        >
+            <x-heroicon-o-play class="h-3.5 w-3.5" />
+            Mulai Tutorial
+        </button>
+
         @if (auth()->user()?->canWrite())
             <div class="relative">
                 <button

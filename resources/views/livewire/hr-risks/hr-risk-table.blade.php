@@ -240,7 +240,7 @@
                          column, but the match here is purely an exact Kode
                          Personil (personnel_ref) equality check — see
                          findCrossModuleLinks() in HrRiskTable. --}}
-                    <div class="border-t border-white/40 px-5 py-4">
+                    <div class="border-t border-white/40 px-5 py-4" data-tour="cross-module-panel">
                         <p class="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
                             <x-heroicon-o-share class="h-3.5 w-3.5" /> Keterkaitan Lintas Modul
                         </p>

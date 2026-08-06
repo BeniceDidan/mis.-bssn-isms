@@ -20,6 +20,7 @@
                 </button>
                 <button
                     x-ripple
+                    data-tour="add-button"
                     @click="$dispatch('open-asset-form')"
                     class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-sky-500 to-sky-600 px-3 py-2 text-sm font-medium text-white shadow-lg shadow-sky-500/30 transition-all duration-300 ease-spring hover:scale-105 hover:shadow-sky-500/50 active:scale-95"
                 >

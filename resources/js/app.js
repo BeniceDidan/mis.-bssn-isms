@@ -1,3 +1,16 @@
+import { startTour, resumeTourIfActive } from './tour';
+
+// Exposed globally so the topbar's plain onclick="startTour()" can reach it
+// without needing its own Alpine component. Module scripts run after HTML
+// parsing (like defer), so DOMContentLoaded may have already fired by the
+// time this executes — check readyState instead of blindly listening.
+window.startTour = startTour;
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', resumeTourIfActive);
+} else {
+    resumeTourIfActive();
+}
+
 // Material-style click "wave" for icon buttons — usage: add x-ripple to any
 // element. Registered on Livewire's bundled Alpine instance, so no separate
 // Alpine import is needed here.
