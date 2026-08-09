@@ -79,9 +79,21 @@ important to understand before touching any of the cross-module code:
 5. **Verification workflow** — only two roles exist, `admin` and
    `user` (see `app/Models/User.php`). Both can write; the only
    difference is `verification_status`. Non-admin saves start as
-   `menunggu_verifikasi`; admin saves are immediately `tervalidasi`.
-   Admin has a dedicated `/verifikasi` queue aggregating pending items
-   across all 8 modules. Enforced server-side via
+   `menunggu_verifikasi`. **Admins are scoped to exactly one of the 8
+   modules each via `admin_module`** (added after this file's original
+   writing — see migration `2026_08_03_000001_add_admin_module_to_users_table`
+   and `App\Support\AdminModules`) — "gaada super admin yang menyetujui
+   semua", so an admin save is only immediately `tervalidasi` when
+   `User::canAutoVerify($moduleKey)` is true, i.e. `admin_module`
+   matches the module being saved (`app/Models/User.php`). A save by an
+   admin scoped to a *different* module still starts as
+   `menunggu_verifikasi`, same as a plain user. **There is no standalone
+   `/verifikasi` route** (despite what an earlier version of this file
+   said) — the verification queue (`AdminVerificationQueue`) is a
+   Livewire component embedded directly inside each of the 8 module
+   index pages (see e.g. `resources/views/assets/index.blade.php`),
+   scoped via `AdminModules::modelsFor($admin->admin_module)` so it only
+   ever shows that admin's own module, never all 8 at once. Enforced server-side via
    `App\Livewire\Concerns\GuardsWriteAccess` (`ensureCanWrite()`), not
    just hidden UI — don't ever gate a save purely in the Blade view.
 
@@ -138,7 +150,13 @@ the user-facing version of the above.
   repo) and `Postgres` (managed database, separate from whatever
   local Postgres you set up here).
 - **Live URL:** `https://mis-bssn-isms-production.up.railway.app` —
-  login `admin`/`admin123` or `user`/`user123`.
+  login `admin`/`admin123` (admin_module: `aset`) or `user`/`user123`
+  for the basic pair. There are also 7 more per-module admin logins
+  seeded (`admin.sdm`, `admin.pengetahuan`, `admin.keamanan`,
+  `admin.risiko`, `admin.perubahan`, `admin.layanan`, `admin.data` —
+  same `admin123` password), one per `admin_module` scope, so testing
+  the verification queue for a module other than Aset needs the
+  matching per-module login, not the plain `admin` one.
 - **To ship a change:** commit, then `git push`. Railway auto-builds
   and redeploys from the Dockerfile on every push to `main` — no
   manual deploy step. **Always ask the user before pushing** — it's a

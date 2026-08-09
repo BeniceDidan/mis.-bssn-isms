@@ -36,7 +36,10 @@ class VerificationWorkflowTest extends TestCase
 
     public function test_admin_submitted_risk_is_immediately_tervalidasi(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        // admin_module must match the module being saved — admins are
+        // scoped to exactly one module each (User::canAutoVerify()),
+        // there's no blanket super-admin (see AdminModules).
+        $admin = User::factory()->create(['role' => 'admin', 'admin_module' => 'risiko']);
         $this->actingAs($admin);
 
         Livewire::test(RiskFormModal::class)
