@@ -85,8 +85,10 @@
                     class="group glass-panel relative overflow-hidden rounded-2xl p-5 shadow-lg transition-all duration-300 ease-spring hover:-translate-y-2 hover:scale-[1.03] hover:shadow-2xl {{ $colors['ring'] }}"
                 >
                     <div class="flex items-start justify-between">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br {{ $colors['grad'] }} text-white shadow-lg {{ $colors['shadow'] }} transition-transform duration-300 ease-spring group-hover:scale-110 group-hover:rotate-6">
-                            <x-dynamic-component :component="'heroicon-' . $module['icon']" class="h-6 w-6" />
+                        <div class="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br {{ $colors['grad'] }} text-white shadow-lg {{ $colors['shadow'] }} transition-transform duration-300 ease-spring group-hover:scale-110 group-hover:rotate-6">
+                            {{-- Glossy top highlight — the detail that reads as "Apple-style" rather than a flat colored square. --}}
+                            <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/35 via-white/0 to-black/10"></div>
+                            <x-dynamic-component :component="'heroicon-' . $module['icon']" class="relative h-6 w-6 drop-shadow-sm" />
                         </div>
                         <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">Aktif</span>
                     </div>
@@ -110,7 +112,7 @@
                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                     class="relative flex cursor-not-allowed flex-col overflow-hidden rounded-2xl border border-white/30 bg-white/30 p-5 opacity-60 shadow-sm backdrop-blur-sm"
                 >
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-300 text-white">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-300 text-white">
                         <x-dynamic-component :component="'heroicon-' . $module['icon']" class="h-6 w-6" />
                     </div>
                     <span class="mt-4 w-fit rounded-full bg-gray-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Segera Hadir</span>
