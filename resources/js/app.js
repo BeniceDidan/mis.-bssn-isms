@@ -43,6 +43,20 @@ document.addEventListener('alpine:init', () => {
     //   x-on:click="if (await $store.confirm.ask('Judul', 'Pesan', 'danger')) $wire.archive(1)"
     // ask() resolves the returned promise with true/false once the user
     // picks a button in the <x-confirm-sheet /> mounted in layouts/app.
+    // Backs the topbar's search trigger and the floating search panel
+    // (mounted once at the layout root, outside the header) — a store
+    // instead of local x-data because the trigger and the panel are no
+    // longer the same element in the DOM. See resources/views/livewire/
+    // global-search.blade.php for why: it used to be a single component
+    // with x-teleport="body" wrapping the results, but every Livewire
+    // re-render (on each debounced keystroke) had Alpine re-teleport a
+    // fresh copy instead of patching the existing one, leaving stale
+    // orphaned overlays behind in <body> and losing focus/keydown
+    // bindings on the "live" one. Same fix confirm-sheet already uses.
+    Alpine.store('search', {
+        open: false,
+    });
+
     Alpine.store('confirm', {
         open: false,
         title: '',

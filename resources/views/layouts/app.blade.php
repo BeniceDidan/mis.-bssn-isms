@@ -105,6 +105,7 @@
     </div>
 
     <x-confirm-sheet />
+    <livewire:global-search />
 
     @livewireScripts
     @stack('scripts')

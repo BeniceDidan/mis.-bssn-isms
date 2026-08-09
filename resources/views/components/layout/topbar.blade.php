@@ -9,8 +9,15 @@
     </button>
 
     <div class="max-w-xl flex-1">
-        <label for="global-search" class="sr-only">Cari aset, risiko, atau data lainnya</label>
-        <livewire:global-search />
+        <button
+            type="button"
+            aria-label="Cari aset, risiko, atau data lainnya"
+            @click="$store.search.open = true"
+            class="flex w-full min-w-0 items-center gap-2 rounded-full border border-white/60 bg-white/50 px-3.5 py-2 text-left text-sm text-gray-400 transition-all duration-300 ease-spring hover:bg-white/70 hover:text-gray-500 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+        >
+            <x-heroicon-o-magnifying-glass class="h-4 w-4 shrink-0" />
+            <span class="truncate">Cari di seluruh modul...</span>
+        </button>
     </div>
 
     {{-- ml-auto pins this to the header's right edge regardless of how much
