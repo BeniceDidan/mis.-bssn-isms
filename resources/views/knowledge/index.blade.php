@@ -33,6 +33,7 @@
                     <x-heroicon-o-play class="h-3.5 w-3.5" />
                     Tutorial Modul Ini
                 </button>
+                <x-integration-map module="pengetahuan" />
                 @if (auth()->user()?->canWrite())
                     <button
                         x-ripple
