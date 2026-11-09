@@ -345,9 +345,16 @@ Aturan yang sengaja dipegang:
 - Riset dasar (PermenPANRB 8/2026 menggantikan 59/2020, pemetaan modul ke
   indikator, matriks prioritas) ada di `docs/riset/` dan **belum ditinjau
   pengguna** — jangan anggap rubrik itu final.
+- `docs/riset/04-rujukan-per-modul.md` memetakan setiap aturan aplikasi ke
+  peraturan (Perpres 95/2018 Pasal 46–54, PermenPANRB 5/2020, BSSN 4/2021,
+  Permen PPN 16/2020, **Permenkomdigi 12/2026** pedoman aset TIK & layanan,
+  BRIN 2/2024) dan mencatat yang perlu disesuaikan — terutama prioritas
+  helpdesk (pedoman resmi: Pk/Pe/Pn dari klasifikasi layanan × Mayor/Minor,
+  bukan P1–P4) dan register risiko (16 kategori, area dampak, selera risiko).
+  Belum ada kode yang diubah berdasarkan temuan itu; tunggu keputusan pengguna.
 
-**Dua Ollama di PC ini.** Port 11434 dilayani Ollama di **WSL** (hanya ada
-`llama3.2`; `bge-m3` diunduh ke sana pada 10 Nov). Ollama Windows
+**Dua Ollama di PC ini.** Port 11434 dilayani Ollama di **WSL** (`llama3.2`
+dan `bge-m3`, yang terakhir terpasang 10 Nov). Ollama Windows
 (`AppData\Local\Programs\Ollama`, model di `~\.ollama\models`: bge-m3,
 qwen2.5, qwen3.5, gemma2, sahabatai-9b, nomic-embed-text) tidak bisa
 memakai port yang sama. Bila ingin memakai model Windows (mis. Sahabat-AI

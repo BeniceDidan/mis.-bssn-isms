@@ -9,6 +9,7 @@ dijadikan bahan presentasi, setiap poin perlu dicek ke sumber aslinya.
 | [01-rubrik-bukti-dukung.md](01-rubrik-bukti-dukung.md) | Struktur Evaluasi Kinerja Pemerintah Digital (PermenPANRB 8/2026), pemetaan 8 modul ke indikator, dan tafsiran unsur bukti dukung per level | `config/bukti_dukung.php`, Evaluasi Bukti Dukung |
 | [02-pengetahuan-rag.md](02-pengetahuan-rag.md) | Cara kerja tanya-jawab dokumen (RAG), pilihan model lokal, dan batasannya | Tab Tanya Dokumen, tag otomatis |
 | [03-triase-helpdesk.md](03-triase-helpdesk.md) | Matriks prioritas dampak × urgensi, kategori tiket, dan target waktu | `config/helpdesk.php`, Tiket Helpdesk |
+| [04-rujukan-per-modul.md](04-rujukan-per-modul.md) | Rujukan resmi untuk setiap aturan dan fitur di 8 modul + audit kesesuaian (sesuai / sebagian / perlu penyesuaian / belum ada rujukan) | Seluruh aplikasi |
 
 ## Temuan yang paling perlu diketahui
 
@@ -28,6 +29,14 @@ dijadikan bahan presentasi, setiap poin perlu dicek ke sumber aslinya.
    hanya bisa mendeteksi tanda tangan elektronik yang tertanam, blok NIP/jabatan,
    dan keberadaan gambar di halaman pengesahan. Membaca cap secara visual butuh
    model vision (lihat berkas 02).
+5. **Perpres 95/2018 masih berlaku** (dicek di JDIH BPK dan JDIH Kemenkeu) dan
+   Pasal 46-nya memuat persis 8 manajemen yang dipakai aplikasi.
+6. **Pedoman Manajemen Aset TIK dan Layanan SPBE sudah resmi** sebagai
+   Permenkomdigi 12/2026 (berlaku 11 Agustus 2026). Pedoman ini punya model
+   prioritas gangguan sendiri (klasifikasi layanan Kritis/Esensial/Normal ×
+   dampak Mayor/Minor), berbeda dengan matriks P1–P4 di aplikasi. Lihat berkas 04.
+7. **Skala risiko 4 tingkat diperbolehkan** PermenPANRB 5/2020 (boleh 3, 4, atau
+   5 level), asalkan matriksnya ditetapkan pimpinan instansi.
 
 ## Cara meninjau
 

@@ -1,5 +1,12 @@
 # 03 · Triase Tiket Helpdesk — DRAF
 
+> **Pembaruan 10 Nov 2026:** Permenkomdigi 12/2026 (Pedoman Manajemen Layanan
+> SPBE, berlaku 11 Agustus 2026) memuat model prioritas penanganan gangguan
+> resmi: klasifikasi layanan (Kritis/Esensial/Normal) × dampak (Mayor/Minor) ×
+> jenis layanan (publik/administrasi) → Pk1–Pk6, Pe1–Pe6, Pn1–Pn6. Matriks
+> P1–P4 di bawah berbeda dengan model itu dan diusulkan untuk diganti. Rincian di
+> [04-rujukan-per-modul.md](04-rujukan-per-modul.md) bagian 10.
+
 ## Dasar
 
 | Kode | Sumber | Isi yang dipakai | Tautan |
