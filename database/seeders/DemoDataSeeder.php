@@ -20,6 +20,8 @@ use App\Models\User;
 use App\Services\Ai\EvidenceAssessor;
 use App\Services\Ai\LocalLlm;
 use App\Services\Ai\TicketTriage;
+use App\Services\KritikalitasService;
+use App\Services\RiskLevelService;
 use App\Support\SimplePdf;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
@@ -85,21 +87,24 @@ class DemoDataSeeder extends Seeder
     /** @return array<string, Asset> */
     private function seedAssets(): array
     {
+        // Skor kerahasiaan/keutuhan/ketersediaan; kritikalitas dihitung dengan
+        // rumus yang sama seperti form Aset (KritikalitasService), tidak diketik.
         $rows = [
-            'srv-app' => ['perangkat_keras', 'Server', 'Server Aplikasi Utama (VM Cluster)', 'Bidang Aplikasi Informatika', 'Pusat Data Lt. 2', 'kritis', [3, 4, 5]],
-            'srv-db' => ['perangkat_keras', 'Server', 'Server Basis Data Terpusat', 'Bidang Aplikasi Informatika', 'Pusat Data Lt. 2', 'kritis', [5, 5, 5]],
-            'firewall' => ['perangkat_keras', 'Perangkat Jaringan', 'Firewall Perimeter Pusat Data', 'Bidang Persandian', 'Pusat Data Lt. 2', 'kritis', [4, 4, 5]],
-            'router' => ['perangkat_keras', 'Perangkat Jaringan', 'Router Inti Jaringan Intra Pemerintah', 'Bidang Infrastruktur', 'Ruang Jaringan', 'tinggi', [3, 4, 5]],
-            'esurat' => ['perangkat_lunak', 'Aplikasi Umum', 'Aplikasi e-Surat dan TTE', 'Sekretariat', 'Server Aplikasi Utama', 'tinggi', [4, 5, 4]],
-            'satudata' => ['perangkat_lunak', 'Aplikasi Khusus', 'Portal Satu Data', 'Bidang Statistik', 'Server Aplikasi Utama', 'tinggi', [2, 5, 4]],
-            'website' => ['perangkat_lunak', 'Situs Web', 'Website Resmi Pemerintah Kota', 'Bidang Informasi Publik', 'Server Aplikasi Utama', 'tinggi', [1, 5, 4]],
-            'simpeg' => ['perangkat_lunak', 'Aplikasi Umum', 'Aplikasi Kepegawaian', 'Bagian Kepegawaian', 'Server Aplikasi Utama', 'sedang', [5, 4, 3]],
-            'data-pend' => ['data_informasi', 'Basis Data', 'Data Kependudukan Terintegrasi', 'Bidang Statistik', 'Server Basis Data Terpusat', 'kritis', [5, 5, 4]],
-            'genset' => ['sarana_pendukung', 'Kelistrikan', 'Genset dan UPS Ruang Server', 'Bidang Infrastruktur', 'Pusat Data Lt. 1', 'sedang', [1, 2, 5]],
+            'srv-app' => ['perangkat_keras', 'Server', 'Server Aplikasi Utama (VM Cluster)', 'Bidang Aplikasi Informatika', 'Pusat Data Lt. 2', [3, 4, 5]],
+            'srv-db' => ['perangkat_keras', 'Server', 'Server Basis Data Terpusat', 'Bidang Aplikasi Informatika', 'Pusat Data Lt. 2', [5, 5, 5]],
+            'firewall' => ['perangkat_keras', 'Perangkat Jaringan', 'Firewall Perimeter Pusat Data', 'Bidang Persandian', 'Pusat Data Lt. 2', [4, 4, 5]],
+            'router' => ['perangkat_keras', 'Perangkat Jaringan', 'Router Inti Jaringan Intra Pemerintah', 'Bidang Infrastruktur', 'Ruang Jaringan', [3, 4, 4]],
+            'esurat' => ['perangkat_lunak', 'Aplikasi Umum', 'Aplikasi e-Surat dan TTE', 'Sekretariat', 'Server Aplikasi Utama', [4, 4, 4]],
+            'satudata' => ['perangkat_lunak', 'Aplikasi Khusus', 'Portal Satu Data', 'Bidang Statistik', 'Server Aplikasi Utama', [2, 4, 4]],
+            'website' => ['perangkat_lunak', 'Situs Web', 'Website Resmi Pemerintah Kota', 'Bidang Informasi Publik', 'Server Aplikasi Utama', [1, 4, 4]],
+            'simpeg' => ['perangkat_lunak', 'Aplikasi Umum', 'Aplikasi Kepegawaian', 'Bagian Kepegawaian', 'Server Aplikasi Utama', [3, 3, 3]],
+            'data-pend' => ['data_informasi', 'Basis Data', 'Data Kependudukan Terintegrasi', 'Bidang Statistik', 'Server Basis Data Terpusat', [5, 5, 4]],
+            'genset' => ['sarana_pendukung', 'Kelistrikan', 'Genset dan UPS Ruang Server', 'Bidang Infrastruktur', 'Pusat Data Lt. 1', [1, 2, 3]],
         ];
 
+        $kritikalitas = new KritikalitasService();
         $assets = [];
-        foreach ($rows as $key => [$category, $sub, $name, $owner, $location, $level, [$c, $i, $a]]) {
+        foreach ($rows as $key => [$category, $sub, $name, $owner, $location, [$c, $i, $a]]) {
             $assets[$key] = Asset::create([
                 'category' => $category,
                 'sub_classification' => $sub,
@@ -107,7 +112,7 @@ class DemoDataSeeder extends Seeder
                 'owner' => $owner,
                 'location' => $location,
                 'status' => 'Aktif',
-                'criticality_level' => $level,
+                'criticality_level' => $kritikalitas->compute($c, $i, $a),
                 'confidentiality_score' => $c,
                 'integrity_score' => $i,
                 'availability_score' => $a,
@@ -165,14 +170,17 @@ class DemoDataSeeder extends Seeder
     private function seedRisks(array $assets): void
     {
         $rows = [
-            ['website', 'Sisipan konten judi online pada website resmi', 'teknis', 'Peretas', 'Plugin CMS usang belum diperbarui', 'tinggi', 'kritis', 'kritis', 'mitigate'],
-            ['srv-db', 'Kegagalan perangkat penyimpanan server basis data', 'teknis', 'Kerusakan perangkat', 'Disk berumur lebih dari 5 tahun', 'sedang', 'kritis', 'tinggi', 'mitigate'],
-            ['esurat', 'Penyalahgunaan akun TTE karena kata sandi dibagikan', 'sumber_daya_manusia', 'Pegawai internal', 'Kesadaran keamanan pegawai rendah', 'sedang', 'tinggi', 'sedang', 'mitigate'],
-            ['genset', 'Pemadaman listrik melebihi kapasitas UPS', 'bencana_alam', 'Gangguan PLN', 'Baterai UPS menurun', 'rendah', 'tinggi', 'sedang', 'transfer'],
-            ['satudata', 'Data sektoral tidak mutakhir', 'operasional', 'Produsen data', 'Belum ada jadwal pemutakhiran', 'tinggi', 'sedang', 'sedang', 'mitigate'],
+            ['website', 'Sisipan konten judi online pada website resmi', 'teknis', 'Peretas', 'Plugin CMS usang belum diperbarui', 'tinggi', 'kritis', 'mitigate'],
+            ['srv-db', 'Kegagalan perangkat penyimpanan server basis data', 'teknis', 'Kerusakan perangkat', 'Disk berumur lebih dari 5 tahun', 'sedang', 'kritis', 'mitigate'],
+            ['esurat', 'Penyalahgunaan akun TTE karena kata sandi dibagikan', 'sumber_daya_manusia', 'Pegawai internal', 'Kesadaran keamanan pegawai rendah', 'rendah', 'tinggi', 'mitigate'],
+            ['genset', 'Pemadaman listrik melebihi kapasitas UPS', 'bencana_alam', 'Gangguan PLN', 'Baterai UPS menurun', 'rendah', 'tinggi', 'transfer'],
+            ['satudata', 'Data sektoral tidak mutakhir', 'operasional', 'Produsen data', 'Belum ada jadwal pemutakhiran', 'sedang', 'sedang', 'mitigate'],
         ];
 
-        foreach ($rows as [$assetKey, $title, $category, $source, $vuln, $likelihood, $impact, $level, $strategy]) {
+        // Level dihitung dengan rumus yang sama seperti form Risiko
+        // (kemungkinan × dampak, naik satu tingkat bila aset Tinggi/Kritis).
+        $levels = new RiskLevelService();
+        foreach ($rows as [$assetKey, $title, $category, $source, $vuln, $likelihood, $impact, $strategy]) {
             Risk::create([
                 'asset_id' => $assets[$assetKey]->id,
                 'title' => $title,
@@ -181,7 +189,7 @@ class DemoDataSeeder extends Seeder
                 'vulnerability' => $vuln,
                 'likelihood' => $likelihood,
                 'impact' => $impact,
-                'risk_level' => $level,
+                'risk_level' => $levels->derive($likelihood, $impact, $assets[$assetKey]->criticality_level?->value),
                 'risk_owner' => $assets[$assetKey]->owner,
                 'treatment_strategy' => $strategy,
                 'status' => 'open',
