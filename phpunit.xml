@@ -27,16 +27,16 @@
              jsonb columns + raw GIN index statements (see assets/risks/etc.
              migrations) that sqlite can't run. Points at a dedicated
              kominfo_isms_test database on the same instance, never the real
-             kominfo_isms one the demo runs on. Same host/port/user as the
-             local Homebrew Postgres in .env — only the database name
-             differs. -->
+             kominfo_isms one the demo runs on. Host, port, username and
+             password are deliberately NOT set here: they come from each
+             machine's own .env, so only the database name differs and no
+             credential is committed. -->
         <env name="DB_CONNECTION" value="pgsql"/>
-        <env name="DB_HOST" value="127.0.0.1"/>
-        <env name="DB_PORT" value="5432"/>
         <env name="DB_DATABASE" value="kominfo_isms_test"/>
-        <env name="DB_USERNAME" value="user"/>
-        <env name="DB_PASSWORD" value=""/>
         <env name="DB_URL" value=""/>
+        <!-- Tests never call a live model: AI features fall back to the
+             deterministic rule engine. Tests that need a model fake HTTP. -->
+        <env name="AI_PROVIDER" value="none"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

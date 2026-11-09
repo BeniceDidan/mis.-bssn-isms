@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\EvidenceDocument;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::redirect('/', '/dashboard');
 
@@ -34,6 +36,17 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/knowledge', 'knowledge.index')->name('knowledge.index');
     Route::view('/services', 'services.index')->name('services.index');
     Route::view('/security-programs', 'security-programs.index')->name('security-programs.index');
+
+    // Bukti dukung disimpan di disk privat (bukan public/storage) karena
+    // berisi dokumen internal OPD — hanya bisa dibuka setelah login.
+    Route::view('/bukti-dukung', 'evidence.index')->name('evidence.index');
+    Route::get('/bukti-dukung/{evidence}/berkas', function (EvidenceDocument $evidence) {
+        abort_unless(Storage::disk('local')->exists($evidence->file_path), 404);
+
+        return Storage::disk('local')->response($evidence->file_path, $evidence->original_name, [
+            'Content-Type' => 'application/pdf',
+        ], 'inline');
+    })->name('evidence.file');
 
     Route::view('/profile', 'profile.edit')->name('profile.edit');
     Route::view('/panduan', 'guide.index')->name('guide.index');

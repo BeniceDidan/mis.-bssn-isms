@@ -12,6 +12,7 @@
                     keahlian: 'open-knowledge-expert-form',
                     aktivitas: 'open-knowledge-activity-form',
                     risiko: 'open-knowledge-risk-form',
+                    tanya: 'open-knowledge-form',
                 }[this.tab];
             },
         }"
@@ -66,6 +67,7 @@
                 ['key' => 'keahlian', 'label' => 'Peta Keahlian', 'icon' => 'o-user-group'],
                 ['key' => 'aktivitas', 'label' => 'Aktivitas Berbagi', 'icon' => 'o-microphone'],
                 ['key' => 'risiko', 'label' => 'Risiko KM', 'icon' => 'o-exclamation-triangle'],
+                ['key' => 'tanya', 'label' => 'Tanya Dokumen', 'icon' => 'o-chat-bubble-left-right'],
             ] as $t)
                 <button
                     x-ripple
@@ -98,6 +100,10 @@
 
         <div x-show="tab === 'risiko'" x-cloak>
             <livewire:knowledge.knowledge-risk-table />
+        </div>
+
+        <div x-show="tab === 'tanya'" x-cloak>
+            <livewire:knowledge.knowledge-ask />
         </div>
 
         <livewire:knowledge.knowledge-form-modal />

@@ -227,13 +227,25 @@
                         @if ($viewingRecord->tickets->isNotEmpty())
                             <div class="space-y-2">
                                 @foreach ($viewingRecord->tickets as $ticket)
-                                    <div class="rounded-lg border border-white/40 bg-white/40 p-2.5 text-xs">
+                                    <div
+                                        @if (auth()->user()?->canWrite())
+                                            x-data
+                                            @click="$dispatch('open-service-ticket-form', { ticketId: {{ $ticket->id }} })"
+                                        @endif
+                                        class="cursor-pointer rounded-lg border border-white/40 bg-white/40 p-2.5 text-xs transition-colors hover:bg-white/70"
+                                    >
                                         <div class="flex items-center justify-between">
-                                            <span class="font-mono text-gray-500">{{ $ticket->legacy_code }}</span>
+                                            <span class="font-mono text-gray-500">{{ $ticket->label() }}</span>
                                             <span class="text-gray-400">{{ optional($ticket->reported_at)->format('d M Y') }}</span>
                                         </div>
                                         <p class="mt-1 text-gray-700">{{ $ticket->issue }}</p>
                                         <div class="mt-1 flex items-center gap-1.5">
+                                            @if ($ticket->priorityInfo())
+                                                <span class="rounded-full px-1.5 py-0.5 text-[10px] font-semibold text-white" style="background-color: {{ $ticket->priorityInfo()['color'] }}">{{ $ticket->priority }}</span>
+                                            @endif
+                                            @if ($ticket->categoryLabel())
+                                                <span class="text-gray-500">{{ $ticket->categoryLabel() }} &middot;</span>
+                                            @endif
                                             @if ($ticket->impact_level)
                                                 <span class="rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style="background-color: {{ $ticket->impact_level->accentHex() }}22; color: {{ $ticket->impact_level->accentHex() }}">
                                                     {{ $ticket->impact_level->label() }}
