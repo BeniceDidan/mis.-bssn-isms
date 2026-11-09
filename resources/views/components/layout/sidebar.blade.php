@@ -20,6 +20,9 @@
         ['label' => 'Manajemen Perubahan', 'route' => 'changes.index', 'icon' => 'o-arrow-path', 'enabled' => true],
         ['label' => 'Manajemen Layanan', 'route' => 'services.index', 'icon' => 'o-wrench-screwdriver', 'enabled' => true],
         ['label' => 'Manajemen Data Informasi', 'route' => 'data-information.index', 'icon' => 'o-circle-stack', 'enabled' => true],
+        // Bukan modul ke-9: alat lintas modul untuk menilai PDF bukti dukung
+        // evaluasi kinerja pemerintah digital terhadap rubrik level.
+        ['label' => 'Evaluasi Bukti Dukung', 'route' => 'evidence.index', 'icon' => 'o-document-check', 'enabled' => true],
     ];
 @endphp
 

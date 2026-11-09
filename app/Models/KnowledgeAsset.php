@@ -9,6 +9,7 @@ use App\Traits\HasVerificationWorkflow;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class KnowledgeAsset extends Model
@@ -31,12 +32,18 @@ class KnowledgeAsset extends Model
         'verification_status',
         'personnel_ref',
         'dynamic_data',
+        'ai_tags',
+        'ai_summary',
+        'index_status',
+        'indexed_at',
     ];
 
     protected $casts = [
         'knowledge_type' => KnowledgeType::class,
         'last_reviewed_at' => 'date',
         'dynamic_data' => 'array',
+        'ai_tags' => 'array',
+        'indexed_at' => 'datetime',
     ];
 
     public function getCodeColumn(): string
@@ -62,5 +69,11 @@ class KnowledgeAsset extends Model
     public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class);
+    }
+
+    /** Potongan isi PDF untuk pencarian semantik (lihat KnowledgeIndexer). */
+    public function chunks(): HasMany
+    {
+        return $this->hasMany(KnowledgeChunk::class)->orderBy('chunk_index');
     }
 }

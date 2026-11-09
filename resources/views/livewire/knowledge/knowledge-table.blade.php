@@ -71,10 +71,15 @@
                             class="transition-all duration-200 hover:bg-white/60 hover:shadow-sm {{ $record->trashed() ? 'opacity-60' : '' }}"
                             style="border-left: 3px solid {{ $record->knowledge_type?->value === 'tacit' ? '#a855f7' : ($record->knowledge_type ? '#f59e0b' : 'transparent') }}"
                         >
-                            <td class="max-w-xs truncate px-4 py-3 font-semibold text-gray-900">
-                                {{ $record->title }}
-                                @if ($record->external_link || $record->document_path)
-                                    <x-heroicon-o-paper-clip class="ml-1 inline h-3.5 w-3.5 text-gray-400" />
+                            <td class="max-w-xs px-4 py-3">
+                                <p class="truncate font-semibold text-gray-900">
+                                    {{ $record->title }}
+                                    @if ($record->external_link || $record->document_path)
+                                        <x-heroicon-o-paper-clip class="ml-1 inline h-3.5 w-3.5 text-gray-400" />
+                                    @endif
+                                </p>
+                                @if (! empty($record->ai_tags))
+                                    <p class="mt-0.5 truncate text-[11px] text-gray-500">{{ implode(' · ', $record->ai_tags) }}</p>
                                 @endif
                             </td>
                             <td class="whitespace-nowrap px-4 py-3">
@@ -207,6 +212,31 @@
                             </div>
                         @endforeach
                     </dl>
+
+                    @if ($viewingRecord->ai_summary || ! empty($viewingRecord->ai_tags) || $viewingRecord->index_status)
+                        <div class="border-t border-white/40 px-5 py-4">
+                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Ringkasan & Tag Otomatis</p>
+                            @if ($viewingRecord->ai_summary)
+                                <p class="text-sm text-gray-700">{{ $viewingRecord->ai_summary }}</p>
+                            @endif
+                            @if (! empty($viewingRecord->ai_tags))
+                                <div class="mt-2 flex flex-wrap gap-1.5">
+                                    @foreach ($viewingRecord->ai_tags as $tag)
+                                        <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{{ $tag }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <p class="mt-2 text-[11px] text-gray-400">
+                                {{ [
+                                    'terindeks' => 'Isi PDF bisa ditanya lewat tab Tanya Dokumen.',
+                                    'kata_kunci' => 'Isi PDF bisa dicari dengan kata kunci (model embedding tidak aktif saat diindeks).',
+                                    'menunggu' => 'PDF sedang diproses.',
+                                    'tanpa_teks' => 'PDF tidak berisi teks (hasil pindai), tidak bisa ditanya.',
+                                    'gagal' => 'PDF gagal dibaca.',
+                                ][$viewingRecord->index_status] ?? 'Tag dari judul; belum ada PDF.' }}
+                            </p>
+                        </div>
+                    @endif
 
                     @if ($viewingRecord->external_link || $viewingRecord->document_path)
                         <div class="border-t border-white/40 px-5 py-4">
