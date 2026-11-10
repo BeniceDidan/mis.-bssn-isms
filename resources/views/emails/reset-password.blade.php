@@ -20,7 +20,7 @@
 
                             <table role="presentation" cellpadding="0" cellspacing="0">
                                 <tr>
-                                    <td style="border-radius:999px; background:#0284c7;">
+                                    <td style="border-radius:999px; background:#183f70;">
                                         <a href="{{ $url }}" style="display:inline-block; padding:12px 28px; font-size:14px; font-weight:600; color:#ffffff; text-decoration:none;">
                                             Atur Ulang Kata Sandi
                                         </a>

@@ -41,7 +41,7 @@
                 class="h-9 w-9 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)]"
                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
             >
-            <div class="hidden h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-400 to-sky-600 text-sm font-bold text-white shadow-lg shadow-sky-900/50">K</div>
+            <div class="hidden h-8 w-8 items-center justify-center rounded-lg bg-brand-700 text-sm font-bold text-white shadow-lg ">K</div>
         </div>
         <div class="leading-tight">
             <p class="text-sm font-semibold text-white">BSSN ISMS</p>
@@ -62,20 +62,20 @@
                     x-ripple
                     @class([
                         'group relative flex items-center gap-3 overflow-hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 ease-spring',
-                        'bg-gradient-to-r from-sky-500 to-sky-600 text-white shadow-lg shadow-sky-900/50 scale-[1.02]' => $isActive,
+                        'bg-brand-700 text-white shadow-lg scale-[1.02]' => $isActive,
                         'text-slate-300 hover:translate-x-1.5 hover:scale-[1.02] hover:bg-white/10 hover:text-white' => ! $isActive,
                     ])
                 >
                     <span
                         @class([
-                            'absolute inset-y-0 left-0 w-1 rounded-r bg-sky-300 transition-transform duration-300 ease-spring',
+                            'absolute inset-y-0 left-0 w-1 rounded-r bg-brand-300 transition-transform duration-300 ease-spring',
                             'scale-y-100' => $isActive,
                             'scale-y-0' => ! $isActive,
                         ])
                     ></span>
                     <x-dynamic-component
                         :component="'heroicon-' . $module['icon']"
-                        class="h-5 w-5 shrink-0 transition-transform duration-300 ease-spring group-hover:scale-125 group-hover:-rotate-6"
+                        class="h-5 w-5 shrink-0 text-muda-300 transition-transform duration-300 ease-spring group-hover:scale-110"
                     />
                     <span>{{ $module['label'] }}</span>
                 </a>
@@ -109,5 +109,5 @@
     x-transition:leave-end="opacity-0"
     x-cloak
     @click="sidebarOpen = false"
-    class="fixed inset-x-0 bottom-0 top-16 z-30 bg-slate-900/50 backdrop-blur-sm md:hidden"
+    class="fixed inset-x-0 bottom-0 top-16 z-30 bg-slate-900/50 md:hidden"
 ></div>

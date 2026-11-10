@@ -8,7 +8,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         x-cloak
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 "
         wire:click.self="close"
     >
         <div
@@ -22,11 +22,11 @@
             class="glass-panel max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl shadow-2xl"
         >
             <form wire:submit="save">
-                <div class="flex items-center justify-between border-b border-white/40 px-6 py-4">
+                <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
                     <h2 class="text-lg font-semibold text-gray-900">
                         {{ $recordId ? 'Ubah Layanan' : 'Layanan Baru' }}
                     </h2>
-                    <button type="button" wire:click="close" data-tour="modal-close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-white/60 hover:text-gray-600">
+                    <button type="button" wire:click="close" data-tour="modal-close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
                         <x-heroicon-o-x-mark class="h-5 w-5" />
                     </button>
                 </div>
@@ -34,29 +34,29 @@
                 <div class="space-y-4 px-6 py-5" data-tour="form-body">
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Nama Layanan SPBE</label>
-                        <input type="text" wire:model="name" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
+                        <input type="text" wire:model="name" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
                         @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Deskripsi / Cakupan Layanan</label>
-                        <textarea wire:model="description" rows="2" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400"></textarea>
+                        <textarea wire:model="description" rows="2" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400"></textarea>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Pengelola Layanan (Owner)</label>
-                            <input type="text" wire:model="owner_unit" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
+                            <input type="text" wire:model="owner_unit" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
                         </div>
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Pengelola Teknis</label>
-                            <input type="text" wire:model="technical_manager" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
+                            <input type="text" wire:model="technical_manager" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
                         </div>
                     </div>
 
                     <div data-tour="personnel-field">
                         <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
-                        <input type="text" list="service-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih dari SDM yang sudah ada, atau ketik kode baru" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
+                        <input type="text" list="service-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih dari SDM yang sudah ada, atau ketik kode baru" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
                         <datalist id="service-personnel-suggestions">
                             @foreach ($hrRisks as $hrRisk)
                                 <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
@@ -68,22 +68,22 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Cara Akses</label>
-                            <input type="text" wire:model="access_method" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
+                            <input type="text" wire:model="access_method" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
                         </div>
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Waktu Pelayanan</label>
-                            <input type="text" wire:model="service_hours" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
+                            <input type="text" wire:model="service_hours" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Target Ketersediaan (SLA)</label>
-                            <input type="text" wire:model="sla_target" placeholder="mis. 99.5%" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
+                            <input type="text" wire:model="sla_target" placeholder="mis. 99.5%" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
                         </div>
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Status</label>
-                            <input type="text" list="service-status-suggestions" wire:model="status" class="w-full rounded-lg border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:ring-sky-400">
+                            <input type="text" list="service-status-suggestions" wire:model="status" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
                             <datalist id="service-status-suggestions">
                                 <option value="Aktif"><option value="Non-aktif"><option value="Dalam Pemeliharaan">
                             </datalist>
@@ -93,10 +93,10 @@
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Aset TIK Terkait</label>
                         <p class="mb-1.5 text-xs text-gray-400">Centang satu atau lebih aset yang dipakai layanan ini — ini yang menghubungkan Layanan ke Aset.</p>
-                        <div class="max-h-48 space-y-1 overflow-y-auto rounded-lg border border-white/60 bg-white/50 p-2">
+                        <div class="max-h-48 space-y-1 overflow-y-auto rounded-lg border border-slate-200 bg-white p-2">
                             @forelse ($assets as $asset)
-                                <label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors duration-150 hover:bg-sky-50">
-                                    <input type="checkbox" wire:model="asset_ids" value="{{ $asset->id }}" class="rounded border-gray-300 text-sky-600 transition-colors duration-150 focus:ring-sky-500">
+                                <label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors duration-150 hover:bg-brand-50">
+                                    <input type="checkbox" wire:model="asset_ids" value="{{ $asset->id }}" class="rounded border-gray-300 text-brand-600 transition-colors duration-150 focus:ring-brand-500">
                                     <span class="text-gray-700">{{ $asset->asset_code }} — {{ $asset->name }}</span>
                                 </label>
                             @empty
@@ -105,10 +105,10 @@
                         </div>
                     </div>
 
-                    <div class="border-t border-white/40 pt-4">
+                    <div class="border-t border-slate-200 pt-4">
                         <div class="mb-2 flex items-center justify-between">
                             <label class="text-sm font-medium text-gray-700">Data Dinamis</label>
-                            <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-sky-600 transition-colors duration-150 hover:text-sky-700 active:scale-95">
+                            <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700 active:scale-95">
                                 <x-heroicon-o-plus class="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-90" /> Tambah Kolom
                             </button>
                         </div>
@@ -116,8 +116,8 @@
                         <div class="space-y-2">
                             @foreach ($dynamicRows as $index => $row)
                                 <div class="flex items-center gap-2" wire:key="service-dynamic-row-{{ $index }}">
-                                    <input type="text" placeholder="Nama Kolom" wire:model="dynamicRows.{{ $index }}.key" class="w-2/5 rounded-lg border-white/60 bg-white/50 text-sm focus:border-sky-400 focus:ring-sky-400">
-                                    <input type="text" placeholder="Nilai" wire:model="dynamicRows.{{ $index }}.value" class="flex-1 rounded-lg border-white/60 bg-white/50 text-sm focus:border-sky-400 focus:ring-sky-400">
+                                    <input type="text" placeholder="Nama Kolom" wire:model="dynamicRows.{{ $index }}.key" class="w-2/5 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                                    <input type="text" placeholder="Nilai" wire:model="dynamicRows.{{ $index }}.value" class="flex-1 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                                     <button type="button" wire:click="removeDynamicRow({{ $index }})" class="rounded p-1.5 text-gray-400 transition-all duration-150 hover:bg-red-50 hover:text-red-600 active:scale-90">
                                         <x-heroicon-o-trash class="h-4 w-4" />
                                     </button>
@@ -131,11 +131,11 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end gap-2 border-t border-white/40 px-6 py-4">
-                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-white/60 bg-white/40 px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-white/70 active:scale-95">
+                <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
+                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95">
                         Batal
                     </button>
-                    <button type="submit" x-ripple class="rounded-full bg-gradient-to-r from-sky-500 to-sky-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-sky-500/30 transition-all duration-300 ease-spring hover:scale-105 hover:shadow-sky-500/50 active:scale-95">
+                    <button type="submit" x-ripple class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95">
                         <span wire:loading.remove wire:target="save">Simpan</span>
                         <span wire:loading wire:target="save">Menyimpan...</span>
                     </button>

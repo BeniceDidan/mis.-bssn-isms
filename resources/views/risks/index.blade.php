@@ -14,7 +14,7 @@
                 x-ripple
                 onclick="window.startModuleTour && window.startModuleTour('risiko')"
                 title="Tutorial Modul Ini"
-                class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-sky-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-sky-50 active:scale-95"
+                class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-brand-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-brand-50 active:scale-95"
             >
                 <x-heroicon-o-play class="h-3.5 w-3.5" />
                 Tutorial Modul Ini
@@ -25,7 +25,7 @@
                     x-ripple
                     data-tour="add-button"
                     @click="$dispatch('open-risk-form')"
-                    class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-sky-500 to-sky-600 px-3 py-2 text-sm font-medium text-white shadow-lg shadow-sky-500/30 transition-all duration-300 ease-spring hover:scale-105 hover:shadow-sky-500/50 active:scale-95"
+                    class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-3 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95"
                 >
                     <x-heroicon-o-plus class="h-4 w-4" />
                     Risiko Baru

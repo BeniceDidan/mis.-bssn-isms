@@ -17,11 +17,11 @@
              a guessed redraw. Either way it sits inside the same
              signal-pulse + radar-sweep rings. --}}
         <div class="relative mb-2 flex h-24 w-24 items-center justify-center">
-            <span class="radar-sweep absolute -inset-2 rounded-full border-2 border-dashed border-sky-300/70"></span>
+            <span class="radar-sweep absolute -inset-2 rounded-full border-2 border-dashed border-brand-300/70"></span>
 
-            <span class="signal-pulse absolute inset-0 rounded-full border-2 border-sky-400"></span>
-            <span class="signal-pulse absolute inset-0 rounded-full border-2 border-indigo-400" style="animation-delay: -0.9s"></span>
-            <span class="signal-pulse absolute inset-0 rounded-full border-2 border-sky-400" style="animation-delay: -1.8s"></span>
+            <span class="signal-pulse absolute inset-0 rounded-full border-2 border-brand-400"></span>
+            <span class="signal-pulse absolute inset-0 rounded-full border-2 border-brand-400" style="animation-delay: -0.9s"></span>
+            <span class="signal-pulse absolute inset-0 rounded-full border-2 border-brand-400" style="animation-delay: -1.8s"></span>
 
             <img
                 src="{{ asset('images/kominfo-logo.png') }}"
@@ -29,7 +29,7 @@
                 class="relative h-16 w-16 object-contain drop-shadow-[0_6px_14px_rgba(30,58,138,0.4)] transition-transform duration-500 ease-spring hover:scale-110"
                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
             >
-            <div class="relative hidden h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-blue-700 text-2xl font-bold text-white shadow-lg shadow-sky-500/40 transition-transform duration-500 ease-spring hover:scale-110">
+            <div class="relative hidden h-16 w-16 items-center justify-center rounded-full bg-brand-700 text-2xl font-bold text-white shadow-lg transition-transform duration-500 ease-spring hover:scale-110">
                 K
             </div>
         </div>
@@ -39,7 +39,7 @@
     </div>
 
     @if (session('status'))
-        <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        <div class="mb-4 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-700">
             {{ session('status') }}
         </div>
     @endif
@@ -50,7 +50,7 @@
         @mousemove="onMove($event)"
         @mouseleave="onLeave()"
         :style="`transform: perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`"
-        class="glass-panel space-y-4 rounded-2xl p-6 shadow-2xl transition-transform duration-300 ease-out hover:shadow-sky-500/10">
+        class="glass-panel space-y-4 rounded-2xl p-6 shadow-2xl transition-transform duration-300 ease-out ">
         <div>
             <label class="mb-1 block text-sm font-medium text-gray-700">Email atau Username</label>
             <input
@@ -58,7 +58,7 @@
                 wire:model="login"
                 autofocus
                 autocomplete="username"
-                class="w-full rounded-lg border border-white/80 bg-white/70 px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
+                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
             @error('login') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
@@ -69,17 +69,17 @@
                 type="password"
                 wire:model="password"
                 autocomplete="current-password"
-                class="w-full rounded-lg border border-white/80 bg-white/70 px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
+                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
             @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
 
         <div class="flex items-center justify-between">
             <label class="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
-                <input type="checkbox" wire:model="remember" class="rounded border-gray-300 text-sky-600 transition-colors duration-150 focus:ring-sky-500">
+                <input type="checkbox" wire:model="remember" class="rounded border-gray-300 text-brand-600 transition-colors duration-150 focus:ring-brand-500">
                 Ingat saya
             </label>
-            <button type="button" @click="mode = 'forgot'" class="text-sm font-medium text-sky-600 transition-colors duration-150 hover:text-sky-700">
+            <button type="button" @click="mode = 'forgot'" class="text-sm font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700">
                 Lupa kata sandi?
             </button>
         </div>
@@ -87,7 +87,7 @@
         <button
             x-ripple
             type="submit"
-            class="w-full rounded-full bg-gradient-to-r from-sky-500 to-sky-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-sky-500/30 transition-all duration-300 ease-spring hover:scale-[1.02] hover:shadow-sky-500/50 active:scale-95"
+            class="w-full rounded-full bg-brand-700 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-[1.02] active:scale-95"
         >
             <span wire:loading.remove wire:target="authenticate">Masuk</span>
             <span wire:loading wire:target="authenticate">Memproses...</span>

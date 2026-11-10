@@ -2,14 +2,14 @@
     // Literal classes (not interpolated) so Tailwind's JIT scanner picks
     // them up — same convention as the module color maps elsewhere.
     $badgeClasses = [
-        'teal' => 'bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300',
-        'purple' => 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300',
-        'indigo' => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300',
-        'sky' => 'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300',
+        'teal' => 'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300',
+        'purple' => 'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300',
+        'indigo' => 'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300',
+        'sky' => 'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300',
         'slate' => 'bg-slate-100 text-slate-700 dark:bg-slate-500/20 dark:text-slate-300',
-        'rose' => 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300',
-        'emerald' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300',
-        'amber' => 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300',
+        'rose' => 'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300',
+        'emerald' => 'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300',
+        'amber' => 'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300',
     ];
     $groups = strlen(trim($query)) >= 2 ? $this->groups() : [];
 @endphp
@@ -26,7 +26,7 @@
     x-data
     x-show="$store.search.open"
     x-cloak
-    class="fixed inset-0 z-[70] flex justify-center overflow-y-auto bg-slate-900/40 px-4 pb-8 pt-[12vh] backdrop-blur-md sm:pt-[16vh]"
+    class="fixed inset-0 z-[70] flex justify-center overflow-y-auto bg-slate-900/40 px-4 pb-8 pt-[12vh] sm:pt-[16vh]"
     @click.self="$store.search.open = false"
     @keydown.escape.window="$store.search.open = false"
 >
@@ -40,7 +40,7 @@
         x-transition:leave-end="opacity-0 -translate-y-3 scale-95"
         class="glass-panel relative z-10 h-fit w-full max-w-xl overflow-hidden rounded-2xl shadow-2xl"
     >
-        <div class="relative border-b border-white/40 dark:border-white/10">
+        <div class="relative border-b border-slate-200 dark:border-white/10">
             <x-heroicon-o-magnifying-glass class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
                 id="global-search"
@@ -57,7 +57,7 @@
                 type="button"
                 title="Tutup"
                 @click="$store.search.open = false"
-                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:scale-110 hover:bg-white/60 hover:text-gray-600 dark:hover:bg-white/10"
+                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:scale-110 hover:bg-slate-50 hover:text-gray-600 dark:hover:bg-white/10"
             >
                 <x-heroicon-o-x-mark class="h-4 w-4" />
             </button>
@@ -85,7 +85,7 @@
                         @foreach ($group['items'] as $item)
                             <a
                                 href="{{ $item['url'] }}"
-                                class="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-sky-50 hover:text-sky-700 dark:text-gray-200 dark:hover:bg-white/10"
+                                class="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700 dark:text-gray-200 dark:hover:bg-white/10"
                             >
                                 <span class="truncate">{{ $item['title'] }}</span>
                                 @if ($item['meta'])

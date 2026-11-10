@@ -98,9 +98,9 @@ return [
     ],
 
     'priorities' => [
-        'P1' => ['label' => 'P1 · Kritis', 'response' => '30 menit', 'resolution' => '4 jam', 'color' => '#ef4444'],
-        'P2' => ['label' => 'P2 · Tinggi', 'response' => '2 jam', 'resolution' => '1 hari kerja', 'color' => '#f97316'],
-        'P3' => ['label' => 'P3 · Sedang', 'response' => '1 hari kerja', 'resolution' => '3 hari kerja', 'color' => '#eab308'],
-        'P4' => ['label' => 'P4 · Rendah', 'response' => '2 hari kerja', 'resolution' => '5 hari kerja', 'color' => '#22c55e'],
+        'P1' => ['label' => 'P1 · Kritis', 'response' => '30 menit', 'resolution' => '4 jam', 'color' => '#b42318'],
+        'P2' => ['label' => 'P2 · Tinggi', 'response' => '2 jam', 'resolution' => '1 hari kerja', 'color' => '#183f70'],
+        'P3' => ['label' => 'P3 · Sedang', 'response' => '1 hari kerja', 'resolution' => '3 hari kerja', 'color' => '#3264a3'],
+        'P4' => ['label' => 'P4 · Rendah', 'response' => '2 hari kerja', 'resolution' => '5 hari kerja', 'color' => '#87a8d3'],
     ],
 ];

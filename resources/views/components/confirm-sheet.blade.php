@@ -8,7 +8,7 @@
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     x-cloak
-    class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+    class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/40 p-4 "
     @click.self="$store.confirm.cancel()"
     @keydown.escape.window="$store.confirm.cancel()"
 >
@@ -24,11 +24,11 @@
     >
         <div
             class="mx-auto flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-300"
-            x-bind:class="$store.confirm.tone === 'danger' ? 'bg-red-100' : 'bg-sky-100'"
+            x-bind:class="$store.confirm.tone === 'danger' ? 'bg-red-100' : 'bg-brand-100'"
         >
             <x-heroicon-o-question-mark-circle
                 class="h-6 w-6 transition-colors duration-300"
-                x-bind:class="$store.confirm.tone === 'danger' ? 'text-red-600' : 'text-sky-600'"
+                x-bind:class="$store.confirm.tone === 'danger' ? 'text-red-600' : 'text-brand-600'"
             />
         </div>
 
@@ -40,7 +40,7 @@
                 type="button"
                 x-ripple
                 @click="$store.confirm.cancel()"
-                class="flex-1 rounded-full border border-white/60 bg-white/40 px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-white/70 active:scale-95"
+                class="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95"
             >
                 Batal
             </button>
@@ -50,8 +50,8 @@
                 @click="$store.confirm.confirm()"
                 class="flex-1 rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95"
                 x-bind:class="$store.confirm.tone === 'danger'
-                    ? 'bg-gradient-to-r from-red-500 to-red-600 shadow-red-500/30 hover:shadow-red-500/50'
-                    : 'bg-gradient-to-r from-sky-500 to-sky-600 shadow-sky-500/30 hover:shadow-sky-500/50'"
+                    ? 'bg-brand-700 '
+                    : 'bg-brand-700 '"
             >
                 Ya, Lanjutkan
             </button>

@@ -361,6 +361,29 @@ memakai port yang sama. Bila ingin memakai model Windows (mis. Sahabat-AI
 yang lebih fasih berbahasa Indonesia), jalankan servernya di port lain dan
 setel `AI_OLLAMA_URL` + `AI_CHAT_MODEL` di `.env`.
 
+## Gaya tampilan (diubah 10 November 2026 atas permintaan pengguna)
+
+Pengguna meminta gaya **situs pemerintahan profesional berwarna biru tua**:
+satu warna dominan, tidak transparan, tanpa hiasan "AI slop". Tata letak
+tidak diubah. Aturannya:
+
+- **Satu warna aksen** `brand-*` (biru tua, didefinisikan di `@theme` pada
+  `resources/css/app.css`). Warna per modul (amber, teal, emerald, ungu,
+  rose, dst.) sudah dihapus — jangan dikembalikan. Merah hanya untuk galat,
+  tombol hapus, dan level Kritis.
+- **Tanpa transparansi/kaca:** `.glass-panel` sekarang putih solid bergaris
+  tipis (nama kelas dipertahankan). Jangan pakai `bg-white/NN`,
+  `backdrop-blur`, gradien (`bg-gradient-*`), atau bayangan berwarna.
+  Sidebar dan toast biru tua solid (`.glass-panel-dark`).
+- **Notifikasi tidak berwarna-warni:** kotak info/peringatan memakai biru
+  netral; hanya bahaya yang merah.
+- **Tingkat Rendah→Kritis** memakai tangga biru (abu-biru, biru sedang,
+  biru tua) dan merah untuk Kritis — lihat `Level::accentHex()` dan
+  `config/helpdesk.php`.
+- Gumpalan warna latar per modul dan ilustrasi `module-ornament` dihapus.
+- Konversi massal dilakukan dengan skrip regex (bukan disimpan di repo);
+  view baru cukup memakai kelas `brand-*`, `slate-*`, `gray-*`, `red-*`.
+
 ## Konteks lintas proyek
 
 Ada di vault Obsidian di `C:\Users\benic\Documents\Obsidian Vault`. Mulai dari `MOC - Memori Bos Didan.md`; catatan repo ini di `02-Projects/Lainnya/BSSN ISMS.md`.

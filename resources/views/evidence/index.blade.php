@@ -17,7 +17,7 @@
                 <button
                     x-ripple
                     @click="$dispatch('open-evidence-upload')"
-                    class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-sky-500 to-sky-600 px-3 py-2 text-sm font-medium text-white shadow-lg shadow-sky-500/30 transition-all duration-300 ease-spring hover:scale-105 active:scale-95"
+                    class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-3 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95"
                 >
                     <x-heroicon-o-arrow-up-tray class="h-4 w-4" />
                     Unggah Bukti Dukung
@@ -30,7 +30,7 @@
                 <button
                     x-ripple
                     @click="tab = '{{ $t['key'] }}'"
-                    :class="tab === '{{ $t['key'] }}' ? 'bg-gradient-to-r from-sky-500 to-sky-600 text-white shadow-md' : 'text-gray-600 hover:bg-white/60'"
+                    :class="tab === '{{ $t['key'] }}' ? 'bg-brand-700 text-white shadow-md' : 'text-gray-600 hover:bg-slate-50'"
                     class="rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 ease-spring"
                 >{{ $t['label'] }}</button>
             @endforeach
@@ -42,17 +42,17 @@
 
         <div x-show="tab === 'rubrik'" x-cloak class="space-y-4">
             @if (config('bukti_dukung.status') === 'draf')
-                <div class="rounded-xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                <div class="rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-800 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-200">
                     Rubrik masih draf dan belum ditinjau. Skor otomatis belum boleh dipakai sebagai nilai resmi.
                 </div>
             @endif
             @foreach (config('bukti_dukung.modules') as $key => $module)
                 <div class="glass-panel overflow-hidden rounded-2xl shadow-lg">
-                    <div class="border-b border-white/40 px-5 py-3">
+                    <div class="border-b border-slate-200 px-5 py-3">
                         <p class="font-semibold text-gray-900">{{ \App\Support\AdminModules::label($key) }}</p>
                         <p class="text-xs text-gray-500">{{ $module['indicator'] }}</p>
                     </div>
-                    <div class="divide-y divide-white/40">
+                    <div class="divide-y divide-slate-200">
                         @foreach ($module['levels'] as $no => $level)
                             <div class="grid gap-2 px-5 py-3 md:grid-cols-[10rem_1fr]">
                                 <p class="text-sm font-medium text-gray-800">Level {{ $no }} · {{ config("bukti_dukung.levels.$no.name") }}</p>

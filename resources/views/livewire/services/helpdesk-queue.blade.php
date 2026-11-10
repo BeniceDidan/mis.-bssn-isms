@@ -12,14 +12,14 @@
     <div class="glass-panel flex flex-col gap-3 rounded-2xl p-4 shadow-lg md:flex-row md:items-center md:justify-center md:gap-4">
         <div class="relative w-full md:max-w-sm">
             <x-heroicon-o-magnifying-glass class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input type="search" wire:model.live.debounce.300ms="search" placeholder="Cari isi tiket, pemohon, kode..." class="w-full rounded-full border-white/60 bg-white/50 pl-9 text-sm focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400">
+            <input type="search" wire:model.live.debounce.300ms="search" placeholder="Cari isi tiket, pemohon, kode..." class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400">
         </div>
-        <select wire:model.live="statusFilter" class="rounded-full border-white/60 bg-white/50 text-sm focus:border-sky-400 focus:ring-sky-400">
+        <select wire:model.live="statusFilter" class="rounded-full border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
             <option value="terbuka">Terbuka</option>
             <option value="selesai">Selesai / ditutup</option>
             <option value="">Semua status</option>
         </select>
-        <select wire:model.live="categoryFilter" class="rounded-full border-white/60 bg-white/50 text-sm focus:border-sky-400 focus:ring-sky-400">
+        <select wire:model.live="categoryFilter" class="rounded-full border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
             <option value="">Semua kategori</option>
             @foreach ($categories as $key => $label)
                 <option value="{{ $key }}">{{ $label }}</option>
@@ -29,8 +29,8 @@
 
     <div class="glass-panel overflow-hidden rounded-2xl shadow-lg">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-white/40 text-sm">
-                <thead class="bg-white/70">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-white">
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Prioritas</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Tiket</th>
@@ -39,13 +39,13 @@
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-white/40">
+                <tbody class="divide-y divide-slate-200">
                     @forelse ($tickets as $ticket)
                         @php $p = $ticket->priorityInfo(); @endphp
                         <tr
                             wire:key="ticket-{{ $ticket->id }}"
                             @if (auth()->user()?->canWrite()) @click="$dispatch('open-service-ticket-form', { ticketId: {{ $ticket->id }} })" @endif
-                            class="cursor-pointer transition-all duration-200 hover:bg-white/60"
+                            class="cursor-pointer transition-all duration-200 hover:bg-slate-50"
                             style="border-left: 3px solid {{ $p['color'] ?? 'transparent' }}"
                         >
                             <td class="whitespace-nowrap px-4 py-3">

@@ -37,10 +37,10 @@ enum Level: string
     public function accentHex(): string
     {
         return match ($this) {
-            self::Rendah => '#22c55e',
-            self::Sedang => '#eab308',
-            self::Tinggi => '#f97316',
-            self::Kritis => '#ef4444',
+            self::Rendah => '#94a3b8',
+            self::Sedang => '#5582bd',
+            self::Tinggi => '#183f70',
+            self::Kritis => '#b42318',
         };
     }
 

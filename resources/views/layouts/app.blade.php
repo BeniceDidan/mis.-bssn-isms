@@ -36,53 +36,10 @@
     })"
 >
 
-    @php
-        // Which "place" the current page belongs to — drives both the
-        // ambient blob palette below and the hand-composed illustration in
-        // components/module-ornament.blade.php. Pages outside the 8
-        // modules (Dashboard, Panduan, Verifikasi, Profil) keep the
-        // original neutral mix — there's no single module identity to
-        // lend them. Full literal Tailwind classes (not interpolated) so
-        // the JIT scanner picks them up.
-        $moduleBlobs = [
-            'sdm' => ['bg-slate-300/40', 'bg-sky-200/30', 'bg-slate-200/40'],
-            'pengetahuan' => ['bg-amber-300/40', 'bg-orange-200/30', 'bg-yellow-200/40'],
-            'aset' => ['bg-teal-300/40', 'bg-cyan-200/30', 'bg-teal-200/40'],
-            'keamanan' => ['bg-emerald-300/40', 'bg-green-200/30', 'bg-emerald-200/40'],
-            'risiko' => ['bg-purple-300/40', 'bg-fuchsia-200/30', 'bg-purple-200/40'],
-            'perubahan' => ['bg-indigo-300/40', 'bg-blue-200/30', 'bg-indigo-200/40'],
-            'layanan' => ['bg-rose-300/40', 'bg-pink-200/30', 'bg-rose-200/40'],
-            'data' => ['bg-sky-300/40', 'bg-cyan-200/30', 'bg-sky-200/40'],
-        ];
-
-        $currentModule = match (true) {
-            request()->routeIs('hr-risks.*') => 'sdm',
-            request()->routeIs('knowledge.*') => 'pengetahuan',
-            request()->routeIs('assets.*') => 'aset',
-            request()->routeIs('security-programs.*') => 'keamanan',
-            request()->routeIs('risks.*') => 'risiko',
-            request()->routeIs('changes.*') => 'perubahan',
-            request()->routeIs('services.*') => 'layanan',
-            request()->routeIs('data-information.*') => 'data',
-            default => null,
-        };
-
-        $blobs = $moduleBlobs[$currentModule] ?? null;
-    @endphp
-
-    <div class="relative flex h-full overflow-hidden">
-        {{-- Ambient drifting color blobs the frosted-glass panels blur
-             against — fixed behind everything, never intercepts clicks.
-             Palette swaps per module; the illustration itself lives lower
-             down, inside the scrolling content column, so it can peek out
-             from behind the first glass-panel card instead of floating
-             disconnected in the fixed viewport corner. --}}
-        <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-950 dark:to-indigo-950/60">
-            <div class="blob-float absolute -left-24 -top-24 h-96 w-96 rounded-full blur-3xl {{ $blobs[0] ?? 'bg-sky-300/40' }}"></div>
-            <div class="blob-float-delay absolute right-0 top-1/3 h-80 w-80 rounded-full blur-3xl {{ $blobs[1] ?? 'bg-purple-300/30' }}"></div>
-            <div class="blob-float-slow absolute bottom-0 left-1/3 h-96 w-96 rounded-full blur-3xl {{ $blobs[2] ?? 'bg-teal-200/40' }}"></div>
-        </div>
-
+    {{-- Gaya pemerintahan: latar abu-biru polos, panel putih solid, satu
+         warna aksen biru tua. Gumpalan warna per modul dan ilustrasi
+         ornamen sengaja dihapus (November 2026). --}}
+    <div class="relative flex h-full overflow-hidden bg-slate-100 dark:bg-slate-950">
         <x-layout.sidebar />
 
         <div class="flex min-w-0 flex-1 flex-col">
@@ -90,9 +47,7 @@
 
             <main class="flex-1 overflow-y-auto p-6">
                 <div class="relative mx-auto max-w-screen-2xl space-y-6">
-                    <x-module-ornament :module="$currentModule" />
-
-                    <div class="relative z-10 space-y-6">
+                    <div class="relative space-y-6">
                         @isset($slot)
                             {{ $slot }}
                         @else

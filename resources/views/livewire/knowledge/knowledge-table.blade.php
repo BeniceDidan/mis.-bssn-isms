@@ -4,20 +4,20 @@
         <div class="relative w-full md:max-w-sm" x-data="{ focused: false }">
             <x-heroicon-o-magnifying-glass
                 class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 transition-all duration-300 ease-spring"
-                x-bind:class="focused ? 'text-amber-500 scale-125' : ''"
+                x-bind:class="focused ? 'text-brand-500 scale-125' : ''"
             />
             <input
                 type="search"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Cari kode, judul, unit pemilik..."
-                class="w-full rounded-full border-white/60 bg-white/50 pl-9 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-amber-400 focus:bg-white/90 focus:ring-amber-400"
+                class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
                 @focus="focused = true"
                 @blur="focused = false"
             >
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-            <select wire:model.live="typeFilter" class="rounded-full border-white/60 bg-white/50 text-sm transition-all duration-300 ease-spring hover:bg-white/80 focus:border-amber-400 focus:ring-amber-400">
+            <select wire:model.live="typeFilter" class="rounded-full border-slate-200 bg-white text-sm transition-all duration-300 ease-spring hover:bg-slate-50 focus:border-brand-400 focus:ring-brand-400">
                 <option value="">Semua Jenis</option>
                 @foreach ($types as $type)
                     <option value="{{ $type->value }}">{{ $type->label() }}</option>
@@ -25,7 +25,7 @@
             </select>
 
             <label class="flex cursor-pointer items-center gap-2 text-sm text-gray-600 transition-colors duration-150 hover:text-gray-800">
-                <input type="checkbox" wire:model.live="showArchived" class="rounded border-gray-300 text-amber-600 transition-colors duration-150 focus:ring-amber-500">
+                <input type="checkbox" wire:model.live="showArchived" class="rounded border-gray-300 text-brand-600 transition-colors duration-150 focus:ring-brand-500">
                 Tampilkan Arsip
             </label>
         </div>
@@ -33,8 +33,8 @@
 
     <div class="glass-panel overflow-hidden rounded-2xl shadow-lg">
         <div class="max-h-[65vh] overflow-auto">
-            <table class="min-w-full divide-y divide-white/40 text-sm">
-                <thead class="sticky top-0 z-10 bg-white/70 backdrop-blur-xl">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="sticky top-0 z-10 bg-white ">
                     <tr>
                         @foreach ([
                             'title' => 'Nama Aset Pengetahuan',
@@ -44,14 +44,14 @@
                         ] as $field => $label)
                             <th
                                 wire:click="sortBy('{{ $field }}')"
-                                class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 transition-all duration-200 hover:bg-white/60 hover:text-gray-700"
+                                class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 transition-all duration-200 hover:bg-slate-50 hover:text-gray-700"
                             >
                                 <span class="inline-flex items-center gap-1">
                                     {{ $label }}
                                     @if ($sortField === $field)
                                         <x-dynamic-component
                                             :component="$sortDirection === 'asc' ? 'heroicon-o-chevron-up' : 'heroicon-o-chevron-down'"
-                                            class="h-3.5 w-3.5 text-amber-600 transition-transform duration-300 ease-spring"
+                                            class="h-3.5 w-3.5 text-brand-600 transition-transform duration-300 ease-spring"
                                         />
                                     @endif
                                 </span>
@@ -61,15 +61,15 @@
                         <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Aksi</th>
                     </tr>
                 </thead>
-                <tbody wire:loading wire:target="search,typeFilter,showArchived,sortBy,previousPage,nextPage,gotoPage" class="divide-y divide-white/40">
+                <tbody wire:loading wire:target="search,typeFilter,showArchived,sortBy,previousPage,nextPage,gotoPage" class="divide-y divide-slate-200">
                     <x-table-skeleton :columns="6" />
                 </tbody>
-                <tbody wire:loading.remove wire:target="search,typeFilter,showArchived,sortBy,previousPage,nextPage,gotoPage" class="divide-y divide-white/40">
+                <tbody wire:loading.remove wire:target="search,typeFilter,showArchived,sortBy,previousPage,nextPage,gotoPage" class="divide-y divide-slate-200">
                     @forelse ($records as $record)
                         <tr
                             wire:key="knowledge-{{ $record->id }}"
-                            class="transition-all duration-200 hover:bg-white/60 hover:shadow-sm {{ $record->trashed() ? 'opacity-60' : '' }}"
-                            style="border-left: 3px solid {{ $record->knowledge_type?->value === 'tacit' ? '#a855f7' : ($record->knowledge_type ? '#f59e0b' : 'transparent') }}"
+                            class="transition-all duration-200 hover:bg-slate-50 hover:shadow-sm {{ $record->trashed() ? 'opacity-60' : '' }}"
+                            style="border-left: 3px solid {{ $record->knowledge_type?->value === 'tacit' ? '#5582bd' : ($record->knowledge_type ? '#183f70' : 'transparent') }}"
                         >
                             <td class="max-w-xs px-4 py-3">
                                 <p class="truncate font-semibold text-gray-900">
@@ -84,7 +84,7 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-3">
                                 @if ($record->knowledge_type)
-                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium transition-transform duration-300 ease-spring hover:scale-110 {{ $record->knowledge_type->value === 'tacit' ? 'bg-purple-100 text-purple-700' : 'bg-amber-100 text-amber-700' }}">
+                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium transition-transform duration-300 ease-spring hover:scale-110 {{ $record->knowledge_type->value === 'tacit' ? 'bg-brand-100 text-brand-700' : 'bg-brand-100 text-brand-700' }}">
                                         {{ $record->knowledge_type->label() }}
                                     </span>
                                 @else
@@ -96,8 +96,8 @@
                                 {{ $record->owner_unit ?: '—' }}
                                 @php
                                     $verificationBadge = [
-                                        'menunggu_verifikasi' => ['label' => 'Menunggu Verifikasi', 'class' => 'bg-amber-100 text-amber-700'],
-                                        'ditolak' => ['label' => 'Ditolak', 'class' => 'bg-red-100 text-red-700'],
+                                        'menunggu_verifikasi' => ['label' => 'Menunggu Verifikasi', 'class' => 'bg-brand-100 text-brand-700'],
+                                        'ditolak' => ['label' => 'Ditolak', 'class' => 'bg-red-50 text-red-700'],
                                     ][$record->verification_status] ?? null;
                                 @endphp
                                 @if ($verificationBadge)
@@ -108,7 +108,7 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-3">
                                 @if ($record->asset)
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-teal-100 px-2 py-0.5 text-xs font-medium text-teal-700">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700">
                                         <x-heroicon-o-archive-box class="h-3 w-3" /> {{ $record->asset->asset_code }}
                                     </span>
                                 @else
@@ -117,7 +117,7 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-right">
                                 <div class="flex items-center justify-end gap-1">
-                                    <button wire:click="viewDetail({{ $record->id }})" title="Lihat Detail" class="rounded-full p-1.5 text-gray-500 transition-all duration-300 ease-spring hover:scale-125 hover:bg-amber-100 hover:text-amber-600 active:scale-90">
+                                    <button wire:click="viewDetail({{ $record->id }})" title="Lihat Detail" class="rounded-full p-1.5 text-gray-500 transition-all duration-300 ease-spring hover:scale-125 hover:bg-brand-100 hover:text-brand-600 active:scale-90">
                                         <x-heroicon-o-eye class="h-4 w-4" />
                                     </button>
 
@@ -126,7 +126,7 @@
                                             <button
                                                 wire:click="$dispatch('open-knowledge-form', { recordId: {{ $record->id }} })"
                                                 title="Ubah"
-                                                class="rounded-full p-1.5 text-gray-500 transition-all duration-300 ease-spring hover:scale-125 hover:bg-amber-100 hover:text-amber-600 active:scale-90"
+                                                class="rounded-full p-1.5 text-gray-500 transition-all duration-300 ease-spring hover:scale-125 hover:bg-brand-100 hover:text-brand-600 active:scale-90"
                                             >
                                                 <x-heroicon-o-pencil-square class="h-4 w-4" />
                                             </button>
@@ -138,7 +138,7 @@
                                                 <x-heroicon-o-archive-box-x-mark class="h-4 w-4" />
                                             </button>
                                         @else
-                                            <button wire:click="restore({{ $record->id }})" title="Pulihkan" class="rounded-full p-1.5 text-gray-500 transition-all duration-300 ease-spring hover:scale-125 hover:bg-emerald-100 hover:text-emerald-600 active:scale-90">
+                                            <button wire:click="restore({{ $record->id }})" title="Pulihkan" class="rounded-full p-1.5 text-gray-500 transition-all duration-300 ease-spring hover:scale-125 hover:bg-brand-100 hover:text-brand-600 active:scale-90">
                                                 <x-heroicon-o-arrow-uturn-left class="h-4 w-4" />
                                             </button>
                                         @endif
@@ -157,7 +157,7 @@
             </table>
         </div>
 
-        <div class="border-t border-white/40 px-4 py-3">
+        <div class="border-t border-slate-200 px-4 py-3">
             {{ $records->links() }}
         </div>
     </div>
@@ -172,7 +172,7 @@
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
             x-cloak
-            class="fixed inset-x-0 top-16 bottom-0 z-50 flex justify-end bg-slate-900/30 backdrop-blur-sm"
+            class="fixed inset-x-0 top-16 bottom-0 z-50 flex justify-end bg-slate-900/30 "
             wire:click.self="closeDetail"
         >
             <div
@@ -186,17 +186,17 @@
                 class="glass-panel h-full w-full max-w-md overflow-y-auto shadow-2xl"
             >
                 @if ($viewingRecord)
-                    <div class="flex items-center justify-between border-b border-white/40 px-5 py-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
                         <div>
                             <p class="text-xs font-mono text-gray-400">{{ $viewingRecord->record_code }}</p>
                             <h2 class="text-lg font-semibold text-gray-900">{{ $viewingRecord->title }}</h2>
                         </div>
-                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-white/60 hover:text-gray-600">
+                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
                             <x-heroicon-o-x-mark class="h-5 w-5" />
                         </button>
                     </div>
 
-                    <dl class="divide-y divide-white/40 px-5">
+                    <dl class="divide-y divide-slate-200 px-5">
                         @foreach ([
                             'Jenis' => $viewingRecord->knowledge_type?->label(),
                             'Kategori' => $viewingRecord->category,
@@ -214,7 +214,7 @@
                     </dl>
 
                     @if ($viewingRecord->ai_summary || ! empty($viewingRecord->ai_tags) || $viewingRecord->index_status)
-                        <div class="border-t border-white/40 px-5 py-4">
+                        <div class="border-t border-slate-200 px-5 py-4">
                             <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Ringkasan & Tag Otomatis</p>
                             @if ($viewingRecord->ai_summary)
                                 <p class="text-sm text-gray-700">{{ $viewingRecord->ai_summary }}</p>
@@ -222,7 +222,7 @@
                             @if (! empty($viewingRecord->ai_tags))
                                 <div class="mt-2 flex flex-wrap gap-1.5">
                                     @foreach ($viewingRecord->ai_tags as $tag)
-                                        <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{{ $tag }}</span>
+                                        <span class="rounded-full bg-brand-100 px-2 py-0.5 text-xs text-brand-800">{{ $tag }}</span>
                                     @endforeach
                                 </div>
                             @endif
@@ -239,17 +239,17 @@
                     @endif
 
                     @if ($viewingRecord->external_link || $viewingRecord->document_path)
-                        <div class="border-t border-white/40 px-5 py-4">
+                        <div class="border-t border-slate-200 px-5 py-4">
                             <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Referensi</p>
                             <div class="space-y-2">
                                 @if ($viewingRecord->external_link)
-                                    <a href="{{ $viewingRecord->external_link }}" target="_blank" class="flex items-center gap-2 rounded-lg border border-white/50 bg-white/50 px-3 py-2 text-sm text-sky-700 transition-all duration-200 hover:translate-x-1 hover:bg-sky-50">
+                                    <a href="{{ $viewingRecord->external_link }}" target="_blank" class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-brand-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50">
                                         <x-heroicon-o-link class="h-4 w-4 shrink-0" />
                                         <span class="truncate">{{ $viewingRecord->external_link }}</span>
                                     </a>
                                 @endif
                                 @if ($viewingRecord->document_path)
-                                    <a href="{{ Illuminate\Support\Facades\Storage::disk('public')->url($viewingRecord->document_path) }}" target="_blank" class="flex items-center gap-2 rounded-lg border border-white/50 bg-white/50 px-3 py-2 text-sm text-sky-700 transition-all duration-200 hover:translate-x-1 hover:bg-sky-50">
+                                    <a href="{{ Illuminate\Support\Facades\Storage::disk('public')->url($viewingRecord->document_path) }}" target="_blank" class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-brand-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50">
                                         <x-heroicon-o-document-text class="h-4 w-4 shrink-0" />
                                         <span class="truncate">{{ $viewingRecord->document_original_name ?? 'Unduh dokumen' }}</span>
                                     </a>
@@ -259,9 +259,9 @@
                     @endif
 
                     @if (! empty($viewingRecord->dynamic_data))
-                        <div class="border-t border-white/40 px-5 py-4">
+                        <div class="border-t border-slate-200 px-5 py-4">
                             <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Data Dinamis</p>
-                            <dl class="divide-y divide-white/40">
+                            <dl class="divide-y divide-slate-200">
                                 @foreach ($viewingRecord->dynamic_data as $key => $value)
                                     <div class="grid grid-cols-2 gap-2 py-2.5 text-sm">
                                         <dt class="text-gray-500">{{ $key }}</dt>
@@ -273,20 +273,20 @@
                     @endif
 
                     @if ($viewingRecord->verifications->isNotEmpty())
-                        <div class="border-t border-white/40 px-5 py-4">
+                        <div class="border-t border-slate-200 px-5 py-4">
                             <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Riwayat Verifikasi</p>
                             <div class="space-y-2">
                                 @foreach ($viewingRecord->verifications as $verification)
-                                    <div class="rounded-lg bg-white/50 px-3 py-2 text-xs">
+                                    <div class="rounded-lg bg-white px-3 py-2 text-xs">
                                         <div class="flex items-center justify-between">
-                                            <span class="font-medium {{ $verification->status === 'ditolak' ? 'text-red-600' : 'text-emerald-600' }}">
+                                            <span class="font-medium {{ $verification->status === 'ditolak' ? 'text-red-600' : 'text-brand-600' }}">
                                                 {{ $verification->status === 'ditolak' ? 'Ditolak' : 'Disetujui' }}
                                             </span>
                                             <span class="text-gray-400">{{ $verification->created_at?->diffForHumans() }}</span>
                                         </div>
                                         <p class="mt-0.5 text-gray-600">oleh {{ $verification->user?->name ?? 'Admin' }}</p>
                                         @if ($verification->notes)
-                                            <p class="mt-1 rounded bg-white/70 px-2 py-1 text-gray-700">{{ $verification->notes }}</p>
+                                            <p class="mt-1 rounded bg-white px-2 py-1 text-gray-700">{{ $verification->notes }}</p>
                                         @endif
                                     </div>
                                 @endforeach

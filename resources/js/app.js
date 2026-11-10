@@ -94,7 +94,7 @@ document.addEventListener('alpine:init', () => {
             const mouse = { x: -9999, y: -9999 };
             let width, height, particles;
 
-            const colors = ['14,165,233', '99,102,241', '45,212,191'];
+            const colors = ['24,63,112', '50,100,163', '85,130,189'];
 
             const resize = () => {
                 width = canvas.width = window.innerWidth;
@@ -153,7 +153,7 @@ document.addEventListener('alpine:init', () => {
                             ctx.beginPath();
                             ctx.moveTo(particles[i].x, particles[i].y);
                             ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(14,165,233,${0.16 * (1 - dist / 130)})`;
+                            ctx.strokeStyle = `rgba(31,79,138,${0.16 * (1 - dist / 130)})`;
                             ctx.lineWidth = 1;
                             ctx.stroke();
                         }

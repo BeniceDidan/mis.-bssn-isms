@@ -6,10 +6,10 @@
                 type="search"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Cari judul, OPD, kode..."
-                class="w-full rounded-full border-white/60 bg-white/50 pl-9 text-sm focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
+                class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
         </div>
-        <select wire:model.live="moduleFilter" class="rounded-full border-white/60 bg-white/50 text-sm focus:border-sky-400 focus:ring-sky-400">
+        <select wire:model.live="moduleFilter" class="rounded-full border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
             <option value="">Semua Modul</option>
             @foreach ($modules as $key => $label)
                 <option value="{{ $key }}">{{ $label }}</option>
@@ -19,8 +19,8 @@
 
     <div class="glass-panel overflow-hidden rounded-2xl shadow-lg">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-white/40 text-sm">
-                <thead class="bg-white/70">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-white">
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Dokumen</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Modul</th>
@@ -30,15 +30,15 @@
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Keputusan</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-white/40">
+                <tbody class="divide-y divide-slate-200">
                     @forelse ($records as $record)
                         @php
-                            $accent = $record->meetsTarget() ? '#22c55e' : ($record->achieved_level > 0 ? '#eab308' : '#ef4444');
+                            $accent = $record->meetsTarget() ? '#183f70' : ($record->achieved_level > 0 ? '#5582bd' : '#94a3b8');
                         @endphp
                         <tr
                             wire:key="evidence-{{ $record->id }}"
                             wire:click="$dispatch('open-evidence-detail', { id: {{ $record->id }} })"
-                            class="cursor-pointer transition-all duration-200 hover:bg-white/60"
+                            class="cursor-pointer transition-all duration-200 hover:bg-slate-50"
                             style="border-left: 3px solid {{ $accent }}"
                         >
                             <td class="max-w-sm px-4 py-3">

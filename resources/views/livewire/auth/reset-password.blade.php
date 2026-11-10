@@ -12,7 +12,7 @@
                 type="email"
                 wire:model="email"
                 autocomplete="email"
-                class="w-full rounded-lg border border-white/80 bg-white/70 px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
+                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
             @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
@@ -24,7 +24,7 @@
                 wire:model="password"
                 autofocus
                 autocomplete="new-password"
-                class="w-full rounded-lg border border-white/80 bg-white/70 px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
+                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
             @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
@@ -35,14 +35,14 @@
                 type="password"
                 wire:model="password_confirmation"
                 autocomplete="new-password"
-                class="w-full rounded-lg border border-white/80 bg-white/70 px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-sky-400 focus:bg-white/90 focus:ring-sky-400"
+                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
         </div>
 
         <button
             x-ripple
             type="submit"
-            class="w-full rounded-full bg-gradient-to-r from-sky-500 to-sky-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-sky-500/30 transition-all duration-300 ease-spring hover:scale-[1.02] hover:shadow-sky-500/50 active:scale-95"
+            class="w-full rounded-full bg-brand-700 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-[1.02] active:scale-95"
         >
             <span wire:loading.remove wire:target="resetPassword">Simpan Kata Sandi Baru</span>
             <span wire:loading wire:target="resetPassword">Menyimpan...</span>
