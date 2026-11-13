@@ -58,6 +58,9 @@
                 wire:model="login"
                 autofocus
                 autocomplete="username"
+                autocapitalize="none"
+                autocorrect="off"
+                spellcheck="false"
                 class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
             @error('login') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
