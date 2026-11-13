@@ -50,7 +50,7 @@
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Judul dokumen <span class="font-normal text-gray-400">(opsional)</span></label>
-                        <input type="text" wire:model="title" placeholder="Kosongkan untuk memakai nama berkas" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                        <input type="text" wire:model="title" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                     </div>
 
                     <div>
@@ -68,12 +68,11 @@
                         >
                         @error('document') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         <div wire:loading wire:target="document" class="mt-1 text-xs text-gray-400">Mengunggah...</div>
-                        <p class="mt-1 text-xs text-gray-400">Maksimal 10 MB. PDF hasil pindai tidak bisa dibaca isinya.</p>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
-                    <span wire:loading wire:target="save" class="mr-auto text-xs text-gray-500">Membaca dan menilai dokumen, mohon tunggu...</span>
+                    <span wire:loading wire:target="save" class="mr-auto text-xs text-gray-500">Menilai...</span>
                     <button type="button" wire:click="close" class="rounded-full px-4 py-2 text-sm font-medium text-gray-600 hover:bg-slate-50">Batal</button>
                     <button type="submit" wire:loading.attr="disabled" wire:target="save,document" class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 disabled:opacity-60">
                         Unggah & Nilai

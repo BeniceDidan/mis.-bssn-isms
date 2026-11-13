@@ -21,49 +21,37 @@
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-white">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Dokumen</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Modul</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Klaim</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Hasil</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Skor</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Keputusan</th>
+                    <tr class="text-left text-xs font-medium text-gray-500">
+                        <th class="px-4 py-3 font-medium">Dokumen</th>
+                        <th class="px-4 py-3 font-medium">Klaim</th>
+                        <th class="px-4 py-3 font-medium">Hasil</th>
+                        <th class="px-4 py-3 font-medium">Skor</th>
+                        <th class="px-4 py-3 font-medium">Keputusan</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">
                     @forelse ($records as $record)
-                        @php
-                            $accent = $record->meetsTarget() ? '#183f70' : ($record->achieved_level > 0 ? '#5582bd' : '#94a3b8');
-                        @endphp
                         <tr
                             wire:key="evidence-{{ $record->id }}"
                             wire:click="$dispatch('open-evidence-detail', { id: {{ $record->id }} })"
-                            class="cursor-pointer transition-all duration-200 hover:bg-slate-50"
-                            style="border-left: 3px solid {{ $accent }}"
+                            class="cursor-pointer hover:bg-slate-50"
                         >
                             <td class="max-w-sm px-4 py-3">
-                                <p class="truncate font-semibold text-gray-900">{{ $record->title }}</p>
-                                <p class="truncate text-xs text-gray-500">
-                                    <span class="font-mono">{{ $record->record_code }}</span>
-                                    @if ($record->unit_name) &middot; {{ $record->unit_name }} @endif
-                                    &middot; {{ $record->created_at->format('d M Y') }}
-                                </p>
+                                <p class="truncate font-medium text-gray-900">{{ $record->title }}</p>
+                                <p class="truncate text-xs text-gray-500">{{ $record->moduleLabel() }}</p>
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $record->moduleLabel() }}</td>
                             <td class="whitespace-nowrap px-4 py-3 text-gray-700">Level {{ $record->target_level }}</td>
-                            <td class="whitespace-nowrap px-4 py-3">
-                                <span class="rounded-full px-2 py-0.5 text-xs font-semibold" style="background-color: {{ $accent }}22; color: {{ $accent }}">
-                                    {{ $record->achieved_level > 0 ? 'Level ' . $record->achieved_level : 'Belum memenuhi' }}
-                                </span>
+                            <td class="whitespace-nowrap px-4 py-3 font-medium {{ $record->meetsTarget() ? 'text-brand-700' : 'text-gray-900' }}">
+                                {{ $record->achieved_level > 0 ? 'Level ' . $record->achieved_level : '—' }}
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 font-semibold text-gray-800">{{ $record->score }}</td>
-                            <td class="whitespace-nowrap px-4 py-3 text-gray-600">
-                                {{ $record->reviewer_decision ? \App\Models\EvidenceDocument::DECISIONS[$record->reviewer_decision] : 'Menunggu asesor' }}
+                            <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $record->score }}</td>
+                            <td class="whitespace-nowrap px-4 py-3 text-gray-500">
+                                {{ $record->reviewer_decision ? \App\Models\EvidenceDocument::DECISIONS[$record->reviewer_decision] : 'Menunggu' }}
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-12 text-center text-sm text-gray-500">Belum ada bukti dukung yang diunggah.</td>
+                            <td colspan="5" class="px-4 py-12 text-center text-sm text-gray-500">Belum ada bukti dukung.</td>
                         </tr>
                     @endforelse
                 </tbody>
