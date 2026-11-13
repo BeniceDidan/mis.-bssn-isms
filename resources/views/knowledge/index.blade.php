@@ -18,12 +18,12 @@
         }"
         class="space-y-4"
     >
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h1 class="text-xl font-semibold text-gray-900">Manajemen Pengetahuan</h1>
                 <p class="text-sm text-gray-500">Register aset pengetahuan, peta keahlian, aktivitas berbagi, dan risiko KM</p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
                 <button
                     type="button"
                     x-ripple

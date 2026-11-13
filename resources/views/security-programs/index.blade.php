@@ -3,12 +3,12 @@
 @section('title', 'Manajemen Keamanan Informasi')
 
 @section('content')
-    <div class="flex items-center justify-between">
+    <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
             <h1 class="text-xl font-semibold text-gray-900">Manajemen Keamanan Informasi</h1>
             <p class="text-sm text-gray-500">Program kerja keamanan informasi SPBE</p>
         </div>
-        <div class="flex items-center gap-2" x-data>
+        <div class="flex flex-wrap items-center gap-2" x-data>
             <button
                 type="button"
                 x-ripple

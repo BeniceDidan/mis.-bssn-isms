@@ -4,12 +4,12 @@
 
 @section('content')
     <div x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'katalog' }" class="space-y-6">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h1 class="text-xl font-semibold text-gray-900">Manajemen Layanan</h1>
                 <p class="text-sm text-gray-500">Katalog layanan SPBE, tiket helpdesk, dan evaluasi kinerja</p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
                 <button
                     type="button"
                     x-ripple

@@ -3,12 +3,12 @@
 @section('title', 'Manajemen Risiko')
 
 @section('content')
-    <div class="flex items-center justify-between">
+    <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
             <h1 class="text-xl font-semibold text-gray-900">Manajemen Risiko</h1>
             <p class="text-sm text-gray-500">Risk register terpusat, tertaut ke Manajemen Aset</p>
         </div>
-        <div class="flex items-center gap-2" x-data>
+        <div class="flex flex-wrap items-center gap-2" x-data>
             <button
                 type="button"
                 x-ripple
