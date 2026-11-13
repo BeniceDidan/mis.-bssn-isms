@@ -82,6 +82,45 @@ class KnowledgeSearchTest extends TestCase
         $this->assertStringContainsString('bge-m3', $result['engine']);
     }
 
+    public function test_all_close_chunks_of_the_best_document_are_used_and_weaker_documents_are_dropped(): void
+    {
+        Storage::fake('public');
+        $this->seedDocuments();
+        config(['ai.provider' => 'ollama']);
+
+        // Semua potongan SOP server sangat mirip dengan pertanyaan, SOP
+        // pencadangan cukup mirip (di atas ambang) tapi jauh di bawahnya.
+        $mode = 'dokumen-utama';
+        Http::fake([
+            '*/api/tags' => Http::response(['models' => [['name' => 'llama3.2:latest'], ['name' => 'bge-m3:latest']]]),
+            '*/api/embed' => function ($request) use (&$mode) {
+                $vector = $mode === 'dokumen-lain' ? [0.6, 0.8] : [1.0, 0.0];
+
+                return Http::response(['embeddings' => array_map(fn () => $vector, (array) $request['input'])]);
+            },
+            '*/api/generate' => Http::response(['response' => 'Syaratnya tercantum di SOP [1].']),
+        ]);
+        $server = KnowledgeAsset::where('title', 'like', 'SOP Permohonan Server%')->firstOrFail();
+        (new KnowledgeIndexer())->index($server);
+        $mode = 'dokumen-lain';
+        (new KnowledgeIndexer())->index(KnowledgeAsset::where('title', 'like', 'SOP Pencadangan%')->firstOrFail());
+        $mode = 'pertanyaan';
+
+        $result = (new KnowledgeSearch())->ask('qqq');
+
+        $chunkCount = $server->chunks()->count();
+        $this->assertGreaterThan(2, $chunkCount); // dulu dibatasi 2 potongan per dokumen
+        $this->assertCount(min(5, $chunkCount), $result['sources']);
+        $this->assertSame([$server->title], collect($result['sources'])->pluck('title')->unique()->values()->all());
+    }
+
+    public function test_small_model_formatting_habits_are_tidied(): void
+    {
+        $this->assertSame('5 hari kerja sejak persyaratan lengkap. [1]', KnowledgeSearch::tidy("Jawaban: 5 hari kerja sejak persyaratan lengkap.\nDaftar:\n[1]"));
+        $this->assertSame("Syaratnya:\n1. Surat permohonan [1]", KnowledgeSearch::tidy("Syaratnya:\n\n1. Surat permohonan\n[1]"));
+        $this->assertSame('Tidak ditemukan di dokumen yang tersedia.', KnowledgeSearch::tidy("Jawaban: Tidak ditemukan di dokumen yang tersedia.\nDaftar:\n- [1] Waktu layanan 5 hari kerja."));
+    }
+
     public function test_archived_documents_are_not_answered_from(): void
     {
         Storage::fake('public');

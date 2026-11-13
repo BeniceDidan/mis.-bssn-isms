@@ -333,9 +333,17 @@ Helpdesk. Ketiganya:
 Aturan yang sengaja dipegang:
 
 - **Skor/level bukti dukung dan prioritas tiket hanya dari mesin aturan.**
-  LLM hanya memberi catatan, memilih kategori bila kata kunci lemah, dan boleh
-  menaikkan (tidak menurunkan) dampak/urgensi. Alasannya: hasil harus bisa
-  dijelaskan dan diaudit.
+  LLM hanya memberi catatan, memilih kategori bila kata kunci lemah (dampak &
+  urgensi lalu dihitung ulang dari aturan kategori itu), dan menulis kalimat
+  pembuka draf balasan. LLM tidak lagi boleh menaikkan dampak/urgensi: pada uji
+  13 November 2026 permintaan API dan permintaan data biasa naik ke P2 tanpa
+  alasan yang masuk akal. Alasannya: hasil harus bisa dijelaskan dan diaudit.
+- Kata kunci triase (`TicketTriage::contains`) boleh diselingi sampai dua kata
+  ("akun saya terkunci" cocok dengan "akun terkunci").
+- Tanya Dokumen hanya memakai potongan yang skornya paling banyak 0,08 di bawah
+  potongan terbaik (`KnowledgeSearch::RELEVANCE_MARGIN`), bukan lagi maksimal
+  2 potongan per dokumen; nomor halaman tidak dikirim ke model, dan kebiasaan
+  format model kecil dirapikan di `KnowledgeSearch::tidy()`.
 - Bukti dukung disimpan di disk privat (`storage/app/private/bukti-dukung`),
   dibuka lewat route ber-login `evidence.file`. Keputusan asesor hanya oleh
   admin modul yang bersangkutan (`canAutoVerify`).

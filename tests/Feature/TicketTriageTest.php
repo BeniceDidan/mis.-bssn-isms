@@ -60,7 +60,7 @@ class TicketTriageTest extends TestCase
         $this->assertSame('kritis', $critical['impact']);
     }
 
-    public function test_llm_can_upgrade_but_never_downgrade_and_cannot_invent_categories(): void
+    public function test_llm_cannot_change_priority_or_invent_categories(): void
     {
         config(['ai.provider' => 'ollama']);
         Http::fake([
@@ -75,13 +75,58 @@ class TicketTriageTest extends TestCase
 
         $this->assertSame('gangguan', $result['category']);     // kategori karangan ditolak
         $this->assertSame('tinggi', $result['impact_level']);   // tidak diturunkan ke "rendah"
-        $this->assertSame('kritis', $result['urgency']);        // boleh dinaikkan
-        $this->assertSame('P1', $result['priority']);
+        $this->assertSame('tinggi', $result['urgency']);        // tidak dinaikkan ke "kritis"
+        $this->assertSame('P2', $result['priority']);           // murni dari matriks aturan
         $this->assertStringContainsString('LLM lokal', $result['triage']['engine']);
         // Kalimat AI dipakai sebagai pembuka; salam tidak dobel, daftar kelengkapan tetap ada.
         $this->assertSame(1, substr_count($result['draft_reply'], 'Yth.'));
         $this->assertStringContainsString('sedang kami periksa', $result['draft_reply']);
         $this->assertStringContainsString('mohon lengkapi', $result['draft_reply']);
+    }
+
+    public function test_keyword_phrases_still_match_with_words_in_between(): void
+    {
+        $result = (new TicketTriage())->triage('Akun saya terkunci setelah salah memasukkan kata sandi tiga kali, saya tidak bisa bekerja.', $this->service());
+
+        $this->assertSame('akun_akses', $result['category']);
+        $this->assertSame('P3', $result['priority']);
+        $this->assertStringContainsString('akun terkunci', implode(' ', $result['triage']['reasons']));
+    }
+
+    public function test_routine_requests_stay_low_priority_even_if_llm_says_urgent(): void
+    {
+        config(['ai.provider' => 'ollama']);
+        Http::fake([
+            '*/api/tags' => Http::response(['models' => [['name' => 'llama3.2:latest']]]),
+            '*/api/generate' => Http::response(['response' => json_encode([
+                'kategori' => 'data', 'dampak' => 'tinggi', 'urgensi' => 'kritis',
+                'alasan' => 'Kami sedang memproses permintaan Anda.', 'draf_balasan' => 'Permintaan rekap data pengunjung portal sudah kami terima dan sedang kami siapkan.',
+            ])]),
+        ]);
+
+        $result = (new TicketTriage())->triage('Kami minta rekap data jumlah pengunjung portal tahun 2025 untuk bahan laporan tahunan.', $this->service());
+
+        $this->assertSame('data', $result['category']);
+        $this->assertSame('P4', $result['priority']);
+        $this->assertStringNotContainsString('Kami sedang memproses', implode(' ', $result['triage']['reasons']));
+    }
+
+    public function test_category_chosen_by_llm_takes_impact_and_urgency_from_rules(): void
+    {
+        config(['ai.provider' => 'ollama']);
+        Http::fake([
+            '*/api/tags' => Http::response(['models' => [['name' => 'llama3.2:latest']]]),
+            '*/api/generate' => Http::response(['response' => json_encode([
+                'kategori' => 'keamanan', 'draf_balasan' => 'Laporan tulisan asing di halaman depan situs sudah kami terima dan segera kami periksa.',
+            ])]),
+        ]);
+
+        $result = (new TicketTriage())->triage('Ada tulisan aneh berbahasa asing di halaman depan situs kami', $this->service());
+
+        $this->assertSame('keamanan', $result['category']);
+        $this->assertSame('kritis', $result['impact_level']);  // bawaan kategori Insiden Keamanan
+        $this->assertSame('P1', $result['priority']);
+        $this->assertContains('Kategori dipilih AI karena kata kunci kurang jelas.', $result['triage']['reasons']);
     }
 
     public function test_llm_reply_with_blank_placeholders_is_discarded(): void

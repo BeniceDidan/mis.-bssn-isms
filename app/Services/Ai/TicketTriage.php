@@ -10,10 +10,13 @@ use Illuminate\Support\Str;
  * Triase tiket helpdesk: kategori, dampak, urgensi, prioritas, draf
  * balasan, dan langkah awal untuk operator/programmer.
  *
- * Prioritas SELALU dihitung dari matriks dampak × urgensi di
- * config/helpdesk.php (bukan ditebak LLM), supaya bisa dijelaskan. LLM
- * hanya membantu memilih kategori untuk teks yang ambigu, menaikkan
- * dampak/urgensi bila menemukan alasan, dan menulis draf balasan.
+ * Dampak, urgensi, dan prioritas SELALU dihitung dari aturan di
+ * config/helpdesk.php (kata kunci, sinyal, kritikalitas aset, matriks
+ * dampak × urgensi), bukan ditebak LLM, supaya bisa dijelaskan. LLM hanya
+ * membantu memilih kategori untuk teks yang ambigu dan menulis kalimat
+ * pembuka draf balasan. Uji 13 November 2026: saat LLM masih boleh
+ * menaikkan dampak/urgensi, permintaan API dan permintaan data biasa naik
+ * ke P2 tanpa alasan yang masuk akal, jadi kewenangan itu dicabut.
  */
 class TicketTriage
 {
@@ -31,30 +34,25 @@ class TicketTriage
         $startedAt = microtime(true);
         $rules = $this->ruleBased($issue, $service);
         $engine = 'Mesin aturan';
-        $reasons = $rules['reasons'];
-        $category = $rules['category'];
-        $impact = $rules['impact'];
-        $urgency = $rules['urgency'];
         $llmReply = null;
 
         $llm = $this->askLlm($issue, $service);
         if ($llm !== null) {
             $engine = 'Mesin aturan + ' . $this->llm->chatEngineName();
 
-            if ($rules['category_strength'] < 2 && $llm['category'] && $llm['category'] !== $category) {
-                $category = $llm['category'];
-                $reasons[] = 'Kategori dipilih AI karena kata kunci kurang jelas.';
-            }
-            if ($llm['impact'] && self::RANK[$llm['impact']] > self::RANK[$impact]) {
-                $impact = $llm['impact'];
-                $reasons[] = 'Dampak dinaikkan AI: ' . ($llm['reason'] ?: 'berdasarkan isi tiket') . '.';
-            }
-            if ($llm['urgency'] && self::RANK[$llm['urgency']] > self::RANK[$urgency]) {
-                $urgency = $llm['urgency'];
+            // Kategori pilihan AI dihitung ulang dengan aturan yang sama,
+            // jadi dampak & urgensinya tetap dari bawaan kategori + sinyal.
+            if ($rules['category_strength'] < 2 && $llm['category'] && $llm['category'] !== $rules['category']) {
+                $rules = $this->ruleBased($issue, $service, $llm['category']);
+                $rules['reasons'][] = 'Kategori dipilih AI karena kata kunci kurang jelas.';
             }
             $llmReply = $llm['reply'];
         }
 
+        $reasons = $rules['reasons'];
+        $category = $rules['category'];
+        $impact = $rules['impact'];
+        $urgency = $rules['urgency'];
         $priority = config("helpdesk.priority_matrix.{$impact}.{$urgency}", 'P4');
         $target = config("helpdesk.priorities.{$priority}");
         $categoryDef = config("helpdesk.categories.{$category}");
@@ -106,9 +104,12 @@ class TicketTriage
     }
 
     /**
+     * $category diisi bila kategorinya sudah dipilih (oleh AI untuk teks
+     * yang kata kuncinya lemah); dampak & urgensi tetap dihitung di sini.
+     *
      * @return array{category: string, category_strength: int, impact: string, urgency: string, reasons: array<int, string>}
      */
-    public function ruleBased(string $issue, ?Service $service = null): array
+    public function ruleBased(string $issue, ?Service $service = null, ?string $category = null): array
     {
         $text = EvidenceAssessor::flatten($issue);
         $reasons = [];
@@ -128,6 +129,10 @@ class TicketTriage
             if ($score > $bestScore) {
                 [$best, $bestScore, $bestHits] = [$key, $score, $hits];
             }
+        }
+
+        if ($category !== null && config("helpdesk.categories.{$category}") !== null) {
+            [$best, $bestHits] = [$category, []];
         }
 
         $def = config("helpdesk.categories.{$best}");
@@ -172,14 +177,23 @@ class TicketTriage
         return ['category' => $best, 'category_strength' => $bestScore, 'impact' => $impact, 'urgency' => $urgency, 'reasons' => $reasons];
     }
 
+    /**
+     * Kata-kata dalam frasa kata kunci boleh diselingi sampai dua kata lain
+     * di klausa yang sama, supaya "akun saya terkunci" tetap cocok dengan
+     * "akun terkunci". Tanda baca di antaranya memutus kecocokan.
+     */
     private function contains(string $flatText, string $keyword): bool
     {
-        $pattern = '/(?<![\p{L}\p{N}])' . str_replace(' ', '\s+', preg_quote(mb_strtolower($keyword), '/')) . '(?![\p{L}\p{N}])/u';
+        $words = array_map(
+            fn ($word) => preg_quote($word, '/'),
+            preg_split('/\s+/u', mb_strtolower(trim($keyword)), -1, PREG_SPLIT_NO_EMPTY)
+        );
+        $pattern = '/(?<![\p{L}\p{N}])' . implode('(?:\s+[\p{L}\p{N}\-]+){0,2}\s+', $words) . '(?![\p{L}\p{N}])/u';
 
         return (bool) preg_match($pattern, $flatText);
     }
 
-    /** @return array{category: ?string, impact: ?string, urgency: ?string, reason: ?string, reply: ?string}|null */
+    /** @return array{category: ?string, reply: ?string}|null */
     private function askLlm(string $issue, ?Service $service): ?array
     {
         if (! $this->llm->chatAvailable()) {
@@ -191,8 +205,7 @@ class TicketTriage
             ($service ? "Layanan: {$service->name}\n" : '')
             . "Isi tiket: \"\"\"{$issue}\"\"\"\n\n"
             . "Pilihan kategori (pakai kodenya): {$categories}.\n"
-            . 'Pilihan dampak dan urgensi: rendah, sedang, tinggi, kritis.' . "\n"
-            . 'Jawab dalam JSON: {"kategori": "kode", "dampak": "...", "urgensi": "...", "alasan": "1 kalimat", '
+            . 'Jawab dalam JSON: {"kategori": "kode", '
             . '"draf_balasan": "1-2 kalimat pembuka yang menanggapi isi tiket secara spesifik dan sopan; tanpa salam, tanpa menjanjikan waktu, tanpa isian kosong seperti [nama]"}',
             true,
             'Anda petugas helpdesk TIK di dinas pemerintahan Indonesia. Gunakan Bahasa Indonesia baku dan sopan. '
@@ -211,9 +224,6 @@ class TicketTriage
 
         return [
             'category' => $pick($answer['kategori'] ?? null, array_keys(config('helpdesk.categories'))),
-            'impact' => $pick($answer['dampak'] ?? null, array_keys(self::RANK)),
-            'urgency' => $pick($answer['urgensi'] ?? null, array_keys(self::RANK)),
-            'reason' => is_string($answer['alasan'] ?? null) ? Str::limit(trim($answer['alasan'], " ."), 160, '') : null,
             'reply' => $reply ? Str::limit($reply, 1200) : null,
         ];
     }

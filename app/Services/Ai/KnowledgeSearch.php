@@ -12,13 +12,22 @@ use Illuminate\Support\Str;
  * Tanya-jawab atas isi dokumen Pengetahuan (RAG).
  *
  * Pencarian: kemiripan embedding (bila bge-m3 tersedia) digabung dengan
- * pencarian teks Postgres berbahasa Indonesia. Jawaban: LLM lokal hanya
+ * pencarian teks Postgres berbahasa Indonesia; hanya potongan yang skornya
+ * dekat dengan potongan terbaik yang dipakai. Jawaban: LLM lokal hanya
  * boleh memakai potongan yang ditemukan dan wajib menyebut nomor sumbernya;
  * bila LLM mati, pengguna tetap mendapat potongan paling relevan + tautan.
  */
 class KnowledgeSearch
 {
     private const MIN_SIMILARITY = 0.45;
+
+    /**
+     * Sebuah potongan dipakai hanya bila skornya paling banyak sebesar ini
+     * di bawah skor potongan terbaik. Sebelumnya dibatasi 2 potongan per dokumen;
+     * akibatnya daftar syarat di SOP server terbuang dan digantikan potongan
+     * SOP lain yang kurang relevan, lalu jawabannya tercampur (uji 13 Nov 2026).
+     */
+    private const RELEVANCE_MARGIN = 0.08;
 
     public function __construct(private LocalLlm $llm = new LocalLlm())
     {
@@ -111,23 +120,13 @@ class KnowledgeSearch
             $scored[$id] = ($scored[$id] ?? ($queryVector ? self::MIN_SIMILARITY : 0.5)) + $bonus;
         }
 
-        $top = $scored->sortDesc()->take($limit * 2);
+        $ranked = $scored->sortDesc();
+        $best = $ranked->first();
+        $top = $ranked->filter(fn ($score) => $score >= $best - self::RELEVANCE_MARGIN)->take($limit);
         $chunks = KnowledgeChunk::with('knowledgeAsset:id,title,record_code,document_path')->findMany($top->keys())->keyBy('id');
 
-        // Maksimal 2 potongan per dokumen supaya sumber tidak didominasi satu PDF.
-        $perDocument = [];
-
         return $top->map(fn ($score, $id) => ['chunk' => $chunks[$id] ?? null, 'score' => $score])
-            ->filter(function ($hit) use (&$perDocument) {
-                if (! $hit['chunk']) {
-                    return false;
-                }
-                $docId = $hit['chunk']->knowledge_asset_id;
-                $perDocument[$docId] = ($perDocument[$docId] ?? 0) + 1;
-
-                return $perDocument[$docId] <= 2;
-            })
-            ->take($limit)
+            ->filter(fn ($hit) => $hit['chunk'] !== null)
             ->values();
     }
 
@@ -138,23 +137,43 @@ class KnowledgeSearch
 
     private function generateAnswer(string $question, Collection $hits): ?string
     {
-        $context = $hits->values()->map(function ($hit, $i) {
-            $chunk = $hit['chunk'];
-
-            return '[' . ($i + 1) . '] ' . $chunk->knowledgeAsset->title . ($chunk->page_number ? " (hal. {$chunk->page_number})" : '') . ":\n" . $chunk->content;
-        })->implode("\n\n");
+        // Nomor halaman tidak dikirim ke model: model kecil sering menyalin
+        // nomor yang salah. Halaman yang benar sudah tampil di daftar sumber.
+        $context = $hits->values()->map(
+            fn ($hit, $i) => '[' . ($i + 1) . '] ' . $hit['chunk']->knowledgeAsset->title . ":\n" . $hit['chunk']->content
+        )->implode("\n\n");
 
         $answer = $this->llm->generate(
             "Sumber:\n{$context}\n\nPertanyaan: {$question}\n\n"
-            . 'Jawab ringkas (maksimal 120 kata). Bila berupa prosedur, tulis sebagai langkah bernomor. '
-            . 'Sebutkan nomor sumber dalam kurung siku, misalnya [1]. Bila jawabannya tidak ada di sumber, katakan tidak ditemukan.',
+            . 'Tulis jawabannya langsung, tanpa judul atau label apa pun, paling banyak 100 kata. '
+            . 'Bila sumber berisi daftar syarat atau langkah yang ditanyakan, salin butirnya sebagai daftar bernomor tanpa menambah butir, langkah, atau saran sendiri. '
+            . 'Pakai hanya sumber yang benar-benar menjawab pertanyaan dan abaikan sumber lain. '
+            . 'Sebutkan nomor sumber dalam kurung siku di akhir kalimat yang memakainya, misalnya [1]; jangan menulis nomor halaman. '
+            . 'Bila jawabannya tidak ada di sumber, tulis hanya kalimat ini: Tidak ditemukan di dokumen yang tersedia.',
             false,
             'Anda petugas layanan pengetahuan di dinas pemerintahan Indonesia. Jawab dalam Bahasa Indonesia baku, '
-            . 'HANYA berdasarkan sumber yang diberikan. Jangan menambah informasi dari luar sumber.'
+            . 'HANYA berdasarkan sumber yang diberikan. Jangan menambah informasi, langkah, atau saran yang tidak tertulis di sumber.'
         );
 
-        // Model kecil sering memberi baris kosong ganda di antara langkah.
-        return is_string($answer) ? Str::limit(preg_replace("/\n\s*\n+/u", "\n", $answer) ?? $answer, 1500) : null;
+        return is_string($answer) ? Str::limit(self::tidy($answer), 1500) : null;
+    }
+
+    /**
+     * Merapikan kebiasaan model kecil: label "Jawaban:"/"Daftar:", nomor
+     * sumber yang berdiri sendiri di satu baris, kalimat tambahan setelah
+     * menyatakan tidak ditemukan, dan baris kosong ganda.
+     */
+    public static function tidy(string $answer): string
+    {
+        $answer = preg_replace('/^[ \t]*(jawaban|daftar)[ \t]*:[ \t]*/imu', '', $answer) ?? $answer;
+        $answer = preg_replace('/\n\s*((?:\[\d+\]\s*)+)(?=\n|$)/u', ' $1', $answer) ?? $answer;
+        $answer = trim(preg_replace("/\n\s*\n+/u", "\n", $answer) ?? $answer);
+
+        if (preg_match('/^tidak ditemukan di dokumen yang tersedia/iu', $answer)) {
+            return 'Tidak ditemukan di dokumen yang tersedia.';
+        }
+
+        return $answer;
     }
 
     private function documentUrl(KnowledgeChunk $chunk): ?string
