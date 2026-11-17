@@ -344,6 +344,16 @@ Aturan yang sengaja dipegang:
   potongan terbaik (`KnowledgeSearch::RELEVANCE_MARGIN`), bukan lagi maksimal
   2 potongan per dokumen; nomor halaman tidak dikirim ke model, dan kebiasaan
   format model kecil dirapikan di `KnowledgeSearch::tidy()`.
+- **Kapasitas Tanya Dokumen.** Vektor disimpan sebagai jsonb (pgvector tidak
+  terpasang di Postgres portabel PC ini); memindai semua potongan butuh
+  ±0,25 ms per potongan (uji 17 Nov 2026: 25.000 potongan ≈ 6 detik). Di atas
+  `ai.full_scan_limit` (3.000 potongan) pencarian jadi dua tahap: dokumen
+  kandidat dipilih dari `knowledge_assets.doc_embedding` (rata-rata vektor
+  potongan, diisi `KnowledgeIndexer`) + kata kunci, baru potongannya diperiksa.
+  Untuk server produksi Linux, pgvector + indeks HNSW tetap pilihan terbaik.
+- Banyak PDF sekaligus: `php artisan pengetahuan:impor <folder> [--kategori=]
+  [--unit=] [--akses=Internal]` (subfolder ikut, berkas yang nama aslinya sudah
+  ada dilewati).
 - Bukti dukung disimpan di disk privat (`storage/app/private/bukti-dukung`),
   dibuka lewat route ber-login `evidence.file`. Keputusan asesor hanya oleh
   admin modul yang bersangkutan (`canAutoVerify`).

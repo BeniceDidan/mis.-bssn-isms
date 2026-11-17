@@ -145,6 +145,32 @@ class LocalLlm
         return ($na > 0 && $nb > 0) ? $dot / (sqrt($na) * sqrt($nb)) : 0.0;
     }
 
+    /**
+     * Rata-rata beberapa vektor, dinormalkan ke panjang 1 — "makna rata-rata"
+     * sebuah dokumen dari semua potongannya.
+     *
+     * @param  array<int, array<int, float>|null>  $vectors
+     * @return array<int, float>|null
+     */
+    public static function centroid(array $vectors): ?array
+    {
+        $vectors = array_values(array_filter($vectors, fn ($v) => is_array($v) && $v !== []));
+        if ($vectors === []) {
+            return null;
+        }
+
+        $dims = count($vectors[0]);
+        $sum = array_fill(0, $dims, 0.0);
+        foreach ($vectors as $vector) {
+            for ($i = 0; $i < $dims; $i++) {
+                $sum[$i] += $vector[$i] ?? 0.0;
+            }
+        }
+        $norm = sqrt(array_sum(array_map(fn ($x) => $x * $x, $sum)));
+
+        return $norm > 0 ? array_map(fn ($x) => round($x / $norm, 8), $sum) : null;
+    }
+
     private function baseName(?string $model): string
     {
         return strtok((string) $model, ':') ?: '';

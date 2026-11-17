@@ -54,7 +54,7 @@ class KnowledgeIndexer
 
         if (! $asset->document_path || ! Storage::disk('public')->exists($asset->document_path)) {
             $asset->chunks()->delete();
-            $asset->updateQuietly(['index_status' => null, 'indexed_at' => null, 'ai_tags' => $this->vocabularyTags($asset->title, ''), 'ai_summary' => null]);
+            $asset->updateQuietly(['index_status' => null, 'indexed_at' => null, 'ai_tags' => $this->vocabularyTags($asset->title, ''), 'ai_summary' => null, 'doc_embedding' => null]);
 
             return $asset;
         }
@@ -66,6 +66,7 @@ class KnowledgeIndexer
                 'index_status' => $pdf['ok'] ? 'tanpa_teks' : 'gagal',
                 'indexed_at' => now(),
                 'ai_tags' => $this->vocabularyTags($asset->title, ''),
+                'doc_embedding' => null,
             ]);
 
             return $asset;
@@ -100,6 +101,7 @@ class KnowledgeIndexer
             'ai_summary' => $summary,
             'index_status' => $hasVectors ? 'terindeks' : 'kata_kunci',
             'indexed_at' => now(),
+            'doc_embedding' => LocalLlm::centroid($vectors),
         ]);
 
         AiLog::record(

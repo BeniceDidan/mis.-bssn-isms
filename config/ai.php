@@ -34,4 +34,11 @@ return [
 
     'chunk_chars' => 900,
     'chunk_overlap' => 150,
+
+    // Tanya Dokumen: di atas jumlah potongan ini, pencarian memakai dua
+    // tahap (pilih dokumen kandidat lewat vektor rata-rata per dokumen, baru
+    // periksa potongannya). Di bawahnya semua potongan diperiksa. Memindai
+    // semua potongan butuh ±0,25 ms per potongan (uji 17 Nov 2026).
+    'full_scan_limit' => (int) env('AI_FULL_SCAN_LIMIT', 3000),
+    'candidate_documents' => (int) env('AI_CANDIDATE_DOCUMENTS', 25),
 ];

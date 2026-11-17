@@ -36,7 +36,11 @@ class KnowledgeAsset extends Model
         'ai_summary',
         'index_status',
         'indexed_at',
+        'doc_embedding',
     ];
+
+    /** Vektor rata-rata dokumen (1.024 angka) tidak perlu ikut ke tampilan/ekspor. */
+    protected $hidden = ['doc_embedding'];
 
     protected $casts = [
         'knowledge_type' => KnowledgeType::class,
@@ -44,6 +48,7 @@ class KnowledgeAsset extends Model
         'dynamic_data' => 'array',
         'ai_tags' => 'array',
         'indexed_at' => 'datetime',
+        'doc_embedding' => 'array',
     ];
 
     public function getCodeColumn(): string

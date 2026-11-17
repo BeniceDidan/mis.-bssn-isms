@@ -3,6 +3,7 @@
 namespace App\Services\Ai;
 
 use App\Models\AiLog;
+use App\Models\KnowledgeAsset;
 use App\Models\KnowledgeChunk;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -76,9 +77,16 @@ class KnowledgeSearch
 
         $queryVector = $this->llm->embed([$question])[0] ?? null;
         if ($queryVector) {
+            // Koleksi kecil: periksa semua potongan (paling teliti). Koleksi
+            // besar: pilih dokumen kandidat dulu, baru periksa potongannya.
+            $candidates = KnowledgeChunk::query()->whereNotNull('embedding')->count() > (int) config('ai.full_scan_limit', 3000)
+                ? $this->candidateDocuments($queryVector, $question)
+                : null;
+
             KnowledgeChunk::query()
                 ->whereNotNull('embedding')
                 ->whereHas('knowledgeAsset')
+                ->when($candidates !== null, fn ($q) => $q->whereIn('knowledge_asset_id', $candidates))
                 ->select(['id', 'embedding'])
                 ->chunkById(500, function ($rows) use ($queryVector, $scored) {
                     foreach ($rows as $row) {
@@ -101,18 +109,7 @@ class KnowledgeSearch
 
         if ($keywordHits->isEmpty() && ! $queryVector) {
             // websearch_to_tsquery mensyaratkan SEMUA kata; longgarkan jadi OR.
-            $terms = collect(preg_split('/\s+/u', Str::lower($question)))
-                ->map(fn ($w) => preg_replace('/[^\p{L}\p{N}]/u', '', $w))
-                ->filter(fn ($w) => mb_strlen($w) >= 4)
-                ->take(8);
-            if ($terms->isNotEmpty()) {
-                $keywordHits = KnowledgeChunk::query()
-                    ->whereHas('knowledgeAsset')
-                    ->whereRaw("to_tsvector('indonesian', content) @@ to_tsquery('indonesian', ?)", [$terms->implode(' | ')])
-                    ->orderByRaw("ts_rank(to_tsvector('indonesian', content), to_tsquery('indonesian', ?)) DESC", [$terms->implode(' | ')])
-                    ->limit($limit * 2)
-                    ->pluck('id');
-            }
+            $keywordHits = $this->anyTermChunkIds($question, $limit * 2);
         }
 
         foreach ($keywordHits as $rank => $id) {
@@ -120,7 +117,7 @@ class KnowledgeSearch
             $scored[$id] = ($scored[$id] ?? ($queryVector ? self::MIN_SIMILARITY : 0.5)) + $bonus;
         }
 
-        $ranked = $scored->sortDesc();
+        $ranked = $this->withTitleBonus($scored, $question)->sortDesc();
         $best = $ranked->first();
         $top = $ranked->filter(fn ($score) => $score >= $best - self::RELEVANCE_MARGIN)->take($limit);
         $chunks = KnowledgeChunk::with('knowledgeAsset:id,title,record_code,document_path')->findMany($top->keys())->keyBy('id');
@@ -128,6 +125,104 @@ class KnowledgeSearch
         return $top->map(fn ($score, $id) => ['chunk' => $chunks[$id] ?? null, 'score' => $score])
             ->filter(fn ($hit) => $hit['chunk'] !== null)
             ->values();
+    }
+
+    /**
+     * Kata dari pertanyaan yang muncul di JUDUL dokumen menambah skor
+     * potongannya (0,04 per kata, maks 0,12). Uji 125 dokumen (17 Nov 2026):
+     * SOP sejenis milik OPD berbeda, atau SOP cuti vs peminjaman ruang rapat
+     * yang kalimatnya mirip, sering tertukar walau nama OPD/topik sudah
+     * disebut di pertanyaan.
+     */
+    private function withTitleBonus(Collection $scored, string $question): Collection
+    {
+        $terms = self::meaningfulWords($question);
+        if ($terms === [] || $scored->isEmpty()) {
+            return $scored;
+        }
+
+        $top = $scored->sortDesc()->take(100)->keys();
+        $titles = KnowledgeChunk::query()
+            ->join('knowledge_assets', 'knowledge_assets.id', '=', 'knowledge_chunks.knowledge_asset_id')
+            ->whereIn('knowledge_chunks.id', $top)
+            ->pluck('knowledge_assets.title', 'knowledge_chunks.id');
+
+        foreach ($titles as $id => $title) {
+            $titleWords = array_flip(self::meaningfulWords($title));
+            $matched = count(array_filter($terms, fn ($t) => isset($titleWords[$t])));
+            if ($matched > 0) {
+                $scored[$id] += min(0.12, 0.04 * $matched);
+            }
+        }
+
+        return $scored;
+    }
+
+    /** @return array<int, string> kata ≥3 huruf yang bukan kata tanya/sambung */
+    private static function meaningfulWords(string $text): array
+    {
+        $stop = ['yang', 'dan', 'atau', 'dengan', 'untuk', 'dari', 'dalam', 'pada', 'kalau', 'jika', 'apa', 'saja', 'berapa', 'bagaimana',
+            'kapan', 'siapa', 'mana', 'harus', 'wajib', 'boleh', 'bisa', 'paling', 'lambat', 'lama', 'setiap', 'sampai', 'sebelum', 'setelah',
+            'kita', 'saya', 'mau', 'minta', 'cara', 'itu', 'ini', 'per', 'juga', 'agar', 'supaya', 'tentang', 'sop', 'pedoman', 'kebijakan'];
+        $words = preg_split('/[^\p{L}\p{N}]+/u', Str::lower($text), -1, PREG_SPLIT_NO_EMPTY);
+
+        return array_values(array_unique(array_filter($words, fn ($w) => mb_strlen($w) >= 3 && ! in_array($w, $stop, true))));
+    }
+
+    /**
+     * Tahap pertama pencarian dua tahap: dokumen yang vektor rata-ratanya
+     * paling mirip dengan pertanyaan, ditambah dokumen yang memuat kata dari
+     * pertanyaan, ditambah dokumen yang belum punya vektor rata-rata (supaya
+     * tidak pernah terlewat).
+     *
+     * @param  array<int, float>  $queryVector
+     * @return array<int, int>
+     */
+    private function candidateDocuments(array $queryVector, string $question): array
+    {
+        $scores = [];
+        KnowledgeAsset::query()
+            ->whereNotNull('doc_embedding')
+            ->select(['id', 'doc_embedding'])
+            ->chunkById(1000, function ($rows) use ($queryVector, &$scores) {
+                foreach ($rows as $row) {
+                    $scores[$row->id] = LocalLlm::cosine($queryVector, $row->doc_embedding);
+                }
+            });
+        arsort($scores);
+        $byMeaning = array_slice(array_keys($scores), 0, (int) config('ai.candidate_documents', 25));
+
+        $byKeyword = KnowledgeChunk::query()
+            ->whereIn('id', $this->anyTermChunkIds($question, 50))
+            ->pluck('knowledge_asset_id')
+            ->all();
+
+        $withoutCentroid = KnowledgeAsset::query()
+            ->whereNull('doc_embedding')
+            ->whereHas('chunks', fn ($q) => $q->whereNotNull('embedding'))
+            ->pluck('id')
+            ->all();
+
+        return array_values(array_unique(array_merge($byMeaning, $byKeyword, $withoutCentroid)));
+    }
+
+    /** Potongan yang memuat salah satu kata (≥4 huruf) dari pertanyaan. */
+    private function anyTermChunkIds(string $question, int $limit): Collection
+    {
+        $terms = collect(preg_split('/\s+/u', Str::lower($question)))
+            ->map(fn ($w) => preg_replace('/[^\p{L}\p{N}]/u', '', $w))
+            ->filter(fn ($w) => mb_strlen($w) >= 4)
+            ->take(8);
+        if ($terms->isEmpty()) {
+            return collect();
+        }
+
+        return KnowledgeChunk::query()
+            ->whereHas('knowledgeAsset')
+            ->whereRaw("to_tsvector('indonesian', content) @@ to_tsquery('indonesian', ?)", [$terms->implode(' | ')])
+            ->orderByRaw("ts_rank(to_tsvector('indonesian', content), to_tsquery('indonesian', ?)) DESC", [$terms->implode(' | ')])
+            ->limit($limit)
+            ->pluck('id');
     }
 
     public function retrievalEngine(): string
