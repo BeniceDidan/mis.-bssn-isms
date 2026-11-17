@@ -21,6 +21,7 @@
                     Tutorial Modul Ini
                 </button>
                 <x-integration-map module="layanan" />
+                <div x-show="tab === 'helpdesk'" x-cloak><x-ai-guide feature="triase" /></div>
                 @if (auth()->user()?->canWrite())
                     <button
                         x-show="tab === 'katalog'"

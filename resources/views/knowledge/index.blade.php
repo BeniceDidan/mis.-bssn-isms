@@ -35,6 +35,7 @@
                     Tutorial Modul Ini
                 </button>
                 <x-integration-map module="pengetahuan" />
+                <div x-show="tab === 'tanya'" x-cloak><x-ai-guide feature="tanya" /></div>
                 @if (auth()->user()?->canWrite())
                     <button
                         x-ripple

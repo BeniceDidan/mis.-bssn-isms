@@ -16,10 +16,13 @@
             </button>
         </div>
         @error('question') <p class="mt-2 text-xs text-red-600">{{ $message }}</p> @enderror
-        <p class="mt-2 text-xs text-gray-400">
-            {{ $indexedCount }} dokumen bisa ditanya
-            @if ($pendingCount) &middot; {{ $pendingCount }} masih diproses @endif
-        </p>
+        <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
+            <p class="text-xs text-gray-400">
+                {{ $indexedCount }} dokumen bisa ditanya
+                @if ($pendingCount) &middot; {{ $pendingCount }} masih diproses @endif
+            </p>
+            <x-ai-guide feature="tanya" variant="link" />
+        </div>
     </form>
 
     @if ($result)

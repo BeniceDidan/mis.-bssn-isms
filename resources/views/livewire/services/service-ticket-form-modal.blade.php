@@ -59,11 +59,14 @@
                     <div>
                         <div class="mb-1 flex items-center justify-between">
                             <label class="text-sm font-medium text-gray-700">Isi Permintaan / Gangguan <span class="text-red-500">*</span></label>
+                            <div class="flex items-center gap-3">
+                            <x-ai-guide feature="triase" variant="link" />
                             <button type="button" wire:click="analyze" wire:loading.attr="disabled" wire:target="analyze" class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100 disabled:opacity-60">
                                 <x-heroicon-o-sparkles class="h-3.5 w-3.5" />
                                 <span wire:loading.remove wire:target="analyze">Analisis AI</span>
                                 <span wire:loading wire:target="analyze">Menganalisis...</span>
                             </button>
+                            </div>
                         </div>
                         <textarea wire:model="issue" rows="3" placeholder="mis. Aplikasi e-Surat tidak bisa diakses sejak pagi, semua pegawai kena" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500"></textarea>
                         @error('issue') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror

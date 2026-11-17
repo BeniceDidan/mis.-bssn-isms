@@ -10,16 +10,19 @@
     >
         <div class="flex flex-wrap items-center justify-between gap-3">
             <h1 class="text-xl font-semibold text-gray-900">Evaluasi Bukti Dukung</h1>
-            @if (auth()->user()?->canWrite())
-                <button
-                    x-ripple
-                    @click="$dispatch('open-evidence-upload')"
-                    class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white"
-                >
-                    <x-heroicon-o-arrow-up-tray class="h-4 w-4" />
-                    Unggah
-                </button>
-            @endif
+            <div class="flex flex-wrap items-center gap-2">
+                <x-ai-guide feature="bukti" />
+                @if (auth()->user()?->canWrite())
+                    <button
+                        x-ripple
+                        @click="$dispatch('open-evidence-upload')"
+                        class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white"
+                    >
+                        <x-heroicon-o-arrow-up-tray class="h-4 w-4" />
+                        Unggah
+                    </button>
+                @endif
+            </div>
         </div>
 
         <div class="glass-panel flex flex-wrap gap-1 rounded-2xl p-1.5 shadow-lg">
