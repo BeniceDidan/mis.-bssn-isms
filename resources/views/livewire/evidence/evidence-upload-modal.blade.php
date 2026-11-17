@@ -17,6 +17,7 @@
             x-transition:enter-start="opacity-0 scale-75 translate-y-6"
             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
             class="glass-panel max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl shadow-2xl"
+            data-tour="evidence-form"
         >
             <form wire:submit="save">
                 <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
@@ -27,10 +28,10 @@
                 </div>
 
                 <div class="space-y-4 px-6 py-5">
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4" data-tour="evidence-claim">
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Modul</label>
-                            <select wire:model="module_key" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                            <select wire:model="module_key" data-field="module_key" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                                 <option value="">Pilih modul...</option>
                                 @foreach ($modules as $key => $label)
                                     <option value="{{ $key }}">{{ $label }}</option>
@@ -40,7 +41,7 @@
                         </div>
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Level yang diklaim</label>
-                            <select wire:model="target_level" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                            <select wire:model="target_level" data-field="target_level" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                                 @foreach ($levels as $no => $level)
                                     <option value="{{ $no }}">Level {{ $no }} — {{ $level['name'] }}</option>
                                 @endforeach
@@ -48,6 +49,7 @@
                         </div>
                     </div>
 
+                    <div class="space-y-4" data-tour="evidence-meta">
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Judul dokumen <span class="font-normal text-gray-400">(opsional)</span></label>
                         <input type="text" wire:model="title" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
@@ -55,10 +57,11 @@
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">OPD / unit kerja pengirim</label>
-                        <input type="text" wire:model="unit_name" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                        <input type="text" wire:model="unit_name" data-field="unit_name" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                    </div>
                     </div>
 
-                    <div>
+                    <div data-tour="evidence-file" data-sample-url="{{ route('evidence.sample') }}">
                         <label class="mb-1 block text-sm font-medium text-gray-700">Berkas PDF</label>
                         <input
                             type="file"
@@ -74,7 +77,7 @@
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
                     <span wire:loading wire:target="save" class="mr-auto text-xs text-gray-500">Menilai...</span>
                     <button type="button" wire:click="close" class="rounded-full px-4 py-2 text-sm font-medium text-gray-600 hover:bg-slate-50">Batal</button>
-                    <button type="submit" wire:loading.attr="disabled" wire:target="save,document" class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 disabled:opacity-60">
+                    <button type="submit" data-tour="evidence-submit" wire:loading.attr="disabled" wire:target="save,document" class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 disabled:opacity-60">
                         Unggah & Nilai
                     </button>
                 </div>

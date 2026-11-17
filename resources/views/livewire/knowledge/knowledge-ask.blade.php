@@ -6,11 +6,12 @@
                 <input
                     type="text"
                     wire:model="question"
+                    data-tour="ask-input"
                     placeholder="Contoh: Gimana prosedur permohonan server?"
                     class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400"
                 >
             </div>
-            <button type="submit" wire:loading.attr="disabled" wire:target="ask" class="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 disabled:opacity-60">
+            <button type="submit" data-tour="ask-submit" wire:loading.attr="disabled" wire:target="ask" class="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 disabled:opacity-60">
                 <span wire:loading.remove wire:target="ask">Tanya</span>
                 <span wire:loading wire:target="ask">Mencari...</span>
             </button>
@@ -26,14 +27,14 @@
     </form>
 
     @if ($result)
-        <div class="glass-panel rounded-2xl p-5 shadow-lg">
+        <div class="glass-panel rounded-2xl p-5 shadow-lg" data-tour="ask-answer">
             <p class="mb-2 text-xs text-gray-500">{{ $askedQuestion }}</p>
             <div class="whitespace-pre-line text-sm leading-relaxed text-gray-800">{{ $result['answer'] }}</div>
             <p class="mt-3 text-xs text-gray-400">Dijawab oleh {{ $result['engine'] }}. Periksa kembali di dokumen sumber.</p>
         </div>
 
         @if ($result['sources'])
-            <div class="glass-panel overflow-hidden rounded-2xl shadow-lg">
+            <div class="glass-panel overflow-hidden rounded-2xl shadow-lg" data-tour="ask-sources">
                 <p class="border-b border-slate-200 px-5 py-3 text-sm font-semibold text-gray-800">Sumber</p>
                 <ul class="divide-y divide-slate-200">
                     @foreach ($result['sources'] as $source)

@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="space-y-6 px-6 py-5">
-                    <dl class="grid grid-cols-3 gap-3">
+                    <dl class="grid grid-cols-3 gap-3" data-tour="evidence-summary">
                         <div>
                             <dt class="text-xs text-gray-500">Klaim</dt>
                             <dd class="text-xl font-semibold text-gray-900">Level {{ $record->target_level }}</dd>
@@ -67,7 +67,7 @@
                     @if ($unreadable)
                         <p class="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{{ $unreadableText }}</p>
                     @elseif ($missing->isNotEmpty())
-                        <div>
+                        <div data-tour="evidence-missing">
                             <p class="text-sm font-medium text-gray-900">Belum ada</p>
                             <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-gray-700">
                                 @foreach ($missing as $label)
@@ -78,7 +78,7 @@
                     @endif
 
                     @if ($pengesahan)
-                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm" data-tour="evidence-validity">
                             @foreach ($validity as $item)
                                 <span class="inline-flex items-center gap-1 {{ $item['found'] ? 'text-gray-700' : 'text-gray-400' }}">
                                     @if ($item['found'])
@@ -92,6 +92,8 @@
                         </div>
                     @endif
 
+                    @if (($levels && ! $unreadable) || $record->ai_notes)
+                    <div class="space-y-3" data-tour="evidence-details">
                     @if ($levels && ! $unreadable)
                         <details class="group">
                             <summary class="cursor-pointer text-sm font-medium text-brand-700">Rincian per level</summary>
@@ -124,8 +126,10 @@
                             <p class="mt-2 whitespace-pre-line text-sm text-gray-700">{{ $record->ai_notes }}</p>
                         </details>
                     @endif
+                    </div>
+                    @endif
 
-                    <div class="border-t border-slate-200 pt-4">
+                    <div class="border-t border-slate-200 pt-4" data-tour="evidence-decision">
                         <p class="mb-2 text-sm font-medium text-gray-900">Keputusan</p>
                         @if ($canDecide)
                             <form wire:submit="saveDecision" class="space-y-2">
@@ -153,7 +157,7 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
+                <div class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-200 px-6 py-4" data-tour="evidence-actions">
                     <a href="{{ route('evidence.file', $record) }}" target="_blank" class="mr-auto inline-flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:underline">
                         <x-heroicon-o-document-text class="h-4 w-4" /> Buka PDF
                     </a>

@@ -116,4 +116,33 @@ class EvidenceAssessorTest extends TestCase
 
         $this->get(route('evidence.file', $record))->assertRedirect(route('login'));
     }
+
+    public function test_tutorial_sample_pdf_is_served_to_logged_in_users_only(): void
+    {
+        $this->get(route('evidence.sample'))->assertRedirect(route('login'));
+
+        $this->actingAs(User::factory()->create(['role' => 'user']));
+        $response = $this->get(route('evidence.sample'))->assertOk();
+
+        $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+    }
+
+    public function test_ai_pages_carry_the_tutorial_markers(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'user']));
+
+        $this->get(route('evidence.index'))->assertOk()
+            ->assertSee('data-tour="evidence-upload-button"', false)
+            ->assertSee('data-tour="evidence-file"', false)
+            ->assertSee("startAiTour('bukti')", false);
+        $this->get(route('knowledge.index'))->assertOk()
+            ->assertSee('data-tour="tab-tanya"', false)
+            ->assertSee('data-tour="ask-input"', false)
+            ->assertSee("startAiTour('tanya')", false);
+        $this->get(route('services.index'))->assertOk()
+            ->assertSee('data-tour="tab-helpdesk"', false)
+            ->assertSee('data-tour="ticket-analyze"', false)
+            ->assertSee("startAiTour('triase')", false);
+    }
 }

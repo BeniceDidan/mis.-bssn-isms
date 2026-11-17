@@ -15,6 +15,7 @@
                 @if (auth()->user()?->canWrite())
                     <button
                         x-ripple
+                        data-tour="evidence-upload-button"
                         @click="$dispatch('open-evidence-upload')"
                         class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white"
                     >

@@ -370,6 +370,14 @@ Aturan yang sengaja dipegang:
   helpdesk (pedoman resmi: Pk/Pe/Pn dari klasifikasi layanan × Mayor/Minor,
   bukan P1–P4) dan register risiko (16 kategori, area dampak, selera risiko).
   Belum ada kode yang diubah berdasarkan temuan itu; tunggu keputusan pengguna.
+- Panduan AI: pop-out `<x-ai-guide feature="bukti|tanya|triase">` (isi di
+  `App\Support\AiGuide`). Tombol "Mulai tutorial" di dalamnya menjalankan
+  tutorial interaktif `resources/js/ai-tour.js` (driver.js, terpisah dari tur
+  modul `tour.js`): menekan tombol aslinya, mengisi contoh bila isian kosong
+  (PDF contoh dari route `evidence.sample`), dan menunggu permintaan Livewire
+  selesai sebelum menjelaskan hasil AI. Elemen yang disorot ditandai
+  `data-tour="..."`; kalau mengubah tampilan tiga fitur AI, pertahankan
+  atribut itu (dijaga `test_ai_pages_carry_the_tutorial_markers`).
 
 **Dua Ollama di PC ini.** Port 11434 dilayani Ollama di **WSL** (`llama3.2`
 dan `bge-m3`, yang terakhir terpasang 10 Nov). Ollama Windows

@@ -52,6 +52,7 @@
             ] as $t)
                 <button
                     x-ripple
+                    data-tour="tab-{{ $t['key'] }}"
                     @click="tab = '{{ $t['key'] }}'"
                     :class="tab === '{{ $t['key'] }}' ? 'bg-brand-700 text-white shadow-md' : 'text-gray-600 hover:bg-slate-50'"
                     class="flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 ease-spring"
@@ -74,6 +75,7 @@
         <div
             x-show="tab === 'helpdesk'"
             x-cloak
+            data-tour="helpdesk-panel"
             x-data="{ toast: null }"
             x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)"
         >

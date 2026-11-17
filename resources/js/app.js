@@ -1,4 +1,5 @@
 import { startTour, startModuleTour, resumeTourIfActive } from './tour';
+import { startAiTour } from './ai-tour';
 
 // Exposed globally so the topbar's plain onclick="startTour()" (and each
 // module page's "Tutorial Modul Ini" button) can reach these without needing
@@ -7,6 +8,7 @@ import { startTour, startModuleTour, resumeTourIfActive } from './tour';
 // executes — check readyState instead of blindly listening.
 window.startTour = startTour;
 window.startModuleTour = startModuleTour;
+window.startAiTour = startAiTour;
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', resumeTourIfActive);
 } else {

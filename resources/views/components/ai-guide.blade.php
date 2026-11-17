@@ -88,8 +88,16 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-end border-t border-slate-200 px-6 py-3">
+                    <div class="flex flex-wrap justify-end gap-2 border-t border-slate-200 px-6 py-3">
                         <button type="button" @click="open = false" class="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-slate-50">Tutup</button>
+                        <button
+                            type="button"
+                            @click="open = false; setTimeout(() => window.startAiTour && window.startAiTour('{{ $feature }}'), 250)"
+                            class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-800"
+                        >
+                            <x-heroicon-o-play class="h-4 w-4" />
+                            Mulai tutorial
+                        </button>
                     </div>
                 </div>
             </div>

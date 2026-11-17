@@ -199,3 +199,33 @@
 
 .dark .bg-muda-100 { background-color: #173a5c; }
 .dark .text-muda-600 { color: #8cc2ee; }
+
+/* Popover tutorial (driver.js), dipakai tur modul dan tur fitur AI. */
+.driver-popover.bssn-tour-popover {
+    max-width: min(340px, calc(100vw - 32px));
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-family: var(--font-sans);
+    color: #1f2937;
+}
+.bssn-tour-popover .driver-popover-title { font-size: 15px; font-weight: 600; line-height: 1.35; }
+.bssn-tour-popover .driver-popover-description { margin-top: 6px; font-size: 14px; line-height: 1.55; color: #374151; }
+.bssn-tour-popover .driver-popover-progress-text { font-size: 12px; color: #6b7280; }
+.bssn-tour-popover .driver-popover-footer { margin-top: 14px; }
+.bssn-tour-popover .driver-popover-footer button {
+    border-radius: 9999px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    text-shadow: none;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #374151;
+}
+.bssn-tour-popover .driver-popover-footer .driver-popover-next-btn {
+    border-color: var(--color-brand-700);
+    background: var(--color-brand-700);
+    color: #fff;
+}
+.bssn-tour-popover .driver-popover-close-btn { color: #9ca3af; }
+.bssn-tour-note { display: block; margin-top: 10px; color: #b45309; }
