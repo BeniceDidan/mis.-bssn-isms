@@ -6,6 +6,7 @@ use App\Livewire\Assistant;
 use App\Livewire\Services\ServiceTicketFormModal;
 use App\Models\AiLog;
 use App\Models\Asset;
+use App\Models\EvidenceDocument;
 use App\Models\KnowledgeAsset;
 use App\Models\Risk;
 use App\Models\Service;
@@ -16,6 +17,7 @@ use App\Services\Ai\TicketTriage;
 use App\Support\IntegrationMap;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -95,19 +97,22 @@ class AppAssistantTest extends TestCase
         $this->assertSame(['TIK-A · Portal diretas'], array_column($result['links'], 'title'));
     }
 
-    public function test_codes_invented_by_the_llm_are_never_shown(): void
+    public function test_llm_answers_with_invented_codes_or_numbers_are_discarded(): void
     {
-        $this->risk('RSK-UJI-0001', 'Peretasan website resmi', 'kritis');
         config(['ai.provider' => 'ollama']);
         Http::fake([
             '*/api/tags' => Http::response(['models' => [['name' => 'llama3.2:latest']]]),
-            '*/api/generate' => Http::response(['response' => 'Risiko kritis: RSK-UJI-0001 dan RSK-UJI-0099.']),
+            '*/api/generate' => Http::response(['response' => 'Ada 3 peran, misalnya RSK-UJI-0099.']),
         ]);
 
-        $result = (new AppAssistant())->answer('Cari risiko peretasan');
+        // Bukan pertanyaan "cara", jadi panduan dirangkai LLM; jawaban LLM
+        // yang mengarang angka & kode dibuang dan diganti teks panduan.
+        $result = (new AppAssistant())->answer('peran admin dan user');
 
         $this->assertStringNotContainsString('RSK-UJI-0099', $result['answer']);
-        $this->assertStringContainsString('RSK-UJI-0001', $result['answer']);
+        $this->assertStringContainsString('Setiap admin memegang satu modul', $result['answer']);
+        $this->assertTrue(AppAssistant::invents('Ada 3 risiko.', 'Risiko: 2'));
+        $this->assertFalse(AppAssistant::invents("1. Klik Simpan.\n2. Tunggu 5 hari kerja.", 'selesai dalam 5 hari kerja'));
     }
 
     public function test_answer_text_from_the_llm_is_tidied(): void
@@ -173,5 +178,93 @@ class AppAssistantTest extends TestCase
         $this->assertStringContainsString('Analisis AI tiket', $layanan);
         $this->assertStringContainsString('Evaluasi Bukti Dukung', $layanan);
         $this->assertStringContainsString('Asisten', collect(IntegrationMap::for('sdm')['flows'])->pluck('to')->implode(' | '));
+    }
+
+    public function test_plain_count_questions_work(): void
+    {
+        $this->risk('RSK-UJI-0001', 'Peretasan website resmi', 'kritis');
+
+        // "jumlah" sempat terpotong menjadi "jum" oleh aturan akhiran.
+        $this->assertStringStartsWith('Ada 1 risiko.', (new AppAssistant())->answer('Berapa jumlah risiko?')['answer']);
+    }
+
+    public function test_casual_and_english_questions_are_understood(): void
+    {
+        $service = Service::create(['name' => 'Portal Uji', 'verification_status' => 'tervalidasi', 'dynamic_data' => []]);
+        ServiceTicket::create(['service_id' => $service->id, 'legacy_code' => 'TIK-A', 'issue' => 'Portal lambat', 'priority' => 'P2', 'status' => 'diproses']);
+        ServiceTicket::create(['service_id' => $service->id, 'legacy_code' => 'TIK-B', 'issue' => 'Portal error', 'priority' => 'P2', 'status' => 'selesai']);
+        $this->risk('RSK-UJI-0001', 'Peretasan website resmi', 'kritis');
+        $this->risk('RSK-UJI-0002', 'Server rusak', 'kritis');
+
+        $this->assertStringStartsWith('Ada 1 tiket helpdesk prioritas P2 yang masih terbuka.', (new AppAssistant())->answer('brp tiket p2 yg blm kelar')['answer']);
+        $this->assertStringStartsWith('Ada 2 risiko level kritis.', (new AppAssistant())->answer('How many critical risks are there?')['answer']);
+    }
+
+    public function test_relations_between_modules(): void
+    {
+        $server = Asset::create(['asset_code' => 'AST-UJI-0001', 'category' => 'perangkat_keras', 'sub_classification' => 'Server', 'name' => 'Server Basis Data Terpusat', 'criticality_level' => 'tinggi', 'verification_status' => 'tervalidasi', 'dynamic_data' => []]);
+        $firewall = Asset::create(['asset_code' => 'AST-UJI-0002', 'category' => 'perangkat_keras', 'sub_classification' => 'Firewall', 'name' => 'Firewall Perimeter Pusat Data', 'criticality_level' => 'tinggi', 'verification_status' => 'tervalidasi', 'dynamic_data' => []]);
+        $portal = Service::create(['name' => 'Layanan Website Resmi', 'verification_status' => 'tervalidasi', 'dynamic_data' => []]);
+        $portal->assets()->sync([$server->id]);
+        $this->risk('RSK-UJI-0001', 'Kegagalan disk server', 'tinggi', $server->id);
+        $this->risk('RSK-UJI-0002', 'Aturan firewall terbuka', 'sedang', $firewall->id);
+        ServiceTicket::create(['service_id' => $portal->id, 'legacy_code' => 'TIK-A', 'issue' => 'Website tidak bisa dibuka', 'priority' => 'P2', 'status' => 'baru']);
+
+        $a = new AppAssistant();
+        $risks = $a->answer('Risiko apa saja pada aset Server Basis Data Terpusat?');
+        $this->assertStringStartsWith('Ada 1 risiko pada aset AST-UJI-0001 Server Basis Data Terpusat.', $risks['answer']);
+        $this->assertSame(['RSK-UJI-0001 · Kegagalan disk server'], array_column($risks['links'], 'title'));
+
+        $this->assertSame(
+            'Tidak ada layanan yang bergantung pada aset AST-UJI-0002 Firewall Perimeter Pusat Data.',
+            $a->answer('Layanan apa yang bergantung pada Firewall Perimeter?')['answer']
+        );
+        // 2 tiket: satu dari helpdesk, satu dibuat otomatis oleh risiko Tinggi pada aset layanan.
+        $this->assertMatchesRegularExpression('/^Ada 2 tiket helpdesk untuk LYN-\S+ Layanan Website Resmi\./u', $a->answer('Tiket untuk layanan website resmi')['answer']);
+    }
+
+    public function test_status_decision_and_time_filters(): void
+    {
+        Storage::fake('local');
+        EvidenceDocument::create(['module_key' => 'risiko', 'target_level' => 2, 'title' => 'Pedoman A', 'file_path' => 'a.pdf', 'original_name' => 'a.pdf']);
+        EvidenceDocument::create(['module_key' => 'aset', 'target_level' => 2, 'title' => 'Inventaris B', 'file_path' => 'b.pdf', 'original_name' => 'b.pdf', 'reviewer_decision' => 'diterima']);
+        $service = Service::create(['name' => 'Portal Uji', 'verification_status' => 'tervalidasi', 'dynamic_data' => []]);
+        ServiceTicket::create(['service_id' => $service->id, 'legacy_code' => 'TIK-LAMA', 'issue' => 'Lama', 'reported_at' => now()->subMonths(2)]);
+        ServiceTicket::create(['service_id' => $service->id, 'legacy_code' => 'TIK-BARU', 'issue' => 'Baru masuk', 'reported_at' => now()]);
+
+        $a = new AppAssistant();
+        $this->assertStringStartsWith('Ada 1 bukti dukung yang belum diputuskan admin.', $a->answer('Bukti dukung yang belum diputuskan')['answer']);
+        $this->assertStringStartsWith('Ada 1 bukti dukung untuk Manajemen Aset.', $a->answer('Bukti dukung manajemen aset')['answer']);
+        $week = $a->answer('Tiket yang masuk minggu ini');
+        $this->assertStringStartsWith('Ada 1 tiket helpdesk yang masuk minggu ini', $week['answer']);
+        $this->assertSame(['TIK-BARU · Baru masuk'], array_column($week['links'], 'title'));
+    }
+
+    public function test_change_history_and_module_admins(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin', 'admin_module' => 'risiko', 'name' => 'Bu Admin Risiko']);
+        $this->actingAs($admin);
+        $risk = $this->risk('RSK-UJI-0001', 'Peretasan website resmi', 'sedang');
+        $risk->update(['risk_owner' => 'Kabid Aptika']);
+
+        $history = (new AppAssistant())->answer('Siapa yang terakhir mengubah risiko RSK-UJI-0001?');
+        $this->assertStringContainsString('diubah oleh Bu Admin Risiko', $history['answer']);
+        $this->assertStringContainsString('risk_owner', $history['answer']);
+
+        $this->assertStringContainsString('Bu Admin Risiko', (new AppAssistant())->answer('Siapa admin modul risiko?')['answer']);
+    }
+
+    public function test_questions_outside_the_app_are_refused_without_asking_the_llm(): void
+    {
+        config(['ai.provider' => 'ollama']);
+        Http::fake([
+            '*/api/tags' => Http::response(['models' => [['name' => 'llama3.2:latest']]]),
+            '*/api/generate' => Http::response(['response' => 'Cuaca hari ini hujan lebat, suhu 22 derajat.']),
+        ]);
+
+        $result = (new AppAssistant())->answer('Cuaca hari ini gimana?');
+
+        $this->assertStringStartsWith('Maaf, saya hanya bisa menjawab hal tentang aplikasi BSSN ISMS', $result['answer']);
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), '/api/generate'));
     }
 }

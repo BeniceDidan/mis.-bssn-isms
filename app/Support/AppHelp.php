@@ -68,7 +68,7 @@ class AppHelp
         [
             'title' => 'Mengubah, mengarsipkan, dan memulihkan data',
             'text' => 'Setiap baris di tabel modul punya tombol Lihat Detail, Ubah, dan Arsipkan. Arsipkan tidak menghapus permanen. Centang Tampilkan Arsip di atas tabel untuk melihat data yang diarsipkan, lalu klik Pulihkan untuk mengembalikannya.',
-            'words' => 'ubah mengubah edit ganti perbarui update hapus menghapus delete arsip arsipkan pulihkan kembalikan restore detail',
+            'words' => 'ubah mengubah ganti perbarui update hapus menghapus arsip arsipkan mengarsipkan diarsipkan pulihkan memulihkan kembalikan restore detail salah input keliru',
             'route' => null,
         ],
         [

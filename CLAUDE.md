@@ -392,25 +392,37 @@ Aturan yang sengaja dipegang:
   ("Terkait di modul lain"); risiko teratas mengisi "Risiko TIK Terkait" bila
   kosong. Pop-out "Titik Integrasi" tiap modul memuat alur AI dari
   `IntegrationMap::AI_FLOWS` + `SHARED_AI_FLOWS`.
-- **Asisten** (`AppAssistant`): bahan jawaban dikumpulkan kode dari panduan
+- **Asisten** (`AppAssistant`). Bahan jawaban dikumpulkan kode dari panduan
   aplikasi (`AppHelp`, ditambah otomatis dari `AiGuide` dan `IntegrationMap`),
-  data 11 jenis catatan modul (hitungan + baris dengan saringan level,
-  prioritas P1–P4, status terbuka, menunggu verifikasi), berkas (PDF
-  pengetahuan + bukti dukung), dan potongan isi dokumen. Aturan yang
-  dipegang, semuanya dari uji 18 Nov 2026 dengan llama3.2:
-  - hitungan/daftar bersaring dijawab langsung dari basis data (model
-    sempat menambah kode risiko yang tidak ada);
-  - pertanyaan cara pakai yang cocok kuat dengan panduan dijawab dengan teks
-    panduan apa adanya (model sempat memparafrasekan rumus skor jadi salah);
-  - jawaban LLM yang menyebut kode data di luar bahan dibuang
-    (`mentionsUnknownCode`), tautan selalu dibuat kode, bukan LLM;
-  - aturan prompt disesuaikan jenis pertanyaan (model kecil menjalankan semua
-    aturan yang diberikan).
-  Vektor panduan disimpan di cache (`ai.apphelp.vectors.*`, berganti otomatis
-  bila teks berubah). Percakapan disimpan di sesi (20 pesan), dibatasi 20
-  pertanyaan/menit/pengguna, tercatat di `ai_logs` (fitur `asisten`). Tombol
-  disembunyikan lewat CSS `body:has(...)` selama modal terbuka. Bila
-  mengubah label tombol atau alur, perbarui `AppHelp` juga.
+  data 11 jenis catatan modul, riwayat (`activity_logs`), admin modul, berkas
+  (PDF pengetahuan + bukti dukung), dan potongan isi dokumen. Pertanyaan
+  dinormalkan dulu (`normalize()`: bahasa santai "brp/yg/blm kelar" dan
+  bahasa Inggris dasar → baku). Saringan yang dikenali: level, prioritas
+  P1–P4, terbuka, status per modul (nilai diambil dari basis data),
+  keputusan bukti dukung, verifikasi, waktu ("minggu ini", "bulan November",
+  WIB), dan relasi (risiko pada aset X, layanan yang bergantung pada aset X,
+  tiket untuk layanan X, aset yang menopang layanan X; jangkar harus cocok
+  ≥60% kata). Aturan yang dipegang, semuanya dari uji 29 pertanyaan
+  18 Nov 2026 dengan llama3.2 (sebelum perbaikan: separuh salah/mengarang):
+  - data, hitungan, relasi, riwayat, dan admin dijawab langsung dari basis
+    data dengan kalimat templat (model sempat mengarang kode risiko dan nama
+    layanan);
+  - pertanyaan cara pakai dijawab dengan teks panduan apa adanya (model
+    sempat memparafrasekan rumus skor jadi salah);
+  - permintaan berkas dijawab daftar berkas, tanpa LLM;
+  - LLM hanya untuk isi dokumen: diberi potongan teratas saja (selisih
+    ≤0,04), jawabannya dibuang bila menyebut kode/angka yang tidak ada di
+    bahan (`invents()`), dicoba sekali lagi bila menyerah padahal potongannya
+    sangat cocok (≥0,6), dan selalu disertai kutipan kalimat asli dokumen
+    (`quote()`, dipilih dengan bge-m3) — model sempat membaca SOP backup
+    "penuh harian + inkremental tiap 4 jam" sebagai "2 kali sehari";
+  - pertanyaan tanpa bahan sama sekali (mis. cuaca) ditolak tanpa LLM.
+  Uji ulang 29 pertanyaan: semua benar. Batasan: model 3B masih bisa salah
+  baca dokumen, makanya kutipan wajib tampil. Vektor panduan disimpan di
+  cache (`ai.apphelp.vectors.*`). Percakapan disimpan di sesi (20 pesan),
+  dibatasi 20 pertanyaan/menit/pengguna, tercatat di `ai_logs` (fitur
+  `asisten`). Tombol disembunyikan lewat CSS `body:has(...)` selama modal
+  terbuka. Bila mengubah label tombol atau alur, perbarui `AppHelp` juga.
 - Pencarian Tiket Helpdesk kini mengenali nomor tiket tampilan `TKT-000123`
   (id), dipakai tautan Asisten.
 
