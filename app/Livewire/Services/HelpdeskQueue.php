@@ -48,7 +48,9 @@ class HelpdeskQueue extends Component
             ->when($this->search, fn ($q) => $q->where(fn ($w) => $w
                 ->where('issue', 'ilike', "%{$this->search}%")
                 ->orWhere('requester_name', 'ilike', "%{$this->search}%")
-                ->orWhere('legacy_code', 'ilike', "%{$this->search}%")))
+                ->orWhere('legacy_code', 'ilike', "%{$this->search}%")
+                // Nomor tiket yang tampil di tabel (TKT-000123) adalah id, bukan kolom.
+                ->when(preg_match('/^\s*tkt-?0*(\d{1,9})\s*$/i', $this->search, $m), fn ($x) => $x->orWhere('id', (int) $m[1]))))
             ->orderByRaw('priority IS NULL, priority ASC')
             ->orderByDesc('reported_at')
             ->orderByDesc('id')

@@ -329,6 +329,7 @@ Helpdesk. Ketiganya:
 | Evaluasi Bukti Dukung | menu samping "Evaluasi Bukti Dukung" (`/bukti-dukung`) | `App\Services\Ai\EvidenceAssessor`, `PdfReader` | `config/bukti_dukung.php` (rubrik, **DRAF**) |
 | Tanya Dokumen + tag | Manajemen Pengetahuan → tab "Tanya Dokumen" | `KnowledgeIndexer`, `KnowledgeSearch`, job `IndexKnowledgeDocument`, perintah `pengetahuan:indeks` | kosakata tag di `KnowledgeIndexer::VOCABULARY` |
 | Triase Helpdesk | Manajemen Layanan → tab "Tiket Helpdesk"; tombol "Analisis AI" di form tiket | `TicketTriage` | `config/helpdesk.php` (kategori, matriks prioritas, target waktu — DRAF) |
+| Asisten (chatbot) | tombol "Asisten" di pojok kanan bawah semua halaman | `AppAssistant`, `App\Support\AppHelp`, `App\Livewire\Assistant` | teks panduan di `AppHelp` (label tombol disalin persis) |
 
 Aturan yang sengaja dipegang:
 
@@ -378,6 +379,40 @@ Aturan yang sengaja dipegang:
   selesai sebelum menjelaskan hasil AI. Elemen yang disorot ditandai
   `data-tour="..."`; kalau mengubah tampilan tiga fitur AI, pertahankan
   atribut itu (dijaga `test_ai_pages_carry_the_tutorial_markers`).
+- **Asal skor bukti dukung** tampil di panel detail (permintaan Kominfo 18 Nov
+  2026, "skor 86 itu dari mana?"): `EvidenceDocument::scoreBreakdown()` →
+  "6 dari 7 unsur", bagian "Asal skor dan level" menulis rumusnya, kriteria
+  tiap level, kata yang ditemukan + halamannya, dan kata kunci yang tidak
+  ditemukan (`keywordsFor()`). Skor = unsur Level 1 s.d. level klaim yang
+  ditemukan ÷ semua unsur Level 1 s.d. level klaim × 100.
+- **Titik integrasi AI ke modul lain.** `TicketTriage::related()` menampilkan
+  aset layanan (Manajemen Aset), risiko terbuka pada aset itu (Manajemen
+  Risiko), dan SOP terdekat (Manajemen Pengetahuan, lewat
+  `KnowledgeSearch::retrieve`, ambang `SOP_MIN_SCORE` 0,45) di form tiket
+  ("Terkait di modul lain"); risiko teratas mengisi "Risiko TIK Terkait" bila
+  kosong. Pop-out "Titik Integrasi" tiap modul memuat alur AI dari
+  `IntegrationMap::AI_FLOWS` + `SHARED_AI_FLOWS`.
+- **Asisten** (`AppAssistant`): bahan jawaban dikumpulkan kode dari panduan
+  aplikasi (`AppHelp`, ditambah otomatis dari `AiGuide` dan `IntegrationMap`),
+  data 11 jenis catatan modul (hitungan + baris dengan saringan level,
+  prioritas P1–P4, status terbuka, menunggu verifikasi), berkas (PDF
+  pengetahuan + bukti dukung), dan potongan isi dokumen. Aturan yang
+  dipegang, semuanya dari uji 18 Nov 2026 dengan llama3.2:
+  - hitungan/daftar bersaring dijawab langsung dari basis data (model
+    sempat menambah kode risiko yang tidak ada);
+  - pertanyaan cara pakai yang cocok kuat dengan panduan dijawab dengan teks
+    panduan apa adanya (model sempat memparafrasekan rumus skor jadi salah);
+  - jawaban LLM yang menyebut kode data di luar bahan dibuang
+    (`mentionsUnknownCode`), tautan selalu dibuat kode, bukan LLM;
+  - aturan prompt disesuaikan jenis pertanyaan (model kecil menjalankan semua
+    aturan yang diberikan).
+  Vektor panduan disimpan di cache (`ai.apphelp.vectors.*`, berganti otomatis
+  bila teks berubah). Percakapan disimpan di sesi (20 pesan), dibatasi 20
+  pertanyaan/menit/pengguna, tercatat di `ai_logs` (fitur `asisten`). Tombol
+  disembunyikan lewat CSS `body:has(...)` selama modal terbuka. Bila
+  mengubah label tombol atau alur, perbarui `AppHelp` juga.
+- Pencarian Tiket Helpdesk kini mengenali nomor tiket tampilan `TKT-000123`
+  (id), dipakai tautan Asisten.
 
 **Dua Ollama di PC ini.** Port 11434 dilayani Ollama di **WSL** (`llama3.2`
 dan `bge-m3`, yang terakhir terpasang 10 Nov). Ollama Windows

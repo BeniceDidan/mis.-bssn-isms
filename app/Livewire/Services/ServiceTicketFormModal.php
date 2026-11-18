@@ -173,6 +173,13 @@ class ServiceTicketFormModal extends Component
             }
         }
         $this->triage = $result['triage'];
+
+        // Risiko teratas pada aset layanan ini mengisi "Risiko TIK Terkait"
+        // bila petugas belum mengisinya sendiri.
+        $topRisk = $result['triage']['related']['risks'][0] ?? null;
+        if ($topRisk && blank($this->related_risk_text)) {
+            $this->related_risk_text = $topRisk['code'];
+        }
     }
 
     public function close(): void

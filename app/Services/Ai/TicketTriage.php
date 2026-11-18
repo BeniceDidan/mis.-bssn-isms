@@ -3,8 +3,12 @@
 namespace App\Services\Ai;
 
 use App\Models\AiLog;
+use App\Models\Risk;
 use App\Models\Service;
+use BackedEnum;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * Triase tiket helpdesk: kategori, dampak, urgensi, prioritas, draf
@@ -21,6 +25,14 @@ use Illuminate\Support\Str;
 class TicketTriage
 {
     private const RANK = ['rendah' => 1, 'sedang' => 2, 'tinggi' => 3, 'kritis' => 4];
+
+    /**
+     * SOP hanya disarankan bila potongannya cukup mirip dengan isi laporan.
+     * Isi tiket biasanya kalimat panjang, jadi kemiripan bge-m3 dengan SOP
+     * yang tepat pun sering hanya 0,45-0,5 (uji 18 Nov 2026: laporan judi
+     * online vs Prosedur Penanganan Insiden Siber = 0,486).
+     */
+    private const SOP_MIN_SCORE = 0.45;
 
     public function __construct(private LocalLlm $llm = new LocalLlm())
     {
@@ -71,6 +83,7 @@ class TicketTriage
             'steps' => $categoryDef['steps'],
             'target_response' => $target['response'],
             'target_resolution' => $target['resolution'],
+            'related' => $this->related($issue, $service),
             'at' => now()->toIso8601String(),
         ];
 
@@ -90,6 +103,61 @@ class TicketTriage
             'priority' => $priority,
             'draft_reply' => $reply,
             'triage' => $triage,
+        ];
+    }
+
+    /**
+     * Titik integrasi ke modul lain, supaya petugas helpdesk tidak mencari
+     * sendiri: aset yang menopang layanan (Manajemen Aset), risiko yang sudah
+     * terdaftar pada aset itu (Manajemen Risiko), dan SOP yang paling dekat
+     * dengan isi laporan (Manajemen Pengetahuan, lewat pencarian Tanya
+     * Dokumen). Hanya membaca; tidak ada data yang diubah.
+     *
+     * @return array{assets: array<int, array>, risks: array<int, array>, documents: array<int, array>}
+     */
+    public function related(string $issue, ?Service $service = null): array
+    {
+        $value = fn ($level) => $level instanceof BackedEnum ? $level->value : $level;
+        $assets = $service ? $service->assets : collect();
+
+        $risks = $assets->isEmpty() ? collect() : Risk::query()
+            ->whereIn('asset_id', $assets->pluck('id'))
+            ->where(fn ($q) => $q->whereNull('status')->orWhere('status', '!=', 'closed'))
+            ->get()
+            ->sortByDesc(fn ($risk) => self::RANK[$value($risk->risk_level)] ?? 0)
+            ->take(3);
+
+        try {
+            $hits = (new KnowledgeSearch($this->llm))->retrieve($issue, 3)
+                ->filter(fn ($hit) => $hit['score'] >= self::SOP_MIN_SCORE);
+        } catch (Throwable) {
+            $hits = collect();
+        }
+
+        return [
+            'assets' => $assets
+                ->sortByDesc(fn ($asset) => self::RANK[$value($asset->criticality_level)] ?? 0)
+                ->take(4)
+                ->map(fn ($asset) => [
+                    'code' => $asset->asset_code,
+                    'name' => $asset->name,
+                    'level' => $value($asset->criticality_level),
+                    'url' => route('assets.index', ['search' => $asset->asset_code]),
+                ])->values()->all(),
+            'risks' => $risks->map(fn ($risk) => [
+                'code' => $risk->risk_code,
+                'title' => $risk->title,
+                'level' => $value($risk->risk_level),
+                'url' => route('risks.index', ['search' => $risk->risk_code]),
+            ])->values()->all(),
+            'documents' => $hits->unique(fn ($hit) => $hit['chunk']->knowledge_asset_id)->take(2)->map(fn ($hit) => [
+                'code' => $hit['chunk']->knowledgeAsset->record_code,
+                'title' => $hit['chunk']->knowledgeAsset->title,
+                'page' => $hit['chunk']->page_number,
+                'url' => $hit['chunk']->knowledgeAsset->document_path
+                    ? Storage::disk('public')->url($hit['chunk']->knowledgeAsset->document_path) . ($hit['chunk']->page_number ? '#page=' . $hit['chunk']->page_number : '')
+                    : route('knowledge.index', ['search' => $hit['chunk']->knowledgeAsset->record_code, 'tab' => 'aset']),
+            ])->values()->all(),
         ];
     }
 

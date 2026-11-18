@@ -233,6 +233,63 @@ class IntegrationMap
     /** @return array<string, mixed>|null */
     public static function for(?string $key): ?array
     {
-        return $key ? (self::MAP[$key] ?? null) : null;
+        $map = $key ? (self::MAP[$key] ?? null) : null;
+        if ($map === null) {
+            return null;
+        }
+
+        $map['flows'] = array_merge($map['flows'], self::AI_FLOWS[$key] ?? [], self::SHARED_AI_FLOWS);
+
+        return $map;
     }
+
+    /**
+     * Titik integrasi fitur AI per modul. Mencerminkan kode:
+     *   - kritikalitas aset, risiko aset, SOP -> App\Services\Ai\TicketTriage::ruleBased()/related()
+     *   - PDF pengetahuan sebagai sumber      -> KnowledgeIndexer, KnowledgeSearch, AppAssistant
+     */
+    private const AI_FLOWS = [
+        'pengetahuan' => [
+            [
+                'type' => 'auto',
+                'to' => 'Tanya Dokumen, Analisis AI tiket, Asisten',
+                'text' => 'PDF yang diunggah di Aset Pengetahuan otomatis dipotong dan diberi vektor makna. Isinya menjadi sumber jawaban Tanya Dokumen, saran SOP pada Analisis AI tiket helpdesk, dan jawaban Asisten.',
+            ],
+        ],
+        'aset' => [
+            [
+                'type' => 'auto',
+                'to' => 'Analisis AI tiket helpdesk',
+                'text' => 'Kalau layanan yang dilaporkan bertumpu pada aset berkritikalitas Tinggi atau Kritis, dampak tiket gangguan dinaikkan satu tingkat. Aset itu juga ditampilkan di hasil analisis.',
+            ],
+        ],
+        'risiko' => [
+            [
+                'type' => 'auto',
+                'to' => 'Analisis AI tiket helpdesk',
+                'text' => 'Risiko yang terdaftar pada aset sebuah layanan ditampilkan di hasil Analisis AI tiket layanan itu. Risiko dengan level tertinggi otomatis mengisi kolom Risiko TIK Terkait.',
+            ],
+        ],
+        'layanan' => [
+            [
+                'type' => 'auto',
+                'to' => 'Aset, Risiko, dan Pengetahuan (Analisis AI tiket)',
+                'text' => 'Analisis AI tiket membaca aset layanan, risiko pada aset itu, dan SOP di Manajemen Pengetahuan, lalu menyarankan kategori, prioritas, langkah awal, dan draf balasan.',
+            ],
+        ],
+    ];
+
+    /** Berlaku untuk kedelapan modul. */
+    private const SHARED_AI_FLOWS = [
+        [
+            'type' => 'manual',
+            'to' => 'Evaluasi Bukti Dukung',
+            'text' => 'Bukti dukung untuk modul ini diunggah dan dinilai di menu Evaluasi Bukti Dukung. Keputusan akhirnya hanya bisa diambil admin modul ini.',
+        ],
+        [
+            'type' => 'auto',
+            'to' => 'Asisten',
+            'text' => 'Asisten di pojok kanan bawah bisa mencari dan menghitung data modul ini, misalnya "daftar risiko kritis" atau "berapa aset kritis".',
+        ],
+    ];
 }

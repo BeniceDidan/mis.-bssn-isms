@@ -52,6 +52,32 @@ class EvidenceAssessorTest extends TestCase
         Storage::disk('local')->assertExists($record->file_path);
     }
 
+    public function test_score_origin_is_shown_as_found_out_of_total_elements(): void
+    {
+        Storage::fake('local');
+        $this->actingAs(User::factory()->create(['role' => 'user']));
+
+        Livewire::test(EvidenceUploadModal::class)
+            ->set('module_key', 'risiko')
+            ->set('target_level', 3)
+            ->set('document', $this->pdfFor('pedoman-risiko'))
+            ->call('save');
+
+        $record = EvidenceDocument::firstOrFail();
+        $breakdown = $record->scoreBreakdown();
+
+        $this->assertSame(['found' => 6, 'total' => 7], $breakdown);
+        $this->assertSame(86, $record->score);
+
+        Livewire::test(EvidenceDetail::class)
+            ->call('open', $record->id)
+            ->assertSee('6 dari 7 unsur')
+            ->assertSee('Asal skor dan level')
+            ->assertSee('Skor 86 = 6 dari 7 unsur Level 1–3 ditemukan di PDF.')
+            ->assertSee('ditemukan kata')
+            ->assertSee('tidak ada kata:');
+    }
+
     public function test_complete_helpdesk_sop_meets_claimed_level(): void
     {
         $doc = DemoDocuments::evidence()['sop-helpdesk'];

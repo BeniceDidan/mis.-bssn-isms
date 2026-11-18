@@ -158,7 +158,7 @@ const TOURS = {
         {
             el: '[data-tour="evidence-summary"]',
             title: 'Hasil penilaian',
-            desc: '<b>Klaim</b> adalah level yang diajukan OPD. <b>Hasil</b> adalah level tertinggi yang semua unsurnya ditemukan. <b>Skor</b> adalah persentase unsur yang ditemukan sampai level yang diklaim.',
+            desc: '<b>Klaim</b> adalah level yang diajukan OPD. <b>Hasil</b> adalah level tertinggi yang semua unsurnya ditemukan. <b>Skor</b> adalah persentase unsur rubrik yang ditemukan sampai level yang diklaim, misalnya 6 dari 7 unsur = 86.',
         },
         {
             el: '[data-tour="evidence-missing"]',
@@ -174,8 +174,8 @@ const TOURS = {
         },
         {
             el: '[data-tour="evidence-details"]',
-            title: 'Rincian dan catatan AI',
-            desc: 'Buka <b>Rincian per level</b> untuk melihat centang tiap unsur. <b>Catatan AI</b> berisi ringkasan dari AI. AI tidak mengubah level atau skor.',
+            title: 'Asal skor dan catatan AI',
+            desc: 'Buka <b>Asal skor dan level</b> untuk melihat hitungan skornya, kriteria tiap level, dan kata yang ditemukan beserta halamannya. <b>Catatan AI</b> berisi ringkasan dari AI. AI tidak mengubah level atau skor.',
             optional: true,
             side: 'top',
         },
@@ -308,6 +308,12 @@ const TOURS = {
             el: '[data-tour="ticket-reasons"]',
             title: 'Alasan dan langkah awal',
             desc: 'Dari mana prioritas itu didapat, dan langkah pertama yang bisa dilakukan operator.',
+            optional: true,
+        },
+        {
+            el: '[data-tour="ticket-related"]',
+            title: 'Terkait di modul lain',
+            desc: 'Aset yang menopang layanan ini, risiko yang sudah terdaftar pada aset itu, dan SOP yang paling dekat dengan isi laporan. Risiko teratas otomatis mengisi kolom <b>Risiko TIK Terkait</b>.',
             optional: true,
         },
         {

@@ -229,3 +229,11 @@
 }
 .bssn-tour-popover .driver-popover-close-btn { color: #9ca3af; }
 .bssn-tour-note { display: block; margin-top: 10px; color: #b45309; }
+
+/* Tombol Asisten (livewire/assistant) disembunyikan selama ada modal atau
+   pop-out terbuka, supaya tidak menutupi tombol Simpan di pojok kanan bawah,
+   terutama di HP. Semua modal memakai lapisan "fixed inset-0 bg-slate-900/40"
+   yang disembunyikan Alpine dengan style display: none. */
+body:has(.fixed.inset-0.bg-slate-900\/40:not([style*="display: none"]):not([x-cloak])) .assistant-launcher {
+    display: none;
+}

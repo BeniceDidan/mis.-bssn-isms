@@ -45,7 +45,7 @@
         <div class="flex min-w-0 flex-1 flex-col">
             <x-layout.topbar />
 
-            <main class="flex-1 overflow-y-auto p-6">
+            <main class="flex-1 overflow-y-auto p-6 pb-24">
                 <div class="relative mx-auto max-w-screen-2xl space-y-6">
                     <div class="relative space-y-6">
                         @isset($slot)
@@ -61,6 +61,9 @@
 
     <x-confirm-sheet />
     <livewire:global-search />
+    @auth
+        <livewire:assistant />
+    @endauth
 
     @livewireScripts
     @stack('scripts')

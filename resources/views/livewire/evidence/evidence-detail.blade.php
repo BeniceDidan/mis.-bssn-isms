@@ -30,6 +30,7 @@
                     ->map(fn ($label, $key) => ['label' => $label, 'found' => $pengesahan[$key]['found']])
                     ->values()
                     ->push(['label' => 'TTE tertanam', 'found' => $pdf['digital_signature'] ?? false]);
+                $breakdown = $record->scoreBreakdown();
             @endphp
             <div
                 x-show="show"
@@ -61,6 +62,9 @@
                         <div>
                             <dt class="text-xs text-gray-500">Skor</dt>
                             <dd class="text-xl font-semibold text-gray-900">{{ $record->score }}</dd>
+                            @if (! $unreadable && $breakdown['total'] > 0)
+                                <dd class="text-xs text-gray-500">{{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur</dd>
+                            @endif
                         </div>
                     </dl>
 
@@ -96,13 +100,20 @@
                     <div class="space-y-3" data-tour="evidence-details">
                     @if ($levels && ! $unreadable)
                         <details class="group">
-                            <summary class="cursor-pointer text-sm font-medium text-brand-700">Rincian per level</summary>
+                            <summary class="cursor-pointer text-sm font-medium text-brand-700">Asal skor dan level</summary>
                             <div class="mt-3 space-y-3">
+                                <div class="rounded-lg bg-slate-50 px-3 py-2 text-sm text-gray-700">
+                                    <p>Skor {{ $record->score }} = {{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur Level 1–{{ $record->target_level }} ditemukan di PDF.</p>
+                                    <p>Hasil = level tertinggi yang semua unsurnya, sampai level itu, ditemukan.</p>
+                                </div>
                                 @foreach ($levels as $no => $level)
                                     @continue($no > max($record->target_level, $record->achieved_level))
                                     <div>
                                         <p class="text-sm font-medium text-gray-900">Level {{ $no }} &middot; {{ $level['name'] }}</p>
-                                        <ul class="mt-1 space-y-0.5">
+                                        @if (! empty($level['kriteria']))
+                                            <p class="text-xs text-gray-500">{{ $level['kriteria'] }}</p>
+                                        @endif
+                                        <ul class="mt-1 space-y-1">
                                             @foreach ($level['unsur'] as $unsur)
                                                 <li class="flex items-start gap-2 text-sm text-gray-600">
                                                     @if ($unsur['found'])
@@ -110,7 +121,14 @@
                                                     @else
                                                         <x-heroicon-o-x-mark class="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
                                                     @endif
-                                                    {{ $unsur['label'] }}
+                                                    <span>
+                                                        {{ $unsur['label'] }}
+                                                        @if ($unsur['found'])
+                                                            <span class="block text-xs text-gray-400">ditemukan kata "{{ $unsur['keyword'] }}"@if ($unsur['page']) di hal. {{ $unsur['page'] }}@endif</span>
+                                                        @elseif ($keywords = $record->keywordsFor($no, $unsur['label']))
+                                                            <span class="block text-xs text-gray-400">tidak ada kata: {{ implode(', ', array_slice($keywords, 0, 4)) }}</span>
+                                                        @endif
+                                                    </span>
                                                 </li>
                                             @endforeach
                                         </ul>

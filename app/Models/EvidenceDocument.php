@@ -89,4 +89,27 @@ class EvidenceDocument extends Model
     {
         return $this->achieved_level >= $this->target_level;
     }
+
+    /**
+     * Asal skor: skor = unsur rubrik Level 1 s.d. level klaim yang ditemukan
+     * dibagi semua unsur Level 1 s.d. level klaim (lihat EvidenceAssessor).
+     * Contoh pedoman risiko klaim Level 3: 6 dari 7 unsur = 86.
+     *
+     * @return array{found: int, total: int}
+     */
+    public function scoreBreakdown(): array
+    {
+        $unsur = collect($this->checks['levels'] ?? [])
+            ->filter(fn ($level, $no) => (int) $no <= $this->target_level)
+            ->flatMap(fn ($level) => $level['unsur'] ?? []);
+
+        return ['found' => $unsur->where('found', true)->count(), 'total' => $unsur->count()];
+    }
+
+    /** Kata kunci rubrik untuk sebuah unsur, supaya tampilan bisa menyebut apa yang dicari. */
+    public function keywordsFor(int|string $level, string $label): array
+    {
+        return collect(config("bukti_dukung.modules.{$this->module_key}.levels.{$level}.unsur", []))
+            ->firstWhere('label', $label)['keywords'] ?? [];
+    }
 }

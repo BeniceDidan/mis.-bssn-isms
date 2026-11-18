@@ -130,6 +130,37 @@
                             @endif
                             <p class="mt-2 text-gray-400">Saran dari {{ $triage['engine'] }}. Periksa sebelum dipakai.</p>
                         </div>
+
+                        @php $related = $triage['related'] ?? []; @endphp
+                        @if (! empty($related['assets']) || ! empty($related['risks']) || ! empty($related['documents']))
+                            <div class="space-y-1.5 rounded-lg bg-white px-3 py-2 text-xs text-gray-600" data-tour="ticket-related">
+                                <p class="font-medium text-gray-700">Terkait di modul lain</p>
+                                @if (! empty($related['assets']))
+                                    <p>
+                                        <span class="text-gray-400">Aset:</span>
+                                        @foreach ($related['assets'] as $item)
+                                            <a href="{{ $item['url'] }}" target="_blank" class="text-brand-700 hover:underline">{{ $item['code'] }} {{ $item['name'] }}</a>@if ($item['level']) <span class="text-gray-400">({{ $item['level'] }})</span>@endif{{ $loop->last ? '' : ',' }}
+                                        @endforeach
+                                    </p>
+                                @endif
+                                @if (! empty($related['risks']))
+                                    <p>
+                                        <span class="text-gray-400">Risiko:</span>
+                                        @foreach ($related['risks'] as $item)
+                                            <a href="{{ $item['url'] }}" target="_blank" class="text-brand-700 hover:underline">{{ $item['code'] }} {{ $item['title'] }}</a>@if ($item['level']) <span class="text-gray-400">({{ $item['level'] }})</span>@endif{{ $loop->last ? '' : ',' }}
+                                        @endforeach
+                                    </p>
+                                @endif
+                                @if (! empty($related['documents']))
+                                    <p>
+                                        <span class="text-gray-400">SOP:</span>
+                                        @foreach ($related['documents'] as $item)
+                                            <a href="{{ $item['url'] }}" target="_blank" class="text-brand-700 hover:underline">{{ $item['title'] }}@if ($item['page']) · hal. {{ $item['page'] }}@endif</a>{{ $loop->last ? '' : ',' }}
+                                        @endforeach
+                                    </p>
+                                @endif
+                            </div>
+                        @endif
                     @endif
 
                     <div data-tour="ticket-reply">
