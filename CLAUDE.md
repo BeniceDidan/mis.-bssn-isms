@@ -429,6 +429,9 @@ Aturan yang sengaja dipegang:
   tautan dalam satu daftar ringkas (4 teratas + "N lainnya"), kalimat baku
   singkat `AppAssistant::NOT_FOUND` / `OUT_OF_SCOPE`. Mesin tetap tercatat di
   `ai_logs`.
+  Satu-satunya penanda AI: "Dirangkum AI dari dokumen/panduan" (kunci `ai` di
+  hasil), hanya pada jawaban yang disusun LLM; jawaban dari basis data dan
+  teks panduan apa adanya tidak diberi label.
 - Pencarian Tiket Helpdesk kini mengenali nomor tiket tampilan `TKT-000123`
   (id), dipakai tautan Asisten.
 

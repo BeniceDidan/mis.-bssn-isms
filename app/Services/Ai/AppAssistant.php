@@ -278,6 +278,8 @@ class AppAssistant
                 'engine' => $this->llm->chatEngineName() . ' + data aplikasi',
                 'links' => $links,
                 'quote' => $this->quote($chunks, $flat, $answer, $queryVector),
+                // Penanda kecil di tampilan: jawaban ini disusun LLM, bukan diambil apa adanya.
+                'ai' => $chunks->isNotEmpty() ? 'dokumen' : 'panduan',
             ];
         }
 

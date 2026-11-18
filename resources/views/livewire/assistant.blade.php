@@ -94,6 +94,10 @@
                             <blockquote class="mt-2 border-l-2 border-brand-200 pl-3 text-[13px] leading-relaxed text-gray-600">{{ $message['quote'] }}</blockquote>
                         @endif
 
+                        @if (! empty($message['ai']))
+                            <p class="mt-1.5 text-[11px] text-gray-400" data-tour="assistant-ai-label">Dirangkum AI dari {{ $message['ai'] }}</p>
+                        @endif
+
                         @if ($links)
                             <ul class="mt-3 divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200">
                                 @foreach ($links as $link)

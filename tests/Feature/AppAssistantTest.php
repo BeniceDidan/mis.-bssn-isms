@@ -124,6 +124,27 @@ class AppAssistantTest extends TestCase
         $this->assertSame(AppAssistant::NOT_FOUND, AppAssistant::tidy('Maaf, saya belum menemukan informasinya di aplikasi ini. Silakan hubungi admin.'));
     }
 
+    public function test_only_answers_written_by_the_llm_carry_the_ai_label(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'user']));
+        $this->risk('RSK-UJI-0001', 'Peretasan website resmi', 'kritis');
+        config(['ai.provider' => 'ollama']);
+        Http::fake([
+            '*/api/tags' => Http::response(['models' => [['name' => 'llama3.2:latest']]]),
+            '*/api/generate' => Http::response(['response' => 'Admin memverifikasi data modulnya, user boleh menambah dan mengubah data.']),
+        ]);
+
+        $summary = (new AppAssistant())->answer('peran admin dan user');
+        $this->assertSame('panduan', $summary['ai']);
+        $this->assertArrayNotHasKey('ai', (new AppAssistant())->answer('Berapa risiko kritis?'));
+
+        Livewire::test(Assistant::class)
+            ->call('send', 'peran admin dan user')
+            ->assertSee('Dirangkum AI dari panduan')
+            ->call('send', 'Berapa risiko kritis?')
+            ->assertSeeHtmlInOrder(['Dirangkum AI dari panduan', 'Ada 1 risiko level kritis.']);
+    }
+
     public function test_widget_keeps_the_conversation_across_pages_and_can_be_cleared(): void
     {
         $this->actingAs(User::factory()->create(['role' => 'user']));
