@@ -423,6 +423,12 @@ Aturan yang sengaja dipegang:
   dibatasi 20 pertanyaan/menit/pengguna, tercatat di `ai_logs` (fitur
   `asisten`). Tombol disembunyikan lewat CSS `body:has(...)` selama modal
   terbuka. Bila mengubah label tombol atau alur, perbarui `AppHelp` juga.
+  Tampilan (permintaan pengguna 18 Nov 2026, kurangi "AI slop"): tanpa label
+  mesin, tanpa "periksa kembali", tanpa kalimat pembuka; jawaban teks polos,
+  kutipan dokumen sebagai blok bergaris tepi (`quote` dikembalikan terpisah),
+  tautan dalam satu daftar ringkas (4 teratas + "N lainnya"), kalimat baku
+  singkat `AppAssistant::NOT_FOUND` / `OUT_OF_SCOPE`. Mesin tetap tercatat di
+  `ai_logs`.
 - Pencarian Tiket Helpdesk kini mengenali nomor tiket tampilan `TKT-000123`
   (id), dipakai tautan Asisten.
 

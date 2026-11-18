@@ -57,7 +57,7 @@ class AppAssistantTest extends TestCase
 
         $result = (new AppAssistant())->answer('Berapa risiko yang levelnya kritis?');
 
-        $this->assertSame('Ada 2 risiko level kritis. Daftarnya ada di bawah.', $result['answer']);
+        $this->assertSame('Ada 2 risiko level kritis.', $result['answer']);
         $this->assertSame('Hitungan langsung dari basis data', $result['engine']);
         $titles = implode(' | ', array_column($result['links'], 'title'));
         $this->assertStringContainsString('RSK-UJI-0001', $titles);
@@ -121,7 +121,7 @@ class AppAssistantTest extends TestCase
             "Langkahnya:\n• Klik Profil.",
             AppAssistant::tidy("**Langkahnya:**\n\n* Klik Profil. (https://contoh.go.id/profil)")
         );
-        $this->assertStringStartsWith('Maaf, saya belum menemukan', AppAssistant::tidy('Maaf, saya belum menemukan informasinya di aplikasi ini. Silakan hubungi admin.'));
+        $this->assertSame(AppAssistant::NOT_FOUND, AppAssistant::tidy('Maaf, saya belum menemukan informasinya di aplikasi ini. Silakan hubungi admin.'));
     }
 
     public function test_widget_keeps_the_conversation_across_pages_and_can_be_cleared(): void
@@ -264,7 +264,7 @@ class AppAssistantTest extends TestCase
 
         $result = (new AppAssistant())->answer('Cuaca hari ini gimana?');
 
-        $this->assertStringStartsWith('Maaf, saya hanya bisa menjawab hal tentang aplikasi BSSN ISMS', $result['answer']);
+        $this->assertSame(AppAssistant::OUT_OF_SCOPE, $result['answer']);
         Http::assertNotSent(fn ($request) => str_contains($request->url(), '/api/generate'));
     }
 }

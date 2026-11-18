@@ -93,6 +93,14 @@ class AppAssistant
 
     private const TIMEZONE = 'Asia/Jakarta';
 
+    /** Kalimat jawaban baku (dibuat singkat; teks penjelas panjang dihapus atas permintaan pengguna 18 Nov 2026). */
+    public const NOT_FOUND = 'Maaf, informasinya belum ditemukan di aplikasi ini.';
+
+    public const OUT_OF_SCOPE = 'Maaf, saya hanya bisa menjawab pertanyaan seputar aplikasi ini.';
+
+    /** Kalimat yang diminta dari LLM bila bahan tidak memuat jawaban (dipetakan ke NOT_FOUND). */
+    private const LLM_NOT_FOUND = 'Maaf, saya belum menemukan informasinya di aplikasi ini.';
+
     /**
      * Bahasa santai dan bahasa Inggris diubah ke bentuk baku sebelum
      * dipahami. Frasa (lebih dari satu kata) diganti lebih dulu.
@@ -206,7 +214,7 @@ class AppAssistant
             $records = $this->searchAllModules($terms);
             if ($records->isNotEmpty()) {
                 return [
-                    'answer' => 'Ditemukan ' . $records->count() . " data yang cocok:\n" . $records->map(fn ($r) => '• ' . $r['title'])->implode("\n"),
+                    'answer' => 'Ditemukan ' . $records->count() . ' data.',
                     'engine' => 'Pencarian langsung di basis data',
                     'links' => $this->links($records, collect(), collect()),
                 ];
@@ -236,7 +244,7 @@ class AppAssistant
         // Berkas yang diminta: daftar saja, tidak dirangkai LLM.
         if ($files->isNotEmpty() && ($intent['file'] || $chunks->isEmpty())) {
             return [
-                'answer' => "Berkas yang cocok:\n" . $files->map(fn ($f) => '• ' . $f['title'])->implode("\n"),
+                'answer' => 'Ditemukan ' . $files->count() . ' berkas.',
                 'engine' => 'Pencarian langsung di basis data',
                 'links' => $this->links(collect(), $files, collect()),
             ];
@@ -245,31 +253,32 @@ class AppAssistant
         $useHelp = $help->filter(fn ($h) => $h['strong'])->take(2);
         if ($useHelp->isEmpty() && $chunks->isEmpty()) {
             return [
-                'answer' => 'Maaf, saya hanya bisa menjawab hal tentang aplikasi BSSN ISMS: cara memakainya, data di setiap modul, berkas, dan isi dokumen pengetahuan. Coba sebut nama modul, kode data, atau judul dokumennya.',
+                'answer' => self::OUT_OF_SCOPE,
                 'engine' => 'Asisten',
                 'links' => [],
             ];
         }
 
         $answer = $this->compose($flat, $page, $history, $useHelp, $chunks, $files);
-        if ($answer !== null && str_starts_with($answer, 'Maaf, saya belum menemukan') && ($chunks->first()['score'] ?? 0) >= 0.6) {
+        if ($answer === self::NOT_FOUND && ($chunks->first()['score'] ?? 0) >= 0.6) {
             // Uji 18 Nov 2026: untuk "berapa lama server disiapkan" (skor 0,72)
             // llama3.2 kadang menjawab "tidak ditemukan", kadang benar.
             $answer = $this->compose($flat, $page, $history, $useHelp, $chunks, $files);
         }
         $links = $this->links(collect(), $files, collect());
-        if ($answer !== null && $chunks->isNotEmpty() && str_starts_with($answer, 'Maaf, saya belum menemukan')) {
+        if ($answer === self::NOT_FOUND && $chunks->isNotEmpty()) {
             $answer = null;
         }
         if ($answer !== null) {
             // Kutipan kalimat asli dari dokumen, supaya salah baca model
             // kecil langsung terlihat (uji 18 Nov 2026: "2 kali sehari" untuk
             // SOP yang menulis penuh harian + inkremental tiap 4 jam).
-            if ($quote = $this->quote($chunks, $flat, $answer, $queryVector)) {
-                $answer .= "\n\n" . $quote;
-            }
-
-            return ['answer' => $answer, 'engine' => $this->llm->chatEngineName() . ' + data aplikasi', 'links' => $links];
+            return [
+                'answer' => $answer,
+                'engine' => $this->llm->chatEngineName() . ' + data aplikasi',
+                'links' => $links,
+                'quote' => $this->quote($chunks, $flat, $answer, $queryVector),
+            ];
         }
 
         return [
@@ -522,7 +531,7 @@ class AppAssistant
                     }
                 }
             });
-            $applied[] = 'yang memuat kata ' . implode(' atau ', array_map(fn ($t) => '"' . $t . '"', $terms));
+            $applied[] = 'yang cocok dengan "' . implode(' ', $terms) . '"';
         }
 
         $count = (clone $query)->count();
@@ -778,10 +787,15 @@ class AppAssistant
     {
         $answer = $exact;
         if ($records->isNotEmpty()) {
-            $answer .= $intent['who'] && $records->count() <= 5
-                ? "\n" . $records->map(fn ($r) => '• ' . $r['name'] . ' (' . Str::after($r['meta'], ' · ') . ')')->implode("\n")
-                : ' Daftarnya ada di bawah.';
+            // "Siapa ...": sebut namanya langsung; selebihnya cukup daftar tautan.
+            if ($intent['who'] && $records->count() <= 5) {
+                $answer = rtrim($answer, '.') . ': ' . $records->pluck('name')->implode(', ') . '.';
+            }
         }
+
+        // Semua baris dari modul yang sama: nama modul di setiap baris tidak perlu diulang.
+        $label = Str::before((string) ($records->first()['meta'] ?? ''), ' · ');
+        $records = $records->map(fn ($r) => ['meta' => Str::after($r['meta'], $label . ' · ')] + $r);
 
         return ['answer' => $answer, 'engine' => 'Hitungan langsung dari basis data', 'links' => $this->links($records, collect(), collect())];
     }
@@ -823,7 +837,7 @@ class AppAssistant
         if ($admins->isEmpty()) {
             $answer = $scope ? 'Belum ada admin untuk ' . AdminModules::label($scope) . '.' : 'Belum ada admin modul.';
         } elseif ($scope) {
-            $answer = 'Admin ' . AdminModules::label($scope) . ': ' . $admins->pluck('name')->implode(', ') . '. Admin inilah yang memverifikasi data dan memutuskan bukti dukung modul itu.';
+            $answer = 'Admin ' . AdminModules::label($scope) . ': ' . $admins->pluck('name')->implode(', ') . '.';
         } else {
             $answer = "Admin tiap modul:\n" . $admins->map(fn ($u) => '• ' . AdminModules::label($u->admin_module) . ': ' . $u->name)->implode("\n");
         }
@@ -865,7 +879,7 @@ class AppAssistant
         if ($logs->isEmpty()) {
             $answer = "Belum ada riwayat perubahan tercatat untuk {$item['title']}.";
         } else {
-            $answer = "Riwayat {$item['title']} (terbaru dulu):\n" . $logs->map(fn ($log) => '• ' . $this->logLine($log))->unique()->implode("\n");
+            $answer = "Riwayat {$item['title']}:\n" . $logs->map(fn ($log) => '• ' . $this->logLine($log))->unique()->implode("\n");
         }
 
         return ['answer' => $answer, 'engine' => 'Langsung dari log aktivitas', 'links' => $this->links(collect([$item]), collect(), collect())];
@@ -1093,7 +1107,7 @@ class AppAssistant
             'Untuk pertanyaan berapa, kapan, jadwal, atau frekuensi, salin kalimat dokumen yang memuat jawabannya apa adanya.',
             'Pakai hanya bahan yang benar-benar menjawab pertanyaan; abaikan sisanya.',
             'Jangan menulis alamat web atau tautan.',
-            'Bila bahan tidak memuat jawabannya, tulis hanya: Maaf, saya belum menemukan informasinya di aplikasi ini.',
+            'Bila bahan tidak memuat jawabannya, tulis hanya: ' . self::LLM_NOT_FOUND,
         ];
 
         $answer = $this->llm->generate(
@@ -1143,7 +1157,7 @@ class AppAssistant
         $hit = $chunks->first();
         $best = $hit ? $this->bestSentences($hit['chunk']->content, $question, $answer, $queryVector, 1) : null;
 
-        return $best ? 'Kutipan ' . $hit['chunk']->knowledgeAsset->title . ': "' . Str::limit($best, 260) . '"' : null;
+        return $best ? Str::limit($best, 260) : null;
     }
 
     /**
@@ -1212,13 +1226,13 @@ class AppAssistant
             $hit = $chunks->first();
             $part = $this->bestSentences($hit['chunk']->content, $question, '', $queryVector, 2) ?? $hit['chunk']->content;
 
-            return 'Bagian dokumen yang paling cocok (' . $hit['chunk']->knowledgeAsset->title . "):\n" . Str::limit($part, 500);
+            return Str::limit($part, 500);
         }
         if ($help->isNotEmpty()) {
             return $help->first()['text'];
         }
 
-        return 'Maaf, saya belum menemukan informasinya di aplikasi ini. Coba sebut nama modul, kode data, atau judul dokumennya.';
+        return self::NOT_FOUND;
     }
 
     /** Merapikan kebiasaan model kecil: markdown, alamat web, judul bagian, baris kosong ganda. */
@@ -1233,7 +1247,7 @@ class AppAssistant
         $answer = trim(preg_replace("/\n\s*\n+/u", "\n", $answer) ?? $answer);
 
         if (preg_match('/^maaf, saya belum menemukan informasinya/iu', $answer)) {
-            return 'Maaf, saya belum menemukan informasinya di aplikasi ini. Coba sebut nama modul, kode data, atau judul dokumennya.';
+            return self::NOT_FOUND;
         }
         // Model kadang menempelkan kalimat "tidak ditemukan" di ujung jawaban
         // yang sudah benar; buang kalimat itu (dan nomor butirnya).

@@ -33,9 +33,9 @@ class Assistant extends Component
     private const SESSION_KEY = 'assistant.messages';
 
     public const EXAMPLES = [
-        'Bagaimana cara menambah aset baru?',
-        'Carikan file SOP permohonan server',
-        'Berapa risiko yang levelnya kritis?',
+        'Cara menambah aset baru',
+        'Cari SOP permohonan server',
+        'Berapa risiko kritis?',
         'Tiket P1 yang masih terbuka',
     ];
 
@@ -61,7 +61,7 @@ class Assistant extends Component
         $key = 'assistant:' . auth()->id();
         if (RateLimiter::tooManyAttempts($key, 20)) {
             $this->messages[] = ['role' => 'user', 'text' => $text];
-            $this->messages[] = ['role' => 'assistant', 'text' => 'Terlalu banyak pertanyaan dalam satu menit. Tunggu sebentar, lalu coba lagi.', 'links' => [], 'engine' => null];
+            $this->messages[] = ['role' => 'assistant', 'text' => 'Terlalu banyak pertanyaan. Coba lagi sebentar lagi.', 'links' => []];
             return;
         }
         RateLimiter::hit($key, 60);
@@ -80,7 +80,7 @@ class Assistant extends Component
         $result = app(AppAssistant::class)->answer(mb_substr($text, 0, 500), $this->page, array_slice($history, -2));
 
         $this->messages[] = ['role' => 'user', 'text' => mb_substr($text, 0, 500)];
-        $this->messages[] = ['role' => 'assistant', 'text' => $result['answer'], 'links' => $result['links'], 'engine' => $result['engine']];
+        $this->messages[] = ['role' => 'assistant', 'text' => $result['answer'], 'links' => $result['links'], 'quote' => $result['quote'] ?? null];
         $this->messages = array_slice($this->messages, -20);
         session([self::SESSION_KEY => $this->messages]);
     }

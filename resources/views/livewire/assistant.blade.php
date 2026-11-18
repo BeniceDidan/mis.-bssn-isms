@@ -16,12 +16,17 @@
             const list = this.$refs.list;
             if (list) list.scrollTop = list.scrollHeight;
         },
+        grow() {
+            const el = this.$refs.input;
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 128) + 'px';
+        },
         ask(text) {
             text = (text ?? this.draft).trim();
             if (text.length < 2 || this.pending) return;
             this.pending = text;
             this.draft = '';
-            this.$nextTick(() => this.scroll());
+            this.$nextTick(() => { this.grow(); this.scroll() });
             $wire.send(text).finally(() => {
                 this.pending = '';
                 this.$nextTick(() => this.scroll());
@@ -37,7 +42,7 @@
         x-show="! open"
         @click="toggle(true)"
         data-tour="assistant-button"
-        class="assistant-launcher fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-brand-700 px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-brand-800"
+        class="assistant-launcher fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-brand-700 py-3 pl-3.5 pr-4 text-sm font-medium text-white shadow-lg hover:bg-brand-800"
     >
         <x-heroicon-o-chat-bubble-left-right class="h-5 w-5" />
         Asisten
@@ -50,60 +55,63 @@
         role="dialog"
         aria-label="Asisten"
         data-tour="assistant-panel"
-        class="fixed inset-x-0 bottom-0 z-[60] flex h-[85vh] flex-col overflow-hidden rounded-t-2xl border border-slate-200 bg-white shadow-2xl sm:inset-x-auto sm:bottom-5 sm:right-5 sm:h-[36rem] sm:max-h-[calc(100vh-2.5rem)] sm:w-[26rem] sm:rounded-2xl"
+        class="fixed inset-x-0 bottom-0 z-[60] flex h-[88vh] flex-col overflow-hidden rounded-t-2xl border border-slate-200 bg-white shadow-2xl sm:inset-x-auto sm:bottom-5 sm:right-5 sm:h-[38rem] sm:max-h-[calc(100vh-2.5rem)] sm:w-[25rem] sm:rounded-2xl"
     >
-        <header class="flex items-center justify-between gap-2 border-b border-slate-200 px-4 py-3">
-            <p class="text-sm font-semibold text-gray-900">Asisten BSSN ISMS</p>
-            <div class="flex items-center gap-1">
+        <header class="flex items-center justify-between border-b border-slate-200 py-2 pl-4 pr-2">
+            <p class="text-sm font-semibold text-gray-900">Asisten</p>
+            <div class="flex items-center">
                 @if ($messages)
-                    <button type="button" wire:click="clear" title="Mulai percakapan baru" class="rounded-full p-1.5 text-gray-400 hover:bg-slate-50 hover:text-gray-600">
-                        <x-heroicon-o-arrow-path class="h-4 w-4" />
+                    <button type="button" wire:click="clear" title="Percakapan baru" aria-label="Percakapan baru" class="rounded-full p-2 text-gray-400 hover:bg-slate-50 hover:text-gray-700">
+                        <x-heroicon-o-pencil-square class="h-[18px] w-[18px]" />
                     </button>
                 @endif
-                <button type="button" @click="toggle(false)" title="Tutup" class="rounded-full p-1.5 text-gray-400 hover:bg-slate-50 hover:text-gray-600">
+                <button type="button" @click="toggle(false)" title="Tutup" aria-label="Tutup" class="rounded-full p-2 text-gray-400 hover:bg-slate-50 hover:text-gray-700">
                     <x-heroicon-o-x-mark class="h-5 w-5" />
                 </button>
             </div>
         </header>
 
-        <div x-ref="list" class="flex-1 space-y-4 overflow-y-auto px-4 py-4" data-tour="assistant-messages">
+        <div x-ref="list" class="flex flex-1 flex-col gap-5 overflow-y-auto px-4 py-4" data-tour="assistant-messages">
             @if (! $messages)
-                <div x-show="! pending">
-                    <p class="text-sm text-gray-600">Tanyakan cara memakai aplikasi, cari data atau berkas, atau tanyakan isi dokumen.</p>
-                    <div class="mt-3 flex flex-col items-start gap-2">
-                        @foreach ($examples as $example)
-                            <button type="button" @click="ask(@js($example))" class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-slate-50">{{ $example }}</button>
-                        @endforeach
-                    </div>
+                <div x-show="! pending" class="mt-auto flex flex-wrap gap-2">
+                    @foreach ($examples as $example)
+                        <button type="button" @click="ask(@js($example))" class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-left text-sm text-gray-700 hover:border-brand-300 hover:bg-slate-50">{{ $example }}</button>
+                    @endforeach
                 </div>
             @endif
 
             @foreach ($messages as $message)
                 @if ($message['role'] === 'user')
                     <div class="flex justify-end" wire:key="m-{{ $loop->index }}">
-                        <p class="max-w-[85%] whitespace-pre-line break-words rounded-2xl rounded-br-md bg-brand-700 px-3 py-2 text-sm text-white">{{ $message['text'] }}</p>
+                        <p class="max-w-[85%] whitespace-pre-line break-words rounded-2xl rounded-br-md bg-brand-700 px-3.5 py-2 text-sm text-white">{{ $message['text'] }}</p>
                     </div>
                 @else
-                    <div class="max-w-[95%]" wire:key="m-{{ $loop->index }}" data-tour="assistant-answer">
-                        <div class="whitespace-pre-line break-words rounded-2xl rounded-bl-md bg-slate-100 px-3 py-2 text-sm leading-relaxed text-gray-800">{{ $message['text'] }}</div>
-                        @if (! empty($message['links']))
-                            <ul class="mt-2 space-y-1.5">
-                                @foreach ($message['links'] as $link)
-                                    <li>
+                    @php $links = $message['links'] ?? []; @endphp
+                    <div wire:key="m-{{ $loop->index }}" data-tour="assistant-answer" x-data="{ all: false }">
+                        <p class="whitespace-pre-line break-words text-sm leading-relaxed text-gray-800" data-tour="assistant-text">{{ $message['text'] }}</p>
+
+                        @if (! empty($message['quote']))
+                            <blockquote class="mt-2 border-l-2 border-brand-200 pl-3 text-[13px] leading-relaxed text-gray-600">{{ $message['quote'] }}</blockquote>
+                        @endif
+
+                        @if ($links)
+                            <ul class="mt-3 divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200">
+                                @foreach ($links as $link)
+                                    <li @if ($loop->index >= 4) x-show="all" x-cloak @endif>
                                         <a
                                             href="{{ $link['url'] }}"
                                             @if ($link['kind'] === 'file') target="_blank" rel="noopener" @endif
-                                            class="flex items-start gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 hover:bg-slate-50"
+                                            class="flex items-center gap-2.5 px-3 py-2 hover:bg-slate-50"
                                         >
                                             @if ($link['kind'] === 'file')
-                                                <x-heroicon-o-document-text class="mt-0.5 h-4 w-4 shrink-0 text-brand-700" />
+                                                <x-heroicon-o-document-text class="h-4 w-4 shrink-0 text-gray-400" />
                                             @elseif ($link['kind'] === 'page')
-                                                <x-heroicon-o-arrow-right class="mt-0.5 h-4 w-4 shrink-0 text-brand-700" />
+                                                <x-heroicon-o-arrow-right class="h-4 w-4 shrink-0 text-gray-400" />
                                             @else
-                                                <x-heroicon-o-table-cells class="mt-0.5 h-4 w-4 shrink-0 text-brand-700" />
+                                                <x-heroicon-o-table-cells class="h-4 w-4 shrink-0 text-gray-400" />
                                             @endif
-                                            <span class="min-w-0">
-                                                <span class="block truncate text-sm font-medium text-gray-900">{{ $link['title'] }}</span>
+                                            <span class="min-w-0 flex-1">
+                                                <span class="block truncate text-sm text-gray-900">{{ $link['title'] }}</span>
                                                 @if ($link['meta'])
                                                     <span class="block truncate text-xs text-gray-500">{{ $link['meta'] }}</span>
                                                 @endif
@@ -111,39 +119,47 @@
                                         </a>
                                     </li>
                                 @endforeach
+                                @if (count($links) > 4)
+                                    <li x-show="! all">
+                                        <button type="button" @click="all = true" class="w-full px-3 py-2 text-left text-xs font-medium text-brand-700 hover:bg-slate-50">{{ count($links) - 4 }} lainnya</button>
+                                    </li>
+                                @endif
                             </ul>
-                        @endif
-                        @if (! empty($message['engine']))
-                            <p class="mt-1 text-[11px] text-gray-400">{{ $message['engine'] }}. Periksa kembali sebelum dipakai.</p>
                         @endif
                     </div>
                 @endif
             @endforeach
 
             <template x-if="pending">
-                <div class="space-y-4">
+                <div class="space-y-5">
                     <div class="flex justify-end">
-                        <p class="max-w-[85%] whitespace-pre-line break-words rounded-2xl rounded-br-md bg-brand-700 px-3 py-2 text-sm text-white" x-text="pending"></p>
+                        <p class="max-w-[85%] whitespace-pre-line break-words rounded-2xl rounded-br-md bg-brand-700 px-3.5 py-2 text-sm text-white" x-text="pending"></p>
                     </div>
-                    <p class="text-sm text-gray-500">Mencari jawaban…</p>
+                    <div class="flex gap-1 py-1" aria-label="Sedang mencari">
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400"></span>
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:150ms]"></span>
+                        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:300ms]"></span>
+                    </div>
                 </div>
             </template>
         </div>
 
-        <form @submit.prevent="ask()" class="border-t border-slate-200 p-3">
-            <div class="flex items-end gap-2">
+        <form @submit.prevent="ask()" class="p-3">
+            <div class="flex items-end gap-2 rounded-2xl border border-slate-200 bg-white py-1.5 pl-3.5 pr-1.5 focus-within:border-brand-400">
                 <textarea
                     x-ref="input"
                     x-model="draft"
+                    @input="grow()"
                     rows="1"
                     maxlength="500"
-                    placeholder="Tulis pertanyaan…"
+                    placeholder="Tanya tentang aplikasi ini"
+                    aria-label="Pertanyaan"
                     data-tour="assistant-input"
                     @keydown.enter="if (! $event.shiftKey) { $event.preventDefault(); ask() }"
-                    class="max-h-32 min-h-[2.5rem] flex-1 resize-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+                    class="max-h-32 flex-1 resize-none border-0 bg-transparent py-1.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:ring-0"
                 ></textarea>
-                <button type="submit" :disabled="pending !== '' || draft.trim().length < 2" title="Kirim" class="rounded-full bg-brand-700 p-2.5 text-white hover:bg-brand-800 disabled:opacity-50">
-                    <x-heroicon-o-paper-airplane class="h-4 w-4" />
+                <button type="submit" :disabled="pending !== '' || draft.trim().length < 2" title="Kirim" aria-label="Kirim" class="rounded-full bg-brand-700 p-2 text-white hover:bg-brand-800 disabled:bg-slate-200 disabled:text-gray-400">
+                    <x-heroicon-o-arrow-up class="h-4 w-4" />
                 </button>
             </div>
         </form>
