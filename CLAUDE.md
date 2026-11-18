@@ -432,6 +432,37 @@ Aturan yang sengaja dipegang:
   Satu-satunya penanda AI: "Dirangkum AI dari dokumen/panduan" (kunci `ai` di
   hasil), hanya pada jawaban yang disusun LLM; jawaban dari basis data dan
   teks panduan apa adanya tidak diberi label.
+- **Asisten: titik integrasi** (`Concerns\AnswersConnections`, tanpa LLM;
+  uji 18 Nov 2026 llama3.2 menjawab "SDM terhubung ke Asisten").
+  - "File yang barusan saya unggah nyambung ke mana?" → unggahan terakhir
+    milik penanya: bukti dukung (`uploaded_by`), PDF pengetahuan (jejak
+    `activity_logs` dengan `document_path`), atau impor Excel (`import_logs`,
+    dicatat trait `Livewire\Concerns\RecordsImports` di 7 importer; data yang
+    masuk = log aktivitas pengguna itu antara `started_at`..`finished_at`).
+    Jawaban menyebut yang sudah tersambung **dan** yang belum (aset kosong,
+    isi PDF belum terbaca, Kode Personil kosong). "Kalau saya unggah …" =
+    skenario, bukan unggahan sendiri.
+  - Data tertentu (kode atau nama aset/layanan ≥60% cocok): daftar catatan
+    tertaut, termasuk tindak lanjut otomatis risiko
+    (`dynamic_data->auto_generated_from_risk`) dan Kode Personil yang sama.
+  - Modul: alur dari `IntegrationMap` apa adanya (sama dengan pop-out),
+    disaring untuk skenario (kritis/tinggi → alur otomatis; arsip →
+    peringatan; impor; unggah PDF). Ubah `IntegrationMap`, jawaban ikut.
+- **Asisten: riset rujukan** (`Concerns\AnswersFromResearch` +
+  `App\Support\ResearchLibrary`). Membaca `docs/riset/README.md` dan
+  `NN-*.md` (bukan `referensi-simantik.md`): tabel sumber berkode jadi daftar
+  rujukan (judul, status, tautan), baris tabel/butir/paragraf jadi potongan
+  yang dicari dengan bge-m3 (vektor di cache `ai.riset.vectors.*`). Kode
+  sumber diganti nama pendek per berkas ("P2" → "PermenPANRB 5/2020"; "P1–P4"
+  prioritas tiket tidak ikut diganti). Jawaban diambil apa adanya, tanpa
+  LLM (uji: model menjawab "dasar aturan manajemen risiko" dengan karangan).
+  Jenis jawaban: daftar semua sumber; rujukan per modul/topik + ringkasan
+  status audit; status peraturan ("Perpres 95/2018 masih berlaku?");
+  potongan paling cocok untuk "kenapa …". Selama judul berkas memuat "DRAF"
+  jawaban diberi label kecil "Riset draf, belum ditinjau" (kunci `draft`);
+  ganti judulnya jadi "… — DITINJAU" setelah ditinjau. Tautan sumber
+  (`kind` `web`) dibuka di tab baru. Rujukan hanya muncul bila ditanya di
+  Asisten, tidak ditempel di halaman lain.
 - Pencarian Tiket Helpdesk kini mengenali nomor tiket tampilan `TKT-000123`
   (id), dipakai tautan Asisten.
 

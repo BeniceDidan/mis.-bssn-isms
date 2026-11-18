@@ -41,4 +41,7 @@ return [
     // semua potongan butuh ±0,25 ms per potongan (uji 17 Nov 2026).
     'full_scan_limit' => (int) env('AI_FULL_SCAN_LIMIT', 3000),
     'candidate_documents' => (int) env('AI_CANDIDATE_DOCUMENTS', 25),
+
+    // Asisten: folder riset rujukan yang bisa ditanyakan (App\Support\ResearchLibrary).
+    'research_path' => base_path('docs/riset'),
 ];

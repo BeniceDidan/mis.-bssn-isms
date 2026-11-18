@@ -16,6 +16,8 @@ use App\Models\SecurityProgram;
 use App\Models\Service;
 use App\Models\ServiceTicket;
 use App\Models\User;
+use App\Services\Ai\Concerns\AnswersConnections;
+use App\Services\Ai\Concerns\AnswersFromResearch;
 use App\Support\AdminModules;
 use App\Support\AppHelp;
 use BackedEnum;
@@ -41,6 +43,9 @@ use Throwable;
  * 3. Riwayat perubahan (activity_logs) dan admin tiap modul.
  * 4. Berkas: PDF Aset Pengetahuan dan bukti dukung.
  * 5. Isi dokumen: potongan PDF terdekat (pencarian Tanya Dokumen).
+ * 6. Titik integrasi: modul, data tertentu, dan berkas yang baru diunggah
+ *    penanya (Concerns\AnswersConnections).
+ * 7. Riset rujukan di docs/riset (Concerns\AnswersFromResearch).
  *
  * Uji 18 Nov 2026 dengan llama3.2 memperlihatkan model kecil mengarang
  * begitu bahannya tidak memuat jawaban (kode risiko, nama layanan, bahkan
@@ -56,6 +61,8 @@ use Throwable;
  */
 class AppAssistant
 {
+    use AnswersConnections, AnswersFromResearch;
+
     /**
      * Urutan penting: yang lebih spesifik dicek dulu ("risiko sdm" sebelum
      * "risiko", "aset pengetahuan" sebelum "aset").
@@ -122,6 +129,9 @@ class AppAssistant
         'krn' => 'karena', 'dr' => 'dari', 'kpn' => 'kapan', 'msh' => 'masih', 'lg' => 'lagi', 'tgl' => 'tanggal', 'bln' => 'bulan',
         'mgg' => 'minggu', 'thn' => 'tahun', 'ttg' => 'tentang', 'jg' => 'juga', 'bs' => 'bisa', 'apaan' => 'apa', 'pw' => 'kata sandi',
         'password' => 'kata sandi', 'upload' => 'unggah', 'import' => 'impor', 'edit' => 'ubah', 'delete' => 'hapus',
+        'aku' => 'saya', 'kemana' => 'ke mana', 'uploaded' => 'diunggah', 'imported' => 'diimpor', 'connected' => 'terhubung',
+        'linked' => 'terhubung', 'integration' => 'integrasi', 'integrated' => 'terintegrasi', 'reference' => 'referensi',
+        'references' => 'referensi', 'regulation' => 'regulasi', 'regulations' => 'regulasi', 'source' => 'sumber', 'sources' => 'sumber',
         // Inggris → Indonesia
         'critical' => 'kritis', 'high' => 'tinggi', 'medium' => 'sedang', 'low' => 'rendah', 'risks' => 'risiko', 'risk' => 'risiko',
         'assets' => 'aset', 'asset' => 'aset', 'tickets' => 'tiket', 'ticket' => 'tiket', 'services' => 'layanan', 'service' => 'layanan',
@@ -177,8 +187,11 @@ class AppAssistant
 
         // Pertanyaan lanjutan pendek ("yang tinggi saja?") mewarisi modul dan
         // maksud pertanyaan sebelumnya; kata cari & saringan dari yang terbaru.
+        // Pertanyaan riset/integrasi/unggahan berdiri sendiri: "Referensi apa saja?" sesudah
+        // "Dasar aturan manajemen risiko" bukan lanjutan (uji tampilan 18 Nov 2026).
         $followUp = $history !== [] && count(self::terms($flat)) <= 2 && $this->detectModule($flat) === null
-            && ! preg_match('/\b(cara|bagaimana|apa itu|siapa)\b/u', $flat);
+            && ! preg_match('/\b(cara|bagaimana|apa itu|siapa)\b/u', $flat)
+            && self::researchIntent($flat, false) !== 'strong' && ! self::wantsConnection($flat) && ! self::mentionsOwnUpload($flat);
         $context = $followUp ? self::normalize(end($history)['q']) . ' ' . $flat : $flat;
 
         $intent = $this->intent($context, $followUp ? $context : $flat, $flat);
@@ -193,13 +206,32 @@ class AppAssistant
             return $logAnswer;
         }
 
+        // 1b. Titik integrasi: berkas yang baru diunggah, data tertentu, atau modul.
+        if ($intent['upload'] && ($upload = $this->uploadAnswer($flat)) !== null) {
+            return $upload;
+        }
+        if ($intent['connect'] && ($connection = $this->connectionAnswer($flat, $moduleKey, $terms)) !== null) {
+            return $connection;
+        }
+
+        // 1c. Riset rujukan (peraturan, standar, literatur di docs/riset).
+        $queryVector = null;
+        if ($intent['research'] === 'strong') {
+            $queryVector = $this->llm->embed([$flat])[0] ?? null;
+            if (($research = $this->researchAnswer($flat, $moduleKey, $queryVector, true)) !== null) {
+                return self::withoutScore($research);
+            }
+        }
+
         // 2. Data modul (hitungan, daftar, saringan, relasi).
         $records = collect();
         $exact = null;
         $wantsData = $intent['list'] || $intent['code'] || $intent['count'] || $intent['filters'] !== []
             || ($moduleKey !== null && $this->mentionsModuleFilter($moduleKey, $context))
             || ($moduleKey !== null && $terms === [] && ! $intent['howto'] && ! $intent['file']);
-        if ($moduleKey !== null && ($wantsData || ($terms !== [] && ! $intent['howto'] && ! $intent['file']))) {
+        // "Kenapa prioritas tiket masih P1–P4?" menanyakan alasan, bukan data (uji 18 Nov 2026).
+        $why = (bool) preg_match('/\b(kenapa|mengapa|alasan|alasannya)\b/u', $flat);
+        if ($moduleKey !== null && ! $why && ($wantsData || ($terms !== [] && ! $intent['howto'] && ! $intent['file']))) {
             [$records, $exact, $narrowed] = $this->moduleRecords($moduleKey, $terms, $intent['filters'], $context);
             // Pencarian kata biasa tanpa hasil diteruskan ke isi dokumen,
             // mis. "kebijakan risiko apa yang berlaku?".
@@ -222,7 +254,7 @@ class AppAssistant
         }
 
         // 3. Panduan, berkas, dan isi dokumen.
-        $queryVector = $this->llm->embed([$flat])[0] ?? null;
+        $queryVector ??= $this->llm->embed([$flat])[0] ?? null;
         $help = $this->searchHelp($flat, $queryVector);
         $files = $intent['file'] ? $this->searchFiles($terms) : collect();
         $chunks = $this->documentChunks($flat, $intent['file'] || ! $intent['howto']);
@@ -230,6 +262,13 @@ class AppAssistant
 
         $topHelp = $help->first();
         $topChunk = $chunks->first()['score'] ?? 0;
+
+        // "Kenapa …" / "boleh …": riset menjawab bila lebih cocok daripada panduan dan dokumen.
+        // Pertanyaan yang menyebut kode data ("kenapa RSK-… kritis?") tentang data itu, bukan riset.
+        if ($intent['research'] === 'weak' && ! $intent['code'] && ($research = $this->researchAnswer($flat, $moduleKey, $queryVector, false)) !== null
+            && $research['score'] >= max($topHelp['score'] ?? 0, $topChunk)) {
+            return self::withoutScore($research);
+        }
 
         // Cara pakai: teks panduan apa adanya, kecuali isi dokumen jelas
         // lebih cocok (mis. "bagaimana cara melapor insiden siber?").
@@ -252,6 +291,12 @@ class AppAssistant
 
         $useHelp = $help->filter(fn ($h) => $h['strong'])->take(2);
         if ($useHelp->isEmpty() && $chunks->isEmpty()) {
+            // Sebelum menolak: mungkin riset memuat jawabannya (ambang lebih ketat bila tidak ditanyakan sebagai riset).
+            $research = $this->researchAnswer($flat, $moduleKey, $queryVector, false);
+            if ($research !== null && ($intent['research'] !== null || $research['score'] >= 0.62)) {
+                return self::withoutScore($research);
+            }
+
             return [
                 'answer' => self::OUT_OF_SCOPE,
                 'engine' => 'Asisten',
@@ -260,9 +305,10 @@ class AppAssistant
         }
 
         $answer = $this->compose($flat, $page, $history, $useHelp, $chunks, $files);
-        if ($answer === self::NOT_FOUND && ($chunks->first()['score'] ?? 0) >= 0.6) {
-            // Uji 18 Nov 2026: untuk "berapa lama server disiapkan" (skor 0,72)
-            // llama3.2 kadang menjawab "tidak ditemukan", kadang benar.
+        // Uji 18 Nov 2026: untuk "berapa lama server disiapkan" (skor 0,72) dan
+        // "berapa kali backup" (skor 0,585, 2 dari 3 kali menyerah) llama3.2
+        // kadang menjawab "tidak ditemukan" padahal potongannya memuat jawaban.
+        for ($retry = 0; $retry < 2 && $answer === self::NOT_FOUND && ($chunks->first()['score'] ?? 0) >= 0.55; $retry++) {
             $answer = $this->compose($flat, $page, $history, $useHelp, $chunks, $files);
         }
         $links = $this->links(collect(), $files, collect());
@@ -343,6 +389,9 @@ class AppAssistant
             'who' => (bool) preg_match('/\bsiapa\b/u', $latest),
             'admin' => (bool) preg_match('/\bsiapa\b.*\badmin\b|\b(daftar|nama|semua) admin\b|\badmin\b.*\bsiapa\b/u', $latest),
             'history' => (bool) preg_match('/\b(riwayat|histori|log aktivitas|aktivitas terakhir|aktivitas terbaru)\b|\bsiapa\b.*\b(mengubah|ubah|menambah|menambahkan|membuat|menginput|input|mengarsipkan|menghapus|hapus)\b|\bkapan\b.*\b(diubah|dibuat|ditambahkan|diarsipkan|diperbarui|diinput)\b/u', $latest),
+            'connect' => self::wantsConnection($latest),
+            'upload' => self::mentionsOwnUpload($latest),
+            'research' => self::researchIntent($latest, (bool) preg_match('/\b(berkas|dokumen|pdf|unduh|download|lampiran|templat|template)\b/u', $latest)),
             'filters' => $filters,
         ];
     }
@@ -1258,6 +1307,13 @@ class AppAssistant
         $answer = trim(preg_replace("/\n\s*\n+/u", "\n", $answer) ?? $answer);
 
         return Str::limit($answer, 1500);
+    }
+
+    private static function withoutScore(array $result): array
+    {
+        unset($result['score']);
+
+        return $result;
     }
 
     private function plain(mixed $value): ?string

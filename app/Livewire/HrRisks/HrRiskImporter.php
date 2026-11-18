@@ -4,13 +4,14 @@ namespace App\Livewire\HrRisks;
 
 use App\Imports\HrRiskImport;
 use App\Livewire\Concerns\GuardsWriteAccess;
+use App\Livewire\Concerns\RecordsImports;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class HrRiskImporter extends Component
 {
-    use WithFileUploads, GuardsWriteAccess;
+    use WithFileUploads, GuardsWriteAccess, RecordsImports;
 
     public bool $show = false;
 
@@ -39,10 +40,12 @@ class HrRiskImporter extends Component
             'file' => ['required', 'file', 'mimes:xlsx,xls', 'max:10240'],
         ]);
 
+        $startedAt = now();
         $import = new HrRiskImport();
         $import->run($this->file->getRealPath());
 
         $summary = $import->summary();
+        $this->recordImport('sdm', $this->file->getClientOriginalName(), $summary, $startedAt);
 
         $this->result = [
             'created' => $summary->created,

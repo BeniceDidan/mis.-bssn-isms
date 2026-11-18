@@ -151,7 +151,7 @@ class AppHelp
         ],
         [
             'title' => 'Asisten',
-            'text' => 'Asisten ada di pojok kanan bawah setiap halaman. Asisten bisa menjelaskan cara memakai aplikasi, mencarikan data dan berkas (PDF pengetahuan dan bukti dukung), menghitung ringkasan data per modul, dan menjawab pertanyaan dari isi dokumen pengetahuan. Tautan ke data dan berkas tampil di bawah jawaban. Asisten berjalan di server sendiri dan setiap jawabannya dicatat di log.',
+            'text' => 'Asisten ada di pojok kanan bawah setiap halaman. Asisten bisa menjelaskan cara memakai aplikasi, mencarikan data dan berkas (PDF pengetahuan dan bukti dukung), menghitung ringkasan data per modul, menjawab pertanyaan dari isi dokumen pengetahuan, menjelaskan titik integrasi (misalnya "file yang barusan saya unggah nyambung ke mana?"), dan menunjukkan rujukan riset (peraturan, standar, literatur) beserta tautannya. Tautan ke data dan berkas tampil di bawah jawaban. Asisten berjalan di server sendiri dan setiap jawabannya dicatat di log.',
             'words' => 'asisten chatbot bot tanya bantuan bisa apa saja',
             'route' => null,
         ],

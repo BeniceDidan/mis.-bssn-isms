@@ -98,6 +98,10 @@
                             <p class="mt-1.5 text-[11px] text-gray-400" data-tour="assistant-ai-label">Dirangkum AI dari {{ $message['ai'] }}</p>
                         @endif
 
+                        @if (! empty($message['draft']))
+                            <p class="mt-1.5 text-[11px] text-gray-400" data-tour="assistant-draft-label">Riset draf, belum ditinjau</p>
+                        @endif
+
                         @if ($links)
                             <ul class="mt-3 divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200">
                                 @foreach ($links as $link)
@@ -105,10 +109,13 @@
                                         <a
                                             href="{{ $link['url'] }}"
                                             @if ($link['kind'] === 'file') target="_blank" rel="noopener" @endif
+                                            @if ($link['kind'] === 'web') target="_blank" rel="noopener noreferrer" @endif
                                             class="flex items-center gap-2.5 px-3 py-2 hover:bg-slate-50"
                                         >
                                             @if ($link['kind'] === 'file')
                                                 <x-heroicon-o-document-text class="h-4 w-4 shrink-0 text-gray-400" />
+                                            @elseif ($link['kind'] === 'web')
+                                                <x-heroicon-o-arrow-top-right-on-square class="h-4 w-4 shrink-0 text-gray-400" />
                                             @elseif ($link['kind'] === 'page')
                                                 <x-heroicon-o-arrow-right class="h-4 w-4 shrink-0 text-gray-400" />
                                             @else
