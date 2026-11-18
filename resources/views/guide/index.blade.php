@@ -15,22 +15,22 @@
     ];
 
     $colorClasses = [
-        'teal' => 'from-teal-400 to-teal-600',
-        'purple' => 'from-purple-400 to-purple-600',
-        'sky' => 'from-sky-400 to-sky-600',
-        'emerald' => 'from-emerald-400 to-emerald-600',
-        'amber' => 'from-amber-400 to-amber-600',
-        'indigo' => 'from-indigo-400 to-indigo-600',
-        'rose' => 'from-rose-400 to-rose-600',
-        'slate' => 'from-slate-400 to-slate-600',
+        'teal' => ' ',
+        'purple' => ' ',
+        'sky' => ' ',
+        'emerald' => ' ',
+        'amber' => ' ',
+        'indigo' => ' ',
+        'rose' => ' ',
+        'slate' => ' ',
     ];
 
     $linkedSpokes = [
-        ['label' => 'Manajemen Risiko', 'icon' => 'o-exclamation-triangle', 'color' => 'text-purple-600 bg-purple-50', 'desc' => 'Setiap risiko dicatat dengan memilih "Aset Terkait" pada form.'],
-        ['label' => 'Manajemen Perubahan', 'icon' => 'o-arrow-path', 'color' => 'text-indigo-600 bg-indigo-50', 'desc' => 'Kolom "Aset Terkait" pada Excel otomatis dicocokkan ke aset saat impor.'],
-        ['label' => 'Manajemen Data & Informasi', 'icon' => 'o-circle-stack', 'color' => 'text-sky-600 bg-sky-50', 'desc' => 'Sama seperti Perubahan — tertaut otomatis saat impor Excel.'],
-        ['label' => 'Manajemen Pengetahuan', 'icon' => 'o-light-bulb', 'color' => 'text-amber-600 bg-amber-50', 'desc' => 'Ditautkan secara manual lewat form (tidak otomatis dari Excel).'],
-        ['label' => 'Manajemen Layanan', 'icon' => 'o-wrench-screwdriver', 'color' => 'text-rose-600 bg-rose-50', 'desc' => 'Satu layanan bisa bergantung pada beberapa aset sekaligus — kolom "Aset TIK Terkait" pada Excel dicocokkan otomatis ke semua aset yang disebut.'],
+        ['label' => 'Manajemen Risiko', 'icon' => 'o-exclamation-triangle', 'color' => 'text-muda-600 bg-muda-100', 'desc' => 'Setiap risiko dicatat dengan memilih "Aset Terkait" pada form.'],
+        ['label' => 'Manajemen Perubahan', 'icon' => 'o-arrow-path', 'color' => 'text-muda-600 bg-muda-100', 'desc' => 'Kolom "Aset Terkait" pada Excel otomatis dicocokkan ke aset saat impor.'],
+        ['label' => 'Manajemen Data & Informasi', 'icon' => 'o-circle-stack', 'color' => 'text-muda-600 bg-muda-100', 'desc' => 'Sama seperti Perubahan — tertaut otomatis saat impor Excel.'],
+        ['label' => 'Manajemen Pengetahuan', 'icon' => 'o-light-bulb', 'color' => 'text-muda-600 bg-muda-100', 'desc' => 'Ditautkan secara manual lewat form (tidak otomatis dari Excel).'],
+        ['label' => 'Manajemen Layanan', 'icon' => 'o-wrench-screwdriver', 'color' => 'text-muda-600 bg-muda-100', 'desc' => 'Satu layanan bisa bergantung pada beberapa aset sekaligus — kolom "Aset TIK Terkait" pada Excel dicocokkan otomatis ke semua aset yang disebut.'],
     ];
 
     $correlationLayers = [
@@ -89,7 +89,7 @@
         <a
             href="{{ route('dashboard') }}"
             x-data x-ripple
-            class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-sky-500 to-sky-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-sky-500/30 transition-all duration-300 ease-spring hover:scale-105 hover:shadow-sky-500/50 active:scale-95"
+            class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95"
         >
             <x-heroicon-o-home class="h-4 w-4" /> Kembali ke Dashboard
         </a>
@@ -107,8 +107,8 @@
 
         <div class="mt-5 space-y-3">
             @foreach ($flowSteps as $step)
-                <div class="flex items-start gap-4 rounded-xl border border-white/40 bg-white/40 p-3 transition-all duration-300 ease-spring hover:translate-x-1 hover:bg-white/70 {{ ! $step['active'] ? 'opacity-60' : '' }}">
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br {{ $colorClasses[$step['color']] }} text-white shadow-md">
+                <div class="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-3 transition-all duration-300 ease-spring hover:translate-x-1 hover:bg-slate-50 {{ ! $step['active'] ? 'opacity-60' : '' }}">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muda-100 text-muda-600">
                         <x-dynamic-component :component="'heroicon-' . $step['icon']" class="h-5 w-5" />
                     </div>
                     <div class="min-w-0 flex-1">
@@ -116,7 +116,7 @@
                             <span class="flex h-5 w-5 items-center justify-center rounded-full bg-gray-900 text-[10px] font-bold text-white">{{ $step['n'] }}</span>
                             <h3 class="text-sm font-semibold text-gray-900">{{ $step['label'] }}</h3>
                             @if ($step['active'])
-                                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">Aktif</span>
+                                <span class="rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-700">Aktif</span>
                             @else
                                 <span class="rounded-full bg-gray-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Segera Hadir</span>
                             @endif
@@ -138,7 +138,7 @@
 
         <div class="mt-5 space-y-2">
             @foreach ($correlationLayers as $li => $layer)
-                <div class="rounded-xl border border-white/40 bg-white/40 p-4">
+                <div class="rounded-xl border border-slate-200 bg-white p-4">
                     <h3 class="text-sm font-semibold text-gray-900">{{ $layer['title'] }}</h3>
                     <p class="mt-1 text-xs text-gray-500">{{ $layer['desc'] }}</p>
 
@@ -153,7 +153,7 @@
                             @foreach ($layer['modules'] as $moduleLabel)
                                 @php $matched = collect($flowSteps)->firstWhere('label', $moduleLabel); @endphp
                                 @if ($matched)
-                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r {{ $colorClasses[$matched['color']] }} px-3 py-1 text-xs font-medium text-white shadow-sm">
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 {{ $colorClasses[$matched['color']] }} px-3 py-1 text-xs font-medium text-white shadow-sm">
                                         <x-dynamic-component :component="'heroicon-' . $matched['icon']" class="h-3.5 w-3.5" />
                                         {{ $matched['label'] }}
                                     </span>
@@ -164,8 +164,8 @@
                         {{-- Lapisan 2: 3 komponen teknis (semuanya tercatat lewat Manajemen Aset), lalu disatukan oleh Manajemen Layanan --}}
                         <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
                             @foreach ($layer['components'] as $component)
-                                <div class="flex items-start gap-2 rounded-lg bg-white/60 p-2.5">
-                                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br {{ $colorClasses['teal'] }} text-white">
+                                <div class="flex items-start gap-2 rounded-lg bg-white p-2.5">
+                                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-700 {{ $colorClasses['teal'] }} text-white">
                                         <x-dynamic-component :component="'heroicon-' . $component['icon']" class="h-3.5 w-3.5" />
                                     </div>
                                     <div class="min-w-0">
@@ -182,7 +182,7 @@
                         @php $unifierMatch = collect($flowSteps)->firstWhere('label', $layer['unifier']['label']); @endphp
                         <div class="flex justify-center">
                             @if ($unifierMatch)
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r {{ $colorClasses[$unifierMatch['color']] }} px-3 py-1.5 text-xs font-medium text-white shadow-sm">
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 {{ $colorClasses[$unifierMatch['color']] }} px-3 py-1.5 text-xs font-medium text-white shadow-sm">
                                     <x-dynamic-component :component="'heroicon-' . $unifierMatch['icon']" class="h-3.5 w-3.5" />
                                     {{ $unifierMatch['label'] }}
                                 </span>
@@ -193,14 +193,14 @@
                         {{-- Lapisan 3: 2 fungsi berjalan simultan — masing-masing bisa berisi lebih dari 1 modul --}}
                         <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
                             @foreach ($layer['groups'] as $group)
-                                <div class="rounded-lg bg-white/60 p-2.5">
+                                <div class="rounded-lg bg-white p-2.5">
                                     <p class="text-xs font-semibold text-gray-800">{{ $group['label'] }}</p>
                                     <p class="mt-0.5 text-[11px] text-gray-500">{{ $group['desc'] }}</p>
                                     <div class="mt-2 flex flex-wrap gap-1.5">
                                         @foreach ($group['modules'] as $moduleLabel)
                                             @php $matched = collect($flowSteps)->firstWhere('label', $moduleLabel); @endphp
                                             @if ($matched)
-                                                <span class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r {{ $colorClasses[$matched['color']] }} px-2.5 py-1 text-[11px] font-medium text-white shadow-sm">
+                                                <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 {{ $colorClasses[$matched['color']] }} px-2.5 py-1 text-[11px] font-medium text-white shadow-sm">
                                                     <x-dynamic-component :component="'heroicon-' . $matched['icon']" class="h-3 w-3" />
                                                     {{ $matched['label'] }}
                                                 </span>
@@ -215,7 +215,7 @@
                             @foreach ($layer['modules'] as $moduleLabel)
                                 @php $matched = collect($flowSteps)->firstWhere('label', $moduleLabel); @endphp
                                 @if ($matched)
-                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r {{ $colorClasses[$matched['color']] }} px-3 py-1 text-xs font-medium text-white shadow-sm">
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 {{ $colorClasses[$matched['color']] }} px-3 py-1 text-xs font-medium text-white shadow-sm">
                                         <x-dynamic-component :component="'heroicon-' . $matched['icon']" class="h-3.5 w-3.5" />
                                         {{ $matched['label'] }}
                                     </span>
@@ -232,11 +232,11 @@
             @endforeach
         </div>
 
-        <div class="mt-4 rounded-xl border border-sky-200 bg-sky-50/70 p-4">
-            <p class="flex items-center gap-1.5 text-sm font-semibold text-sky-800">
+        <div class="mt-4 rounded-xl border border-brand-200 bg-brand-50 p-4">
+            <p class="flex items-center gap-1.5 text-sm font-semibold text-brand-800">
                 <x-heroicon-o-squares-2x2 class="h-4 w-4" /> Ringkasan
             </p>
-            <p class="mt-1 text-xs text-sky-700">{{ $correlationSummary }}</p>
+            <p class="mt-1 text-xs text-brand-700">{{ $correlationSummary }}</p>
         </div>
     </div>
 
@@ -249,14 +249,14 @@
         </p>
 
         <div class="mt-5 flex flex-col items-center gap-4">
-            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 text-white shadow-lg shadow-teal-900/20">
+            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-700 text-white shadow-lg ">
                 <x-heroicon-o-archive-box class="h-8 w-8" />
             </div>
             <span class="text-sm font-semibold text-gray-900">Manajemen Aset</span>
 
             <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
                 @foreach ($linkedSpokes as $spoke)
-                    <div class="flex items-start gap-3 rounded-xl border border-white/40 bg-white/40 p-3">
+                    <div class="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3">
                         <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {{ $spoke['color'] }}">
                             <x-dynamic-component :component="'heroicon-' . $spoke['icon']" class="h-4 w-4" />
                         </div>
@@ -269,22 +269,22 @@
             </div>
         </div>
 
-        <div class="mt-5 rounded-xl border border-sky-200 bg-sky-50/70 p-4">
-            <p class="flex items-center gap-1.5 text-sm font-semibold text-sky-800">
+        <div class="mt-5 rounded-xl border border-brand-200 bg-brand-50 p-4">
+            <p class="flex items-center gap-1.5 text-sm font-semibold text-brand-800">
                 <x-heroicon-o-eye class="h-4 w-4" /> Cara melihatnya: panel "Riwayat Terkait"
             </p>
-            <p class="mt-1 text-xs text-sky-700">
+            <p class="mt-1 text-xs text-brand-700">
                 Buka <span class="font-medium">Manajemen Aset</span> → klik ikon mata pada baris aset →
                 gulir ke bawah pada panel yang muncul. Semua Risiko, Perubahan, Data &amp; Informasi, dan
                 Pengetahuan yang tertaut ke aset tersebut akan tampil dalam satu tempat.
             </p>
         </div>
 
-        <div class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
-            <p class="flex items-center gap-1.5 text-sm font-semibold text-emerald-800">
+        <div class="mt-3 rounded-xl border border-brand-200 bg-brand-50 p-4">
+            <p class="flex items-center gap-1.5 text-sm font-semibold text-brand-800">
                 <x-heroicon-o-bolt class="h-4 w-4" /> Efek nyata — bukan cuma referensi diam
             </p>
-            <p class="mt-1 text-xs text-emerald-700">
+            <p class="mt-1 text-xs text-brand-700">
                 Coba catat atau ubah sesuatu di Risiko, Perubahan, Data &amp; Informasi, atau Pengetahuan, lalu
                 buka lagi asetnya — akan langsung muncul entri baru di "Aktivitas Aset Terbaru" lengkap dengan
                 nama modul asalnya, badge angka di kolom "Terhubung" ikut naik, dan tanggal "terakhir diperbarui"
@@ -293,11 +293,11 @@
             </p>
         </div>
 
-        <div class="mt-3 rounded-xl border border-amber-200 bg-amber-50/70 p-4">
-            <p class="flex items-center gap-1.5 text-sm font-semibold text-amber-800">
+        <div class="mt-3 rounded-xl border border-brand-200 bg-brand-50 p-4">
+            <p class="flex items-center gap-1.5 text-sm font-semibold text-brand-800">
                 <x-heroicon-o-sparkles class="h-4 w-4" /> Perubahan → Pengetahuan diingatkan otomatis
             </p>
-            <p class="mt-1 text-xs text-amber-700">
+            <p class="mt-1 text-xs text-brand-700">
                 Kalau ada aset yang sudah punya catatan Perubahan tapi belum didokumentasikan di Pengetahuan,
                 panel Riwayat Terkait akan menyapa dengan ajakan "buat dokumentasinya?" — tinggal klik, dan form
                 Pengetahuan langsung terbuka dengan aset itu sudah terisi. Jadi tidak perlu mengingat-ingat
@@ -337,7 +337,7 @@
             @foreach ($reviewWorkflow as $wi => $step)
                 @php $matched = collect($flowSteps)->firstWhere('label', $step['label']); @endphp
                 <div class="relative flex gap-4 pb-5 pl-1 {{ ! $loop->last ? 'border-l-2 border-dashed border-gray-200' : '' }}">
-                    <div class="-ml-[21px] flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br {{ $colorClasses[$matched['color']] }} text-white shadow-md ring-4 ring-white">
+                    <div class="-ml-[21px] flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muda-100 text-muda-600 ring-4 ring-white">
                         <x-dynamic-component :component="'heroicon-' . $matched['icon']" class="h-5 w-5" />
                     </div>
                     <div class="min-w-0 flex-1 pt-1.5">
@@ -367,7 +367,7 @@
                 'Lihat semuanya sekaligus lewat panel "Riwayat Terkait" di halaman detail Aset.',
             ] as $index => $item)
                 <li class="flex items-start gap-3 text-sm text-gray-700">
-                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-bold text-sky-700">{{ $index + 1 }}</span>
+                    <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">{{ $index + 1 }}</span>
                     <span class="pt-0.5">{{ $item }}</span>
                 </li>
             @endforeach
@@ -378,21 +378,21 @@
     <div class="glass-panel rounded-2xl p-6 shadow-lg">
         <h2 class="text-base font-semibold text-gray-900">6. Status Modul Saat Ini</h2>
         <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div class="rounded-xl bg-emerald-50 p-3 text-center">
-                <p class="text-2xl font-bold text-emerald-700">8</p>
-                <p class="text-xs text-emerald-600">Modul Aktif</p>
+            <div class="rounded-xl bg-brand-50 p-3 text-center">
+                <p class="text-2xl font-bold text-brand-700">8</p>
+                <p class="text-xs text-brand-600">Modul Aktif</p>
             </div>
             <div class="rounded-xl bg-gray-100 p-3 text-center">
                 <p class="text-2xl font-bold text-gray-500">0</p>
                 <p class="text-xs text-gray-500">Segera Hadir</p>
             </div>
-            <div class="rounded-xl bg-sky-50 p-3 text-center">
-                <p class="text-2xl font-bold text-sky-700">5</p>
-                <p class="text-xs text-sky-600">Modul Tertaut ke Aset</p>
+            <div class="rounded-xl bg-brand-50 p-3 text-center">
+                <p class="text-2xl font-bold text-brand-700">5</p>
+                <p class="text-xs text-brand-600">Modul Tertaut ke Aset</p>
             </div>
-            <div class="rounded-xl bg-amber-50 p-3 text-center">
-                <p class="text-2xl font-bold text-amber-700">2</p>
-                <p class="text-xs text-amber-600">Modul Berdiri Sendiri (SDM, Keamanan Informasi)</p>
+            <div class="rounded-xl bg-brand-50 p-3 text-center">
+                <p class="text-2xl font-bold text-brand-700">2</p>
+                <p class="text-xs text-brand-600">Modul Berdiri Sendiri (SDM, Keamanan Informasi)</p>
             </div>
         </div>
     </div>
@@ -408,21 +408,21 @@
         </p>
 
         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div class="rounded-xl border border-white/40 bg-white/40 p-3">
+            <div class="rounded-xl border border-slate-200 bg-white p-3">
                 <p class="text-sm font-semibold text-gray-900">User</p>
                 <p class="mt-1 text-xs text-gray-600">Input/ubah data di semua modul. Setiap simpan (baru atau edit ulang) otomatis berstatus "Menunggu Verifikasi".</p>
             </div>
-            <div class="rounded-xl border border-white/40 bg-white/40 p-3">
+            <div class="rounded-xl border border-slate-200 bg-white p-3">
                 <p class="text-sm font-semibold text-gray-900">Admin (per modul)</p>
                 <p class="mt-1 text-xs text-gray-600">Tidak ada menu "Verifikasi" terpisah — panel Verifikasi muncul langsung di halaman modulnya sendiri (mis. Admin Modul Risiko melihatnya di halaman Manajemen Risiko), berisi antrean modul itu saja. Setujui (ACC) atau tolak dengan catatan koreksi.</p>
             </div>
         </div>
 
-        <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50/70 p-4">
-            <p class="flex items-center gap-1.5 text-sm font-semibold text-amber-800">
+        <div class="mt-4 rounded-xl border border-brand-200 bg-brand-50 p-4">
+            <p class="flex items-center gap-1.5 text-sm font-semibold text-brand-800">
                 <x-heroicon-o-clipboard-document-check class="h-4 w-4" /> Cara kerjanya
             </p>
-            <p class="mt-1 text-xs text-amber-700">
+            <p class="mt-1 text-xs text-brand-700">
                 Badge kuning "Menunggu Verifikasi" atau merah "Ditolak" muncul langsung di tabel setiap modul.
                 Kalau ditolak, catatan koreksi Admin tersimpan permanen dan terlihat di panel detail record —
                 User tinggal edit ulang, yang otomatis mengembalikannya ke antrian untuk ditinjau lagi.

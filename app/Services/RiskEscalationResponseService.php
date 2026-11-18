@@ -9,6 +9,7 @@ use App\Models\DataInformation;
 use App\Models\Risk;
 use App\Models\SecurityProgram;
 use App\Models\ServiceTicket;
+use App\Services\Ai\TicketTriage;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -101,6 +102,10 @@ class RiskEscalationResponseService
                 'requester_name' => 'Sistem (otomatis)',
                 'issue' => "Risiko {$risk->risk_level->label()} terdeteksi pada aset terkait: \"{$risk->title}\".",
                 'impact_level' => $risk->risk_level->value,
+                // Risiko tinggi/kritis menuntut tindakan segera: urgensi =
+                // level risiko, sehingga tiket langsung P1/P2 di antrean Helpdesk.
+                'urgency' => $risk->risk_level->value,
+                'priority' => TicketTriage::priorityFor($risk->risk_level->value, $risk->risk_level->value),
                 'related_risk_text' => $risk->risk_code,
                 'status' => 'baru',
                 'dynamic_data' => ['auto_generated_from_risk' => $risk->risk_code],

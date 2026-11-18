@@ -1,0 +1,87 @@
+<div x-data="{ show: @entangle('show') }">
+    <div
+        x-show="show"
+        x-transition:enter="transition ease-out duration-250"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        x-cloak
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 "
+        wire:click.self="close"
+    >
+        <div
+            x-show="show"
+            x-transition:enter="transition ease-spring duration-400"
+            x-transition:enter-start="opacity-0 scale-75 translate-y-6"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            class="glass-panel max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl shadow-2xl"
+            data-tour="evidence-form"
+        >
+            <form wire:submit="save">
+                <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                    <h2 class="text-lg font-semibold text-gray-900">Unggah Bukti Dukung</h2>
+                    <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                        <x-heroicon-o-x-mark class="h-5 w-5" />
+                    </button>
+                </div>
+
+                <div class="space-y-4 px-6 py-5">
+                    <div class="grid grid-cols-2 gap-4" data-tour="evidence-claim">
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Modul</label>
+                            <select wire:model="module_key" data-field="module_key" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                                <option value="">Pilih modul...</option>
+                                @foreach ($modules as $key => $label)
+                                    <option value="{{ $key }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('module_key') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Level yang diklaim</label>
+                            <select wire:model="target_level" data-field="target_level" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                                @foreach ($levels as $no => $level)
+                                    <option value="{{ $no }}">Level {{ $no }} — {{ $level['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4" data-tour="evidence-meta">
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Judul dokumen <span class="font-normal text-gray-400">(opsional)</span></label>
+                        <input type="text" wire:model="title" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                    </div>
+
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">OPD / unit kerja pengirim</label>
+                        <input type="text" wire:model="unit_name" data-field="unit_name" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                    </div>
+                    </div>
+
+                    <div data-tour="evidence-file" data-sample-url="{{ route('evidence.sample') }}">
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Berkas PDF</label>
+                        <input
+                            type="file"
+                            wire:model="document"
+                            accept="application/pdf"
+                            class="block w-full text-sm text-gray-600 file:mr-3 file:rounded-full file:border-0 file:bg-brand-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-200"
+                        >
+                        @error('document') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        <div wire:loading wire:target="document" class="mt-1 text-xs text-gray-400">Mengunggah...</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
+                    <span wire:loading wire:target="save" class="mr-auto text-xs text-gray-500">Menilai...</span>
+                    <button type="button" wire:click="close" class="rounded-full px-4 py-2 text-sm font-medium text-gray-600 hover:bg-slate-50">Batal</button>
+                    <button type="submit" data-tour="evidence-submit" wire:loading.attr="disabled" wire:target="save,document" class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 disabled:opacity-60">
+                        Unggah & Nilai
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
