@@ -25,7 +25,7 @@
             <form wire:submit.prevent="save">
                 <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
                     <h2 class="text-lg font-semibold text-gray-900">{{ $ticketId ? 'Ubah Tiket' : 'Tiket Baru' }}</h2>
-                    <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                    <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600">
                         <x-heroicon-o-x-mark class="h-5 w-5" />
                     </button>
                 </div>
@@ -190,16 +190,16 @@
                     </div>
 
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Kode Legacy <span class="text-gray-400">(opsional)</span></label>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Kode Lama <span class="text-gray-400">(opsional)</span></label>
                         <input type="text" wire:model="legacy_code" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500">
                     </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4" data-tour="ticket-actions">
-                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95">
+                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:bg-slate-50">
                         Batal
                     </button>
-                    <button type="submit" x-ripple wire:loading.attr="disabled" wire:target="save,analyze" class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95 disabled:opacity-60">
+                    <button type="submit" x-ripple wire:loading.attr="disabled" wire:target="save,analyze" class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring disabled:opacity-60">
                         <span wire:loading.remove wire:target="save">Simpan</span>
                         <span wire:loading wire:target="save">Menyimpan...</span>
                     </button>

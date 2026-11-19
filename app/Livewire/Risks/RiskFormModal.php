@@ -15,6 +15,7 @@ use App\Models\Risk;
 use App\Services\RiskLevelService;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Support\SaveNotice;
 
 class RiskFormModal extends Component
 {
@@ -170,6 +171,7 @@ class RiskFormModal extends Component
     public function save(): void
     {
         $this->ensureCanWrite();
+        $since = SaveNotice::since();
 
         $validated = $this->validate();
 
@@ -186,14 +188,15 @@ class RiskFormModal extends Component
         $payload['verification_status'] = auth()->user()?->canAutoVerify('risiko') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->riskId) {
-            Risk::findOrFail($this->riskId)->update($payload);
+            $saved = Risk::findOrFail($this->riskId);
+            $saved->update($payload);
         } else {
-            Risk::create($payload);
+            $saved = Risk::create($payload);
         }
 
         $this->show = false;
         $this->dispatch('risk-saved');
-        $this->dispatch('toast', message: $this->riskId ? 'Risiko diperbarui.' : 'Risiko baru ditambahkan.');
+        $this->dispatch('toast', message: SaveNotice::make($this->riskId ? 'Risiko diperbarui.' : 'Risiko baru ditambahkan.', 'risiko', $saved->refresh(), $since));
     }
 
     public function close(): void

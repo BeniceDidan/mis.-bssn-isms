@@ -12,6 +12,7 @@ use App\Models\Change;
 use App\Models\HrRisk;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Support\SaveNotice;
 
 class ChangeFormModal extends Component
 {
@@ -113,6 +114,7 @@ class ChangeFormModal extends Component
     public function save(): void
     {
         $this->ensureCanWrite();
+        $since = SaveNotice::since();
 
         $validated = $this->validate();
 
@@ -128,14 +130,15 @@ class ChangeFormModal extends Component
         $payload['verification_status'] = auth()->user()?->canAutoVerify('perubahan') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->changeId) {
-            Change::findOrFail($this->changeId)->update($payload);
+            $saved = Change::findOrFail($this->changeId);
+            $saved->update($payload);
         } else {
-            Change::create($payload);
+            $saved = Change::create($payload);
         }
 
         $this->show = false;
         $this->dispatch('change-saved');
-        $this->dispatch('toast', message: $this->changeId ? 'Perubahan diperbarui.' : 'Perubahan baru ditambahkan.');
+        $this->dispatch('toast', message: SaveNotice::make($this->changeId ? 'Perubahan diperbarui.' : 'Perubahan baru ditambahkan.', 'perubahan', $saved->refresh(), $since));
     }
 
     public function close(): void

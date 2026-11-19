@@ -202,6 +202,10 @@ class AppAssistant
         if ($intent['admin']) {
             return $this->adminAnswer($context);
         }
+        // Arti istilah ("MTTR itu apa?", "riwayat terkait itu apa?"): teks panduan apa adanya.
+        if (($define = $this->definitionAnswer($flat, $intent)) !== null) {
+            return $define;
+        }
         if ($intent['history'] && ($logAnswer = $this->historyAnswer($flat, $moduleKey, $terms)) !== null) {
             return $logAnswer;
         }
@@ -210,7 +214,8 @@ class AppAssistant
         if ($intent['upload'] && ($upload = $this->uploadAnswer($flat)) !== null) {
             return $upload;
         }
-        if ($intent['connect'] && ($connection = $this->connectionAnswer($flat, $moduleKey, $terms)) !== null) {
+        // "Dasar resmi alur integrasi apa?" menanyakan rujukan, bukan alurnya.
+        if ($intent['connect'] && $intent['research'] !== 'strong' && ($connection = $this->connectionAnswer($flat, $moduleKey, $terms)) !== null) {
             return $connection;
         }
 
@@ -388,7 +393,7 @@ class AppAssistant
             'search' => (bool) preg_match('/\b(cari|carikan|temukan|tampilkan|tunjukkan|daftar)\b/u', $context),
             'who' => (bool) preg_match('/\bsiapa\b/u', $latest),
             'admin' => (bool) preg_match('/\bsiapa\b.*\badmin\b|\b(daftar|nama|semua) admin\b|\badmin\b.*\bsiapa\b/u', $latest),
-            'history' => (bool) preg_match('/\b(riwayat|histori|log aktivitas|aktivitas terakhir|aktivitas terbaru)\b|\bsiapa\b.*\b(mengubah|ubah|menambah|menambahkan|membuat|menginput|input|mengarsipkan|menghapus|hapus)\b|\bkapan\b.*\b(diubah|dibuat|ditambahkan|diarsipkan|diperbarui|diinput)\b/u', $latest),
+            'history' => (bool) preg_match('/\b(riwayat(?! terkait)|histori|log aktivitas|aktivitas terakhir|aktivitas terbaru)\b|\bsiapa\b.*\b(mengubah|ubah|menambah|menambahkan|membuat|menginput|input|mengarsipkan|menghapus|hapus)\b|\bkapan\b.*\b(diubah|dibuat|ditambahkan|diarsipkan|diperbarui|diinput)\b/u', $latest),
             'connect' => self::wantsConnection($latest),
             'upload' => self::mentionsOwnUpload($latest),
             'research' => self::researchIntent($latest, (bool) preg_match('/\b(berkas|dokumen|pdf|unduh|download|lampiran|templat|template)\b/u', $latest)),
@@ -989,10 +994,49 @@ class AppAssistant
     // Panduan, berkas, dan isi dokumen
     // ------------------------------------------------------------------
 
+    /**
+     * "X itu apa?" / "apa itu X?" / "arti X": dijawab dari panduan bila ada
+     * entri yang judul atau kata kuncinya memuat istilah itu. Tanpa LLM,
+     * supaya arti istilah tidak dikarang ulang.
+     */
+    private function definitionAnswer(string $flat, array $intent): ?array
+    {
+        if (! preg_match('/\b(apa itu|itu apa|apa maksud|maksudnya apa|maksud dari|apa arti|artinya apa|arti dari|pengertian)\b/u', $flat)
+            || $intent['code'] || $intent['count'] || $intent['list'] || $intent['research'] === 'strong') {
+            return null;
+        }
+        // Istilah yang seluruhnya kata umum ("riwayat terkait") dicocokkan sebagai frasa ke judul/kata kunci panduan.
+        $subject = trim(preg_replace('/\s+/u', ' ', preg_replace('/\b(apa itu|itu apa|apa maksud|maksudnya apa|maksud dari|apa arti|artinya apa|arti dari|pengertian|sih|ya|dong|kak)\b/u', ' ', $flat)));
+        if (mb_strlen($subject) >= 3) {
+            $phrase = collect(AppHelp::entries())->first(fn ($e) => str_contains(self::normalize($e['title'] . ' ' . $e['words']), $subject));
+            if ($phrase !== null) {
+                return ['answer' => $phrase['text'], 'engine' => 'Panduan aplikasi', 'links' => $this->links(collect(), collect(), collect([$phrase]))];
+            }
+        }
+        $terms = self::terms($flat);
+        if ($terms === []) {
+            return null;
+        }
+        $need = max(1, (int) ceil(count($terms) / 2));
+        $words = collect(AppHelp::entries())->pluck('words', 'title');
+        $top = $this->searchHelp($flat, $this->llm->embed([$flat])[0] ?? null)
+            ->first(fn ($h) => count(array_intersect($terms, self::terms($h['title'] . ' ' . ($words[$h['title']] ?? '')))) >= $need);
+        if ($top === null) {
+            return null;
+        }
+
+        return ['answer' => $top['text'], 'engine' => 'Panduan aplikasi', 'links' => $this->links(collect(), collect(), collect([$top]))];
+    }
+
     /** @return Collection<int, array{title: string, text: string, url: ?string, page: ?string, score: float, strong: bool}> */
     private function searchHelp(string $question, ?array $queryVector): Collection
     {
         $entries = AppHelp::entries();
+        // Entri "Setelah …" (IntegrationMap::EVENTS) tidak boleh menyalip panduan
+        // cara pakai: "cara impor aset dari Excel" bukan "impor Excel lalu ke mana".
+        if (! preg_match('/\b(setelah|sesudah|habis|kemana|ke mana|terjadi|alur|dikirim|datang|nyambung|otomatis)\b/u', $question)) {
+            $entries = array_values(array_filter($entries, fn ($e) => empty($e['event'])));
+        }
         $vectors = $queryVector ? $this->helpVectors($entries) : null;
         $terms = self::terms($question);
 

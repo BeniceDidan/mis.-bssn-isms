@@ -86,9 +86,9 @@ class AssistantConnectionsTest extends TestCase
         $result = (new AppAssistant())->answer('Modul SDM terhubung ke modul apa?');
 
         $this->assertStringStartsWith('Manajemen SDM terhubung lewat Kode Personil.', $result['answer']);
-        $this->assertStringContainsString('• Manajemen Risiko (otomatis):', $result['answer']);
+        $this->assertStringContainsString('• Ke Manajemen Risiko (otomatis):', $result['answer']);
         $this->assertStringNotContainsString('Asisten (', $result['answer']);
-        $this->assertSame('Titik integrasi aplikasi', $result['engine']);
+        $this->assertSame('Alur data aplikasi', $result['engine']);
         $this->assertSame([route('hr-risks.index')], array_column($result['links'], 'url'));
     }
 
@@ -129,7 +129,7 @@ class AssistantConnectionsTest extends TestCase
         $this->assertStringContainsString('• Risiko: RSK-UJI-0001 · Kegagalan disk server', $asset['answer']);
         $this->assertMatchesRegularExpression('/• Layanan: LYN-\S+ · Layanan Website Resmi/u', $asset['answer']);
         $this->assertStringContainsString('• Tiket helpdesk:', $asset['answer']);
-        $this->assertSame('Titik integrasi dari basis data', $asset['engine']);
+        $this->assertSame('Alur data dari basis data', $asset['engine']);
 
         $risk = $a->answer('Risiko RSK-UJI-0001 memicu apa saja?')['answer'];
         foreach (['Program keamanan (dibuat otomatis)', 'Perubahan (dibuat otomatis)', 'Data & informasi (dibuat otomatis)', 'Tiket helpdesk (dibuat otomatis)'] as $line) {

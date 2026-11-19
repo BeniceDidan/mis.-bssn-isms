@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use App\Support\SaveNotice;
 
 class KnowledgeFormModal extends Component
 {
@@ -141,6 +142,7 @@ class KnowledgeFormModal extends Component
     public function save(): void
     {
         $this->ensureCanWrite();
+        $since = SaveNotice::since();
 
         $validated = $this->validate();
 
@@ -188,7 +190,7 @@ class KnowledgeFormModal extends Component
 
         $this->show = false;
         $this->dispatch('knowledge-saved');
-        $this->dispatch('toast', message: $this->recordId ? 'Dokumen diperbarui.' : 'Dokumen baru ditambahkan.');
+        $this->dispatch('toast', message: SaveNotice::make($this->recordId ? 'Dokumen diperbarui.' : 'Dokumen baru ditambahkan.', 'pengetahuan', $record->refresh(), $since));
     }
 
     public function close(): void

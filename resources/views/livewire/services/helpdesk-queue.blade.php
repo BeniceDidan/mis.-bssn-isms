@@ -32,11 +32,11 @@
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-white">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Prioritas</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Tiket</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Kategori</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Layanan</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Prioritas</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Tiket</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Kategori</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Layanan</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">

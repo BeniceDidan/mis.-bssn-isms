@@ -1,9 +1,9 @@
-<div class="space-y-4" x-data="{ toast: null }" x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)">
+<div class="space-y-4" x-data="{ toast: null }" x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, Math.min(9000, Math.max(3000, $event.detail.message.length * 55)))">
 
     <div class="glass-panel flex flex-col gap-3 rounded-2xl p-4 shadow-lg md:flex-row md:flex-wrap md:items-center md:justify-center md:gap-6">
         <div class="relative w-full md:max-w-sm" x-data="{ focused: false }">
             <x-heroicon-o-magnifying-glass class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 transition-all duration-300 ease-spring" x-bind:class="focused ? 'text-brand-500 scale-125' : ''" />
-            <input type="search" wire:model.live.debounce.300ms="search" placeholder="Cari risiko, area dampak..." class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400" @focus="focused = true" @blur="focused = false">
+            <input type="search" wire:model.live.debounce.300ms="search" placeholder="Cari risiko, area dampak..." class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400" @focus="focused = true" @blur="focused = false">
         </div>
         <div class="flex flex-wrap items-center gap-2">
             <select wire:model.live="levelFilter" class="rounded-full border-slate-200 bg-white text-sm transition-all duration-300 ease-spring hover:bg-slate-50 focus:border-brand-400 focus:ring-brand-400">
@@ -24,11 +24,11 @@
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="sticky top-0 z-10 bg-white ">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Pernyataan Risiko</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Aset Terkait</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Skor</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Level</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Aksi</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Pernyataan Risiko</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Aset Terkait</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Skor</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Level</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500">Aksi</th>
                     </tr>
                 </thead>
                 <tbody wire:loading wire:target="search,levelFilter,showArchived,previousPage,nextPage,gotoPage" class="divide-y divide-slate-200">
@@ -98,7 +98,7 @@
                             <p class="text-xs font-mono text-gray-400">{{ $viewingRecord->record_code }}</p>
                             <h2 class="text-lg font-semibold text-gray-900">{{ \Illuminate\Support\Str::limit($viewingRecord->pernyataan_risiko, 60) }}</h2>
                         </div>
-                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600">
                             <x-heroicon-o-x-mark class="h-5 w-5" />
                         </button>
                     </div>
@@ -114,8 +114,8 @@
                             'Tingkat Risiko Bawaan' => $viewingRecord->tingkat_risiko_bawaan?->label(),
                             'Rencana Mitigasi' => $viewingRecord->rencana_mitigasi,
                             'Penanggung Jawab' => $viewingRecord->penanggung_jawab,
-                            'Tingkat Residual Risk' => $viewingRecord->tingkat_residual_risk?->label(),
-                            'Kode Legacy' => $viewingRecord->legacy_code,
+                            'Tingkat Risiko Sisa' => $viewingRecord->tingkat_residual_risk?->label(),
+                            'Kode Lama' => $viewingRecord->legacy_code,
                         ] as $label => $value)
                             <div class="grid grid-cols-2 gap-2 py-2.5 text-sm">
                                 <dt class="text-gray-500">{{ $label }}</dt>
@@ -126,7 +126,7 @@
 
                     @if ($viewingRecord->verifications->isNotEmpty())
                         <div class="border-t border-slate-200 px-5 py-4">
-                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Riwayat Verifikasi</p>
+                            <p class="mb-2 text-xs font-semibold text-gray-400">Riwayat Verifikasi</p>
                             <div class="space-y-2">
                                 @foreach ($viewingRecord->verifications as $verification)
                                     <div class="rounded-lg bg-white px-3 py-2 text-xs">
@@ -148,7 +148,7 @@
         </div>
     </div>
 
-    <div x-show="toast" x-transition:enter="transition ease-spring duration-400" x-transition:enter-start="opacity-0 translate-y-6 scale-90" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 translate-y-4 scale-90" x-cloak class="glass-panel-dark fixed bottom-5 right-5 z-50 rounded-full px-4 py-2.5 text-sm text-white shadow-2xl">
+    <div x-show="toast" x-transition:enter="transition ease-spring duration-400" x-transition:enter-start="opacity-0 translate-y-6 scale-90" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 translate-y-4 scale-90" x-cloak class="glass-panel-dark fixed bottom-5 right-5 z-50 max-w-sm rounded-2xl px-4 py-2.5 text-sm leading-snug text-white shadow-2xl">
         <span x-text="toast"></span>
     </div>
 </div>

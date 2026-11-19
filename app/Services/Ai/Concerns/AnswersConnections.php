@@ -38,6 +38,7 @@ trait AnswersConnections
         'berkaitan', 'berhubungan', 'hubungan', 'terjadi', 'efek', 'efeknya', 'dampaknya', 'pengaruh', 'pengaruhnya', 'memicu',
         'dimanfaatkan', 'larinya', 'kalau', 'jika', 'bila', 'apabila', 'nanti', 'titik', 'unggah', 'diunggah', 'mengunggah', 'impor',
         'diimpor', 'excel', 'naik', 'menjadi', 'diarsipkan', 'arsip', 'dihapus', 'hapus', 'barusan', 'tadi', 'kemana', 'sop',
+        'alur', 'simpan', 'disimpan', 'menyimpan', 'datanya', 'habis', 'setelah', 'sesudah', 'dikirim', 'datang',
     ];
 
     private const INTEGRATION_OVERVIEW = "Semua modul tersambung lewat dua kunci: Kode Aset dan Kode Personil.\n"
@@ -58,7 +59,7 @@ trait AnswersConnections
     private static function wantsConnection(string $text): bool
     {
         // "integrasi" saja tidak cukup: "syarat permohonan integrasi API" adalah isi dokumen (uji 18 Nov 2026).
-        return (bool) preg_match('/\b(tersambung|nyambung|menyambung|sambungan|terhubung|terkoneksi|titik integrasi|integrasi antar ?modul|integrasi modul|integrasi lintas modul|integrasinya|terintegrasi (?:dengan apa|ke mana)|keterkaitan|berkaitan dengan apa|terkait (?:apa|ke mana|dengan apa)|berhubungan dengan apa|ke mana saja|masuk ke mana|larinya ke mana|dipakai di mana|digunakan di mana|dipakai untuk apa|dimanfaatkan di mana|apa yang terjadi|yang terjadi (?:kalau|jika|bila|apabila)|efeknya|dampaknya ke|pengaruhnya|memicu apa)\b/u', $text);
+        return (bool) preg_match('/\b(tersambung|nyambung|menyambung|sambungan|terhubung|terkoneksi|titik integrasi|integrasi antar ?modul|integrasi modul|integrasi lintas modul|integrasinya|terintegrasi (?:dengan apa|ke mana)|keterkaitan|berkaitan dengan apa|terkait (?:apa|ke mana|dengan apa)|berhubungan dengan apa|ke mana saja|masuk ke mana|larinya ke mana|dipakai di mana|digunakan di mana|dipakai untuk apa|dimanfaatkan di mana|apa yang terjadi|yang terjadi (?:kalau|jika|bila|apabila)|efeknya|dampaknya ke|pengaruhnya|memicu apa|alur data|alurnya|alur (?:modul|manajemen|integrasi)|(?:habis|setelah|sesudah) (?:saya |di)?simpan\w*|datanya (?:ke ?mana|dikirim)|dikirim ke ?mana|datang dari mana)\b/u', $text);
     }
 
     /** "File yang barusan saya unggah", "impor Excel tadi" — bukan "kalau saya unggah". */
@@ -109,13 +110,21 @@ trait AnswersConnections
         }
 
         if ($candidates->isEmpty()) {
+            // Belum ada unggahan dari akun ini: tetap jelaskan alurnya secara umum.
+            $general = collect(IntegrationMap::EVENTS)->first(fn ($e) => match ($want) {
+                'bukti' => str_contains($e['action'], 'bukti dukung'),
+                'impor' => str_contains($e['action'], 'Excel'),
+                'pengetahuan' => str_contains($e['action'], 'Aset Pengetahuan'),
+                default => false,
+            });
+
             return [
                 'answer' => match ($want) {
                     'bukti' => 'Belum ada bukti dukung yang diunggah dari akun ini.',
                     'impor' => 'Belum ada impor Excel dari akun ini.',
                     'pengetahuan' => 'Belum ada PDF pengetahuan yang diunggah dari akun ini.',
                     default => 'Belum ada berkas yang diunggah dari akun ini.',
-                },
+                } . ($general ? "\nSecara umum: " . $general['result'] : ''),
                 'engine' => 'Langsung dari basis data',
                 'links' => [],
             ];
@@ -171,7 +180,7 @@ trait AnswersConnections
             $lines[] = '• Menunggu verifikasi admin Manajemen Pengetahuan.';
         }
 
-        return ['answer' => $head . "\n" . implode("\n", $lines), 'engine' => 'Titik integrasi dari basis data', 'links' => $this->connectionLinks($links)];
+        return ['answer' => $head . "\n" . implode("\n", $lines), 'engine' => 'Alur data dari basis data', 'links' => $this->connectionLinks($links)];
     }
 
     private function evidenceConnections(EvidenceDocument $doc, bool $upload): array
@@ -208,7 +217,7 @@ trait AnswersConnections
             ['kind' => 'page', 'title' => 'Buka Evaluasi Bukti Dukung', 'meta' => null, 'url' => route('evidence.index')],
         ]);
 
-        return ['answer' => $head . "\n" . implode("\n", $lines), 'engine' => 'Titik integrasi dari basis data', 'links' => $this->connectionLinks($links)];
+        return ['answer' => $head . "\n" . implode("\n", $lines), 'engine' => 'Alur data dari basis data', 'links' => $this->connectionLinks($links)];
     }
 
     private function importConnections(ImportLog $import): array
@@ -266,7 +275,7 @@ trait AnswersConnections
 
         $links = collect([['kind' => 'page', 'title' => "Buka {$module}", 'meta' => null, 'url' => route(AppHelp::MODULE_ROUTES[$import->module_key])]]);
 
-        return ['answer' => $head . ($lines ? "\n" . implode("\n", $lines) : ''), 'engine' => 'Titik integrasi dari basis data', 'links' => $this->connectionLinks($links)];
+        return ['answer' => $head . ($lines ? "\n" . implode("\n", $lines) : ''), 'engine' => 'Alur data dari basis data', 'links' => $this->connectionLinks($links)];
     }
 
     // ------------------------------------------------------------------
@@ -283,7 +292,7 @@ trait AnswersConnections
         if ($moduleKey === 'bukti') {
             return [
                 'answer' => self::EVIDENCE_FLOW,
-                'engine' => 'Titik integrasi aplikasi',
+                'engine' => 'Alur data aplikasi',
                 'links' => [['kind' => 'page', 'title' => 'Buka Evaluasi Bukti Dukung', 'meta' => null, 'url' => route('evidence.index')]],
             ];
         }
@@ -293,7 +302,7 @@ trait AnswersConnections
         // Tanpa modul dan tanpa data: hanya pertanyaan integrasi yang tegas
         // ("apa yang terjadi kalau server mati" bukan pertanyaan integrasi).
         if (preg_match('/\b(integrasi|terintegrasi|terhubung|tersambung|nyambung|keterkaitan|antarmodul|antar modul|lintas modul)\b/u', $text)) {
-            return ['answer' => self::INTEGRATION_OVERVIEW, 'engine' => 'Titik integrasi aplikasi', 'links' => []];
+            return ['answer' => self::INTEGRATION_OVERVIEW, 'engine' => 'Alur data aplikasi', 'links' => []];
         }
 
         return null;
@@ -401,7 +410,7 @@ trait AnswersConnections
                 $answer .= ' Isi Aset Terkait supaya tampil di Riwayat Terkait aset.';
             }
 
-            return ['answer' => $answer, 'engine' => 'Titik integrasi dari basis data', 'links' => $this->connectionLinks(collect([$item]))];
+            return ['answer' => $answer, 'engine' => 'Alur data dari basis data', 'links' => $this->connectionLinks(collect([$item]))];
         }
 
         $lines = collect($groups)->map(fn ($g) => $g[1]->count() === 1
@@ -411,7 +420,7 @@ trait AnswersConnections
 
         return [
             'answer' => "{$item['title']} terhubung ke:\n" . $lines->implode("\n"),
-            'engine' => 'Titik integrasi dari basis data',
+            'engine' => 'Alur data dari basis data',
             'links' => $this->connectionLinks($links, 12),
         ];
     }
@@ -435,6 +444,18 @@ trait AnswersConnections
         } elseif (preg_match('/\b(kritis|tinggi)\b/u', $text)) {
             // "Kalau risiko jadi kritis …": semua akibat otomatis (tindak lanjut, tiket, analisis AI).
             $focus = fn ($f) => $f['type'] === 'auto';
+        } elseif (preg_match('/\b(?:habis|setelah|sesudah) (?:saya |di)?simpan\w*|\bdisimpan\b|\bmenyimpan\b/u', $text)
+            && ($events = $this->eventsFor($map['label']))->isNotEmpty()) {
+            // "Habis saya simpan risiko, datanya ke mana?": kejadian nyata setelah simpan.
+            return [
+                'answer' => "Setelah disimpan di {$map['label']}:\n" . $events->map(fn ($e) => '• ' . $e['action'] . ': ' . $e['result'])->implode("\n"),
+                'engine' => 'Alur data aplikasi',
+                'links' => [['kind' => 'page', 'title' => 'Buka Panduan', 'meta' => null, 'url' => route('guide.index') . '#alur']],
+            ];
+        } elseif (preg_match('/\btiket\b/u', $text) && $mapKey === 'layanan') {
+            $focus = fn ($f) => str_contains($f['text'], 'tiket');
+        } elseif (preg_match('/\bkritikalitas\b/u', $text)) {
+            $focus = fn ($f) => str_contains($f['text'], 'kritikalitas');
         } elseif (preg_match('/\b(impor|diimpor|excel)\b/u', $text)) {
             $focus = fn ($f) => (bool) preg_match('/impor|excel/iu', $f['to'] . ' ' . $f['text']);
         } elseif (preg_match('/\b(unggah|diunggah|mengunggah|pdf|sop|dokumen)\b/u', $text)) {
@@ -446,7 +467,7 @@ trait AnswersConnections
             $focus = $picked->isNotEmpty() ? 'skenario' : null;
         }
 
-        $lines = $flows->map(fn ($f) => '• ' . Str::ucfirst($f['to']) . ' (' . ($f['type'] === 'auto' ? 'otomatis' : 'diisi manual') . '): ' . $f['text']);
+        $lines = $flows->map(fn ($f) => '• ' . Str::ucfirst(IntegrationMap::direction($f)) . ' (' . ($f['type'] === 'auto' ? 'otomatis' : 'bila kolomnya diisi') . '): ' . $f['text']);
         if (! empty($map['warning']) && ($focus === null || $focus === 'arsip')) {
             $lines->push(($focus === 'arsip' ? '' : 'Perhatian: ') . $map['warning']);
         }
@@ -454,9 +475,21 @@ trait AnswersConnections
 
         return [
             'answer' => trim(($head ? $head . "\n" : '') . $lines->implode("\n")),
-            'engine' => 'Titik integrasi aplikasi',
+            'engine' => 'Alur data aplikasi',
             'links' => [['kind' => 'page', 'title' => 'Buka ' . $map['label'], 'meta' => null, 'url' => route(AppHelp::MODULE_ROUTES[$mapKey])]],
         ];
+    }
+
+    /** Kejadian di IntegrationMap::EVENTS yang terjadi di modul ini, plus verifikasi (berlaku di semua modul). */
+    private function eventsFor(string $label): Collection
+    {
+        $short = trim(str_replace('Manajemen ', '', $label));
+
+        return collect(IntegrationMap::EVENTS)
+            ->filter(fn ($e) => $e['where'] === $label || $e['where'] === 'Semua modul'
+                || in_array($short, array_map('trim', explode(',', $e['where'])), true))
+            ->sortBy(fn ($e) => $e['where'] === 'Semua modul' ? 1 : 0)
+            ->values();
     }
 
     private function connectionLinks(Collection $links, int $take = 8): array

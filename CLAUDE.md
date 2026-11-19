@@ -510,6 +510,48 @@ tidak diubah. Aturannya:
 - Konversi massal dilakukan dengan skrip regex (bukan disimpan di repo);
   view baru cukup memakai kelas `brand-*`, `slate-*`, `gray-*`, `red-*`.
 
+## Alur data dan bahasa tampilan (19 November 2026)
+
+Permintaan pengguna: kata-kata di 8 modul lebih manusiawi, alur antarmodul
+"ini ke mana, habis ini ke mana" sangat jelas, semua bisa ditanyakan ke
+Asisten, tampilan rapi tanpa teks pengisi, dan **setiap hal punya dasar
+resmi**. Dasarnya di `docs/riset/06-alur-dan-bahasa.md` (DRAF): Permenkomdigi
+6/2025 Pasal 9 ayat (5) (rancang bangun memuat alur proses, keterhubungan
+fungsi, antarmuka, kendali validasi, integrasi), Pasal 17 (helpdesk + FAQ),
+Pasal 19 (manual pengguna); Perpres 63/2019 Pasal 2, 25, 28 (bahasa
+Indonesia di sistem informasi pelayanan); Perpres 95/2018 Pasal 2, 47–54.
+
+- **Satu sumber alur: `App\Support\IntegrationMap`.** `MAP[modul]['flows']`
+  punya `dir` (`out` dikirim ke / `in` datang dari) dan `type` (`auto` /
+  `manual` = "Bila kolomnya diisi"); `EVENTS` = tabel "Setelah Anda
+  menyimpan, datanya ke mana". Dipakai pop-out **Alur Data**
+  (`components/integration-map`, dulu "Titik Integrasi"), halaman Panduan
+  (`guide/index`, ditulis ulang), `AppHelp` (entri "Setelah …" ditandai
+  `event` dan hanya ikut dicari bila pertanyaan menyebut setelah/alur/ke
+  mana), dan `AnswersConnections`. Ubah perilaku → ubah kalimat di sini.
+- **Pesan setelah simpan** (`App\Support\SaveNotice`) di 8 form utama:
+  status verifikasi, aset tujuan, dan tindak lanjut yang **benar-benar**
+  dibuat pada penyimpanan itu (dicek di DB sejak `SaveNotice::since()`).
+  Toast kini `max-w-sm rounded-2xl`, lama tampil mengikuti panjang pesan.
+- **Tampilan bersama:** kotak isian diberi garis lewat `@layer base` di
+  `app.css` (view memakai `border-gray-300` tanpa lebar garis, jadi dulu
+  tak bergaris); kartu angka putih polos; daftar aktivitas lewat
+  `x-activity-feed` (menulis "dari Manajemen …" untuk kejadian lintas
+  modul); waktu relatif Bahasa Indonesia (`Carbon::setLocale('id')` di
+  AppServiceProvider); huruf kapital semua, subjudul modul, label AKTIF,
+  dan efek tombol membesar/berputar dihapus.
+- **Istilah:** Kemungkinan, Dampak, Unit Pemilik, Pengelola Layanan,
+  Tingkat Risiko Sisa, Target Ketersediaan, Ketersediaan Tercapai, Rata-rata
+  Waktu Pemulihan, Penanggung Jawab, Kode Lama, Kolom Tambahan (dulu Data
+  Dinamis), Mayor/Minor, "Manajemen Data & Informasi". Nama kolom DB tidak
+  berubah.
+- **Asisten:** pertanyaan "X itu apa?" dijawab teks panduan apa adanya
+  (`definitionAnswer`, juga mencocokkan frasa yang semuanya kata umum
+  seperti "riwayat terkait"); "habis simpan X ke mana" dijawab dari
+  `EVENTS`; "dasar resmi …" ke riset, bukan ke peta alur; "riwayat
+  terkait" bukan pertanyaan riwayat aktivitas. Teks modul di `AppHelp`
+  memuat tujuan resmi Perpres 95/2018. Tes: `tests/Feature/DataFlowTest.php`.
+
 ## Konteks lintas proyek
 
 Ada di vault Obsidian di `C:\Users\benic\Documents\Obsidian Vault`. Mulai dari `MOC - Memori Bos Didan.md`; catatan repo ini di `02-Projects/Lainnya/BSSN ISMS.md`.

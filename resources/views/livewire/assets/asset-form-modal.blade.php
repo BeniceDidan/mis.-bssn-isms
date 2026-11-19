@@ -44,7 +44,7 @@
                     <h2 class="text-lg font-semibold text-gray-900">
                         {{ $assetId ? 'Ubah Aset' : 'Aset Baru' }}
                     </h2>
-                    <button type="button" wire:click="close" data-tour="modal-close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                    <button type="button" wire:click="close" data-tour="modal-close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600">
                         <x-heroicon-o-x-mark class="h-5 w-5" />
                     </button>
                 </div>
@@ -66,7 +66,7 @@
                             <label class="mb-1 block text-sm font-medium text-gray-700">
                                 Kritikalitas
                                 @if ($this->computedCriticality())
-                                    <span class="ml-1 text-[10px] font-normal uppercase tracking-wide text-brand-600">Dihitung otomatis</span>
+                                    <span class="ml-1 text-[10px] font-normal text-brand-600">Dihitung otomatis</span>
                                 @endif
                             </label>
                             @if ($this->computedCriticality())
@@ -173,13 +173,13 @@
 
                     <div data-tour="personnel-field">
                         <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
-                        <input type="text" list="asset-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih dari SDM yang sudah ada, atau ketik kode baru" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
+                        <input type="text" list="asset-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
                         <datalist id="asset-personnel-suggestions">
                             @foreach ($hrRisks as $hrRisk)
                                 <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
                             @endforeach
                         </datalist>
-                        <p class="mt-1 text-[11px] text-gray-400">Ketik untuk melihat saran SDM yang sudah diinput, atau kode yang sama di modul lain untuk menautkannya secara pasti sebagai orang/pihak ketiga yang sama.</p>
+                        <p class="mt-1 text-[11px] text-gray-400">Kode yang sama di modul lain berarti orang yang sama. Kosongkan untuk dibuat otomatis.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -206,8 +206,8 @@
 
                     <div class="border-t border-gray-200 pt-4">
                         <div class="mb-2 flex items-center justify-between">
-                            <label class="text-sm font-medium text-gray-700">Data Dinamis (Spesifik Kategori)</label>
-                            <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700 active:scale-95">
+                            <label class="text-sm font-medium text-gray-700">Kolom Tambahan</label>
+                            <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700">
                                 <x-heroicon-o-plus class="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-90" /> Tambah Kolom
                             </button>
                         </div>
@@ -234,17 +234,17 @@
                             @endforeach
 
                             @if (empty($dynamicRows))
-                                <p class="text-xs text-gray-400">Belum ada kolom dinamis. Klik "Tambah Kolom" untuk menambahkan atribut spesifik kategori ini.</p>
+                                <p class="text-xs text-gray-400">Belum ada kolom tambahan.</p>
                             @endif
                         </div>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
-                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95">
+                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:bg-slate-50">
                         Batal
                     </button>
-                    <button type="submit" x-ripple class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95">
+                    <button type="submit" x-ripple class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring">
                         <span wire:loading.remove wire:target="save">Simpan</span>
                         <span wire:loading wire:target="save">Menyimpan...</span>
                     </button>

@@ -26,7 +26,7 @@
                     <h2 class="text-lg font-semibold text-gray-900">
                         {{ $recordId ? 'Ubah Peta Keahlian' : 'Peta Keahlian Baru' }}
                     </h2>
-                    <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                    <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600">
                         <x-heroicon-o-x-mark class="h-5 w-5" />
                     </button>
                 </div>
@@ -34,27 +34,27 @@
                 <div class="space-y-4 px-6 py-5">
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Nama Pegawai</label>
-                        <input type="text" wire:model="nama_pegawai" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
+                        <input type="text" wire:model="nama_pegawai" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                         @error('nama_pegawai') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Jabatan & Unit Kerja</label>
-                        <input type="text" wire:model="jabatan_unit" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
+                        <input type="text" wire:model="jabatan_unit" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                     </div>
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Keahlian Spesifik</label>
-                        <textarea wire:model="keahlian_spesifik" rows="2" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400"></textarea>
+                        <textarea wire:model="keahlian_spesifik" rows="2" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400"></textarea>
                     </div>
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Sertifikasi / Lisensi</label>
-                        <textarea wire:model="sertifikasi_lisensi" rows="2" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400"></textarea>
+                        <textarea wire:model="sertifikasi_lisensi" rows="2" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400"></textarea>
                     </div>
 
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Peran KM</label>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Peran</label>
                         <select wire:model="peran_km" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:border-brand-400 focus:ring-brand-400">
                             <option value="">Pilih peran...</option>
                             <option value="Mentor / SME">Mentor / SME</option>
@@ -65,21 +65,21 @@
 
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
-                        <input type="text" list="knowledge-expert-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih dari SDM yang sudah ada, atau ketik kode baru" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:ring-brand-400">
+                        <input type="text" list="knowledge-expert-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                         <datalist id="knowledge-expert-personnel-suggestions">
                             @foreach ($hrRisks as $hrRisk)
                                 <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
                             @endforeach
                         </datalist>
-                        <p class="mt-1 text-[11px] text-gray-400">Ketik untuk melihat saran SDM yang sudah diinput, atau kode yang sama di modul lain untuk menautkannya secara pasti sebagai orang yang sama.</p>
+                        <p class="mt-1 text-[11px] text-gray-400">Kode yang sama di modul lain berarti orang yang sama. Kosongkan untuk dibuat otomatis.</p>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
-                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95">
+                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:bg-slate-50">
                         Batal
                     </button>
-                    <button type="submit" x-ripple class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95">
+                    <button type="submit" x-ripple class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring">
                         <span wire:loading.remove wire:target="save">Simpan</span>
                         <span wire:loading wire:target="save">Menyimpan...</span>
                     </button>

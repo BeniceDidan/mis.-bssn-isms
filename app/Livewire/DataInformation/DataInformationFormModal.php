@@ -12,6 +12,7 @@ use App\Models\DataInformation;
 use App\Models\HrRisk;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Support\SaveNotice;
 
 class DataInformationFormModal extends Component
 {
@@ -113,6 +114,7 @@ class DataInformationFormModal extends Component
     public function save(): void
     {
         $this->ensureCanWrite();
+        $since = SaveNotice::since();
 
         $validated = $this->validate();
 
@@ -128,14 +130,15 @@ class DataInformationFormModal extends Component
         $payload['verification_status'] = auth()->user()?->canAutoVerify('data_informasi') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->recordId) {
-            DataInformation::findOrFail($this->recordId)->update($payload);
+            $saved = DataInformation::findOrFail($this->recordId);
+            $saved->update($payload);
         } else {
-            DataInformation::create($payload);
+            $saved = DataInformation::create($payload);
         }
 
         $this->show = false;
         $this->dispatch('data-information-saved');
-        $this->dispatch('toast', message: $this->recordId ? 'Catatan diperbarui.' : 'Catatan baru ditambahkan.');
+        $this->dispatch('toast', message: SaveNotice::make($this->recordId ? 'Catatan diperbarui.' : 'Catatan baru ditambahkan.', 'data_informasi', $saved->refresh(), $since));
     }
 
     public function close(): void

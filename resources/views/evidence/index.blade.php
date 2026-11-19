@@ -5,7 +5,7 @@
 @section('content')
     <div
         x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'hasil', toast: null }"
-        x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)"
+        x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, Math.min(9000, Math.max(3000, $event.detail.message.length * 55)))"
         class="space-y-4"
     >
         <div class="flex flex-wrap items-center justify-between gap-3">
@@ -64,7 +64,7 @@
             x-show="toast"
             x-transition
             x-cloak
-            class="fixed bottom-6 right-6 z-[60] rounded-full bg-slate-900/90 px-4 py-2 text-sm text-white shadow-xl"
+            class="fixed bottom-6 right-6 z-[60] max-w-sm rounded-2xl bg-slate-900 px-4 py-2 text-sm leading-snug text-white shadow-xl"
             x-text="toast"
         ></div>
     </div>

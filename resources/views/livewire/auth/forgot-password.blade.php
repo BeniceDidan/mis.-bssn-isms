@@ -18,7 +18,7 @@
                 wire:model="email"
                 autofocus
                 autocomplete="email"
-                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
+                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
             @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
@@ -26,7 +26,7 @@
         <button
             x-ripple
             type="submit"
-            class="w-full rounded-full bg-brand-700 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-[1.02] active:scale-95"
+            class="w-full rounded-full bg-brand-700 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring"
         >
             <span wire:loading.remove wire:target="sendResetLink">Kirim Tautan Reset</span>
             <span wire:loading wire:target="sendResetLink">Mengirim...</span>

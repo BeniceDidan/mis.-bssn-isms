@@ -47,7 +47,7 @@ trait AnswersFromResearch
     /** 'strong': jelas menanyakan riset; 'weak': "kenapa…", bandingkan dengan panduan; null: bukan. */
     private static function researchIntent(string $text, bool $fileIntent): ?string
     {
-        $strong = preg_match('/\b(riset|rujukan|rujukannya|referensi|referensinya|literatur|literasi|regulasi|regulasinya|peraturan|peraturannya|dasar hukum|landasan hukum|landasan|dasar aturan|dasar aturannya|aturan resmi|pedoman resmi|permen\w*|perpres|perban|permendagri|undang undang|iso|itil|nist|jurnal|paper|artikel|standar internasional|pasal|dicabut)\b/u', $text)
+        $strong = preg_match('/\b(riset|rujukan|rujukannya|referensi|referensinya|literatur|literasi|regulasi|regulasinya|peraturan|peraturannya|dasar hukum|landasan hukum|landasan|dasar aturan|dasar aturannya|aturan resmi|pedoman resmi|dasar resmi|dasar resminya|basis resmi|acuan resmi|permen\w*|perpres|perban|permendagri|undang undang|iso|itil|nist|jurnal|paper|artikel|standar internasional|pasal|dicabut)\b/u', $text)
             || preg_match('/\bsumber(?:nya)?\b(?!\s+(?:ancaman|risiko|daya|dana|data|jawaban))/u', $text)
             || self::regulationNeedle($text) !== null;
         if ($strong && (! $fileIntent || preg_match('/\briset\b/u', $text))) {

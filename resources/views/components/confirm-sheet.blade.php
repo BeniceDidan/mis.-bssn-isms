@@ -40,7 +40,7 @@
                 type="button"
                 x-ripple
                 @click="$store.confirm.cancel()"
-                class="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95"
+                class="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:bg-slate-50"
             >
                 Batal
             </button>
@@ -48,7 +48,7 @@
                 type="button"
                 x-ripple
                 @click="$store.confirm.confirm()"
-                class="flex-1 rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95"
+                class="flex-1 rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring"
                 x-bind:class="$store.confirm.tone === 'danger'
                     ? 'bg-brand-700 '
                     : 'bg-brand-700 '"

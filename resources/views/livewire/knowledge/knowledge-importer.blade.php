@@ -23,7 +23,7 @@
         >
             <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
                 <h2 class="text-lg font-semibold text-gray-900">Impor dari Excel</h2>
-                <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600">
                     <x-heroicon-o-x-mark class="h-5 w-5" />
                 </button>
             </div>
@@ -72,7 +72,7 @@
             </div>
 
             <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
-                <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95">
+                <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:bg-slate-50">
                     Tutup
                 </button>
                 <button
@@ -80,7 +80,7 @@
                     wire:loading.attr="disabled"
                     wire:target="import"
                     x-ripple
-                    class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95 disabled:opacity-50"
+                    class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring disabled:opacity-50"
                 >
                     <span wire:loading.remove wire:target="import">Impor</span>
                     <span wire:loading wire:target="import">Memproses...</span>

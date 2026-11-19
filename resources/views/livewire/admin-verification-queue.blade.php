@@ -1,7 +1,7 @@
 <div
     class="space-y-4"
     x-data="{ toast: null, open: {{ $pending->isNotEmpty() ? 'true' : 'false' }} }"
-    x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)"
+    x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, Math.min(9000, Math.max(3000, $event.detail.message.length * 55)))"
 >
     <button
         type="button"
@@ -34,11 +34,11 @@
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="sticky top-0 z-10 bg-white ">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Modul</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Kode</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Judul / Nama</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Diajukan</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Aksi</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Modul</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Kode</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Judul / Nama</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Diajukan</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">
@@ -59,7 +59,7 @@
                                             placeholder="{{ $decision === 'ditolak' ? 'Catatan koreksi (wajib)...' : 'Catatan (opsional)...' }}"
                                             class="w-56 rounded-full border-gray-300 text-xs focus:border-brand-500 focus:ring-brand-500"
                                         >
-                                        <button wire:click="confirmDecision" x-ripple class="rounded-full bg-gray-900 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 ease-spring hover:scale-105 active:scale-95">
+                                        <button wire:click="confirmDecision" x-ripple class="rounded-full bg-gray-900 px-3 py-1.5 text-xs font-medium text-white transition-all duration-300 ease-spring">
                                             Konfirmasi
                                         </button>
                                         <button wire:click="cancelDecision" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-gray-100 hover:text-gray-600">
@@ -110,7 +110,7 @@
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 translate-y-4 scale-90"
         x-cloak
-        class="glass-panel-dark fixed bottom-5 right-5 z-50 rounded-full px-4 py-2.5 text-sm text-white shadow-2xl"
+        class="glass-panel-dark fixed bottom-5 right-5 z-50 max-w-sm rounded-2xl px-4 py-2.5 text-sm leading-snug text-white shadow-2xl"
     >
         <span x-text="toast"></span>
     </div>

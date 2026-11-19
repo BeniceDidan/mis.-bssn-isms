@@ -14,7 +14,7 @@
                 x-ripple
                 @click="open = true; tab = 'kerja'"
                 title="Panduan {{ $guide['title'] }}"
-                class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-white active:scale-95"
+                class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-gray-700 transition-all duration-300 ease-spring hover:bg-white"
             >
                 <x-heroicon-o-book-open class="h-3.5 w-3.5" />
                 Panduan AI

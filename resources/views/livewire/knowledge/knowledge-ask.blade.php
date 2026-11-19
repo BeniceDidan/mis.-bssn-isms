@@ -11,7 +11,7 @@
                     class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400"
                 >
             </div>
-            <button type="submit" data-tour="ask-submit" wire:loading.attr="disabled" wire:target="ask" class="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 disabled:opacity-60">
+            <button type="submit" data-tour="ask-submit" wire:loading.attr="disabled" wire:target="ask" class="inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring disabled:opacity-60">
                 <span wire:loading.remove wire:target="ask">Tanya</span>
                 <span wire:loading wire:target="ask">Mencari...</span>
             </button>

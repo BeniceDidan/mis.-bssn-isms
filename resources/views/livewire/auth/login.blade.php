@@ -26,10 +26,10 @@
             <img
                 src="{{ asset('images/kominfo-logo.png') }}"
                 alt="Logo Kominfo"
-                class="relative h-16 w-16 object-contain drop-shadow-[0_6px_14px_rgba(30,58,138,0.4)] transition-transform duration-500 ease-spring hover:scale-110"
+                class="relative h-16 w-16 object-contain drop-shadow-[0_6px_14px_rgba(30,58,138,0.4)] transition-transform duration-500 ease-spring"
                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
             >
-            <div class="relative hidden h-16 w-16 items-center justify-center rounded-full bg-brand-700 text-2xl font-bold text-white shadow-lg transition-transform duration-500 ease-spring hover:scale-110">
+            <div class="relative hidden h-16 w-16 items-center justify-center rounded-full bg-brand-700 text-2xl font-bold text-white shadow-lg transition-transform duration-500 ease-spring">
                 K
             </div>
         </div>
@@ -61,7 +61,7 @@
                 autocapitalize="none"
                 autocorrect="off"
                 spellcheck="false"
-                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
+                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
             @error('login') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
@@ -72,7 +72,7 @@
                 type="password"
                 wire:model="password"
                 autocomplete="current-password"
-                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
+                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400"
             >
             @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
         </div>
@@ -90,7 +90,7 @@
         <button
             x-ripple
             type="submit"
-            class="w-full rounded-full bg-brand-700 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-[1.02] active:scale-95"
+            class="w-full rounded-full bg-brand-700 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring"
         >
             <span wire:loading.remove wire:target="authenticate">Masuk</span>
             <span wire:loading wire:target="authenticate">Memproses...</span>

@@ -1,4 +1,4 @@
-<div class="space-y-4" x-data="{ toast: null }" x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)">
+<div class="space-y-4" x-data="{ toast: null }" x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, Math.min(9000, Math.max(3000, $event.detail.message.length * 55)))">
 
     <div class="glass-panel flex flex-col gap-3 rounded-2xl p-4 shadow-lg md:flex-row md:flex-wrap md:items-center md:justify-center md:gap-6">
         <div class="relative w-full md:max-w-sm" x-data="{ focused: false }">
@@ -10,7 +10,7 @@
                 type="search"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Cari kode, judul, unit pemilik..."
-                class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
+                class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400"
                 @focus="focused = true"
                 @blur="focused = false"
             >
@@ -44,7 +44,7 @@
                         ] as $field => $label)
                             <th
                                 wire:click="sortBy('{{ $field }}')"
-                                class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 transition-all duration-200 hover:bg-slate-50 hover:text-gray-700"
+                                class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold text-gray-500 transition-all duration-200 hover:bg-slate-50 hover:text-gray-700"
                             >
                                 <span class="inline-flex items-center gap-1">
                                     {{ $label }}
@@ -57,8 +57,8 @@
                                 </span>
                             </th>
                         @endforeach
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Aset Terkait</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Aksi</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Aset Terkait</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500">Aksi</th>
                     </tr>
                 </thead>
                 <tbody wire:loading wire:target="search,typeFilter,showArchived,sortBy,previousPage,nextPage,gotoPage" class="divide-y divide-slate-200">
@@ -84,7 +84,7 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-3">
                                 @if ($record->knowledge_type)
-                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium transition-transform duration-300 ease-spring hover:scale-110 {{ $record->knowledge_type->value === 'tacit' ? 'bg-brand-100 text-brand-700' : 'bg-brand-100 text-brand-700' }}">
+                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium transition-transform duration-300 ease-spring {{ $record->knowledge_type->value === 'tacit' ? 'bg-brand-100 text-brand-700' : 'bg-brand-100 text-brand-700' }}">
                                         {{ $record->knowledge_type->label() }}
                                     </span>
                                 @else
@@ -191,7 +191,7 @@
                             <p class="text-xs font-mono text-gray-400">{{ $viewingRecord->record_code }}</p>
                             <h2 class="text-lg font-semibold text-gray-900">{{ $viewingRecord->title }}</h2>
                         </div>
-                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600">
                             <x-heroicon-o-x-mark class="h-5 w-5" />
                         </button>
                     </div>
@@ -204,7 +204,7 @@
                             'Tingkat Aksesibilitas' => $viewingRecord->access_level,
                             'Terakhir Ditinjau' => optional($viewingRecord->last_reviewed_at)?->format('d M Y'),
                             'Aset Terkait' => $viewingRecord->asset ? "{$viewingRecord->asset->asset_code} — {$viewingRecord->asset->name}" : null,
-                            'Kode Legacy' => $viewingRecord->legacy_code,
+                            'Kode Lama' => $viewingRecord->legacy_code,
                         ] as $label => $value)
                             <div class="grid grid-cols-2 gap-2 py-2.5 text-sm">
                                 <dt class="text-gray-500">{{ $label }}</dt>
@@ -215,7 +215,7 @@
 
                     @if ($viewingRecord->ai_summary || ! empty($viewingRecord->ai_tags) || $viewingRecord->index_status)
                         <div class="border-t border-slate-200 px-5 py-4">
-                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Ringkasan & Tag Otomatis</p>
+                            <p class="mb-2 text-xs font-semibold text-gray-400">Ringkasan & Tag Otomatis</p>
                             @if ($viewingRecord->ai_summary)
                                 <p class="text-sm text-gray-700">{{ $viewingRecord->ai_summary }}</p>
                             @endif
@@ -240,16 +240,16 @@
 
                     @if ($viewingRecord->external_link || $viewingRecord->document_path)
                         <div class="border-t border-slate-200 px-5 py-4">
-                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Referensi</p>
+                            <p class="mb-2 text-xs font-semibold text-gray-400">Referensi</p>
                             <div class="space-y-2">
                                 @if ($viewingRecord->external_link)
-                                    <a href="{{ $viewingRecord->external_link }}" target="_blank" class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-brand-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50">
+                                    <a href="{{ $viewingRecord->external_link }}" target="_blank" class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-brand-700 transition-all duration-200 hover:bg-brand-50">
                                         <x-heroicon-o-link class="h-4 w-4 shrink-0" />
                                         <span class="truncate">{{ $viewingRecord->external_link }}</span>
                                     </a>
                                 @endif
                                 @if ($viewingRecord->document_path)
-                                    <a href="{{ Illuminate\Support\Facades\Storage::disk('public')->url($viewingRecord->document_path) }}" target="_blank" class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-brand-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50">
+                                    <a href="{{ Illuminate\Support\Facades\Storage::disk('public')->url($viewingRecord->document_path) }}" target="_blank" class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-brand-700 transition-all duration-200 hover:bg-brand-50">
                                         <x-heroicon-o-document-text class="h-4 w-4 shrink-0" />
                                         <span class="truncate">{{ $viewingRecord->document_original_name ?? 'Unduh dokumen' }}</span>
                                     </a>
@@ -260,7 +260,7 @@
 
                     @if (! empty($viewingRecord->dynamic_data))
                         <div class="border-t border-slate-200 px-5 py-4">
-                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Data Dinamis</p>
+                            <p class="mb-2 text-xs font-semibold text-gray-400">Kolom Tambahan</p>
                             <dl class="divide-y divide-slate-200">
                                 @foreach ($viewingRecord->dynamic_data as $key => $value)
                                     <div class="grid grid-cols-2 gap-2 py-2.5 text-sm">
@@ -274,7 +274,7 @@
 
                     @if ($viewingRecord->verifications->isNotEmpty())
                         <div class="border-t border-slate-200 px-5 py-4">
-                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Riwayat Verifikasi</p>
+                            <p class="mb-2 text-xs font-semibold text-gray-400">Riwayat Verifikasi</p>
                             <div class="space-y-2">
                                 @foreach ($viewingRecord->verifications as $verification)
                                     <div class="rounded-lg bg-white px-3 py-2 text-xs">
@@ -307,7 +307,7 @@
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 translate-y-4 scale-90"
         x-cloak
-        class="glass-panel-dark fixed bottom-5 right-5 z-50 rounded-full px-4 py-2.5 text-sm text-white shadow-2xl"
+        class="glass-panel-dark fixed bottom-5 right-5 z-50 max-w-sm rounded-2xl px-4 py-2.5 text-sm leading-snug text-white shadow-2xl"
     >
         <span x-text="toast"></span>
     </div>

@@ -40,6 +40,43 @@
     --color-muda-600: #2b70b8;
 }
 
+/* Kotak isian form. View memakai "rounded-md border-gray-300" tanpa kelas
+   lebar garis, dan Tailwind v4 tidak memasang plugin forms, jadi kotak
+   isian sempat tampil tanpa garis dan tanpa jarak dalam. Lapisan base kalah
+   dari utilitas, jadi kotak yang sengaja polos (border-0, bg-transparent)
+   tetap polos. */
+@layer base {
+    input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='range']):not([type='color']),
+    select,
+    textarea {
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        background-color: #ffffff;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: #111827;
+    }
+    select {
+        padding-right: 2rem;
+    }
+    input:not([type='checkbox']):not([type='radio']):focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: var(--color-brand-500);
+        box-shadow: 0 0 0 3px rgb(50 100 163 / 0.15);
+    }
+    input[type='checkbox'],
+    input[type='radio'] {
+        accent-color: var(--color-brand-700);
+    }
+    input::placeholder,
+    textarea::placeholder {
+        color: #9ca3af;
+    }
+}
+
 /* Animasi kecil di halaman login (ikon mengambang, cincin sinyal). */
 @keyframes icon-float {
     0%, 100% { transform: translateY(0); }
@@ -166,6 +203,7 @@
 .dark select,
 .dark textarea {
     background-color: rgb(26 37 55);
+    border-color: rgb(51 65 85);
     color: rgb(226 232 240);
 }
 

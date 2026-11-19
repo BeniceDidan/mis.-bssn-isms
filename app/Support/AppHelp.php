@@ -32,7 +32,7 @@ class AppHelp
     /** @var array<string, string> route => nama halaman untuk tautan "Buka ..." */
     private const PAGE_LABELS = [
         'dashboard' => 'Dashboard',
-        'guide.index' => 'Panduan Penggunaan',
+        'guide.index' => 'Panduan',
         'profile.edit' => 'Profil',
         'evidence.index' => 'Evaluasi Bukti Dukung',
         'assets.index' => 'Manajemen Aset',
@@ -79,7 +79,7 @@ class AppHelp
         ],
         [
             'title' => 'Verifikasi data (ACC atau koreksi)',
-            'text' => 'Data yang disimpan pengguna biasa berstatus Menunggu Verifikasi. Admin modul itu melihat antrean verifikasi di bagian atas halaman modulnya, lalu klik Setujui atau Tolak / Minta Koreksi. Data yang disimpan admin modul itu sendiri langsung Tervalidasi. Riwayat verifikasi tersimpan.',
+            'text' => 'Data yang disimpan pengguna biasa, atau admin modul lain, berstatus Menunggu Verifikasi. Admin modul itu melihat antrean verifikasi di bagian atas halaman modulnya, lalu klik Setujui atau Tolak / Minta Koreksi. Data yang disimpan admin modul itu sendiri langsung Tervalidasi. Riwayat verifikasi tersimpan.',
             'words' => 'verifikasi validasi acc setujui persetujuan approve tolak koreksi menunggu tervalidasi antrean',
             'route' => null,
         ],
@@ -96,14 +96,14 @@ class AppHelp
             'route' => null,
         ],
         [
-            'title' => 'Titik Integrasi dan Riwayat Terkait',
-            'text' => 'Tombol Titik Integrasi di kanan atas setiap modul menjelaskan ke modul mana datanya mengalir, mana yang otomatis dan mana yang diisi manual. Di Manajemen Aset, tombol Lihat Detail menampilkan Riwayat Terkait: semua risiko, perubahan, data & informasi, pengetahuan, dan program keamanan yang menunjuk aset itu.',
-            'words' => 'integrasi terhubung hubungan keterkaitan relasi nyambung riwayat terkait lintas modul alur',
+            'title' => 'Alur Data dan Riwayat Terkait',
+            'text' => 'Tombol Alur Data di kanan atas setiap modul menjelaskan data modul itu dikirim ke mana dan datang dari mana, mana yang otomatis dan mana yang terjadi bila kolom penghubungnya diisi. Halaman Panduan punya tabel "Setelah Anda menyimpan, datanya ke mana" untuk semua modul. Di Manajemen Aset, tombol Lihat Detail menampilkan Riwayat Terkait: semua risiko, perubahan, data & informasi, pengetahuan, layanan, dan program keamanan yang memilih aset itu.',
+            'words' => 'alur data integrasi terhubung hubungan keterkaitan relasi nyambung riwayat terkait lintas modul kemana dikirim mengalir',
             'route' => 'guide.index',
         ],
         [
             'title' => 'Tutorial dan panduan',
-            'text' => 'Tombol Mulai Tutorial di bagian atas halaman mengajak tur keliling 8 modul. Setiap modul punya tombol Tutorial Modul Ini. Fitur AI punya tombol Panduan AI yang berisi penjelasan dan tutorial interaktif (Mulai tutorial). Penjelasan lengkap alur ada di halaman Panduan Penggunaan (menu nama pengguna di pojok kanan atas).',
+            'text' => 'Tombol Mulai Tutorial di bagian atas halaman mengajak tur keliling 8 modul. Setiap modul punya tombol Tutorial. Fitur AI punya tombol Panduan AI yang berisi penjelasan dan tutorial interaktif (Mulai tutorial). Urutan kerja dan alur data semua modul ada di halaman Panduan (menu nama pengguna di pojok kanan atas).',
             'words' => 'tutorial panduan bantuan petunjuk belajar tur cara pakai manual help',
             'route' => 'guide.index',
         ],
@@ -150,8 +150,38 @@ class AppHelp
             'route' => 'evidence.index',
         ],
         [
+            'title' => 'Kenapa level risiko naik sendiri',
+            'text' => 'Level risiko dihitung ulang otomatis dalam tiga keadaan: saat risiko disimpan (Kemungkinan × Dampak), saat kritikalitas aset terkaitnya berubah menjadi Tinggi atau Kritis (naik satu tingkat), dan saat ada risiko SDM Tinggi atau Kritis dengan Kode Personil yang sama (naik satu tingkat lagi). Alasannya tercatat di aktivitas risiko itu.',
+            'words' => 'level risiko naik sendiri otomatis berubah sendiri kenapa tiba tiba eskalasi',
+            'route' => 'risks.index',
+        ],
+        [
+            'title' => 'Tiket otomatis dari risiko',
+            'text' => 'Tiket dengan pemohon "Sistem (otomatis)" dibuat dari Manajemen Risiko. Saat sebuah risiko menjadi Tinggi atau Kritis dan asetnya dipakai sebuah layanan, satu tiket berstatus Baru dibuat untuk setiap layanan itu, dengan prioritas P1 atau P2 dan kolom Risiko TIK Terkait berisi kode risikonya.',
+            'words' => 'tiket otomatis sistem dari mana datang sendiri dibuat sendiri helpdesk risiko',
+            'route' => 'services.index',
+        ],
+        [
+            'title' => 'Kolom Tambahan',
+            'text' => 'Kolom Tambahan di form dipakai untuk isian yang tidak punya kolom baku, misalnya rencana mitigasi atau rencana pemulihan. Klik Tambah Kolom, lalu isi nama dan nilainya. Isinya ikut tersimpan dan tampil di detail data.',
+            'words' => 'kolom tambahan data dinamis tambah kolom atribut isian lain',
+            'route' => null,
+        ],
+        [
+            'title' => 'Level risiko inheren dan risiko sisa',
+            'text' => 'Level risiko inheren adalah level risiko sebelum ada pengendalian. Risiko sisa adalah risiko yang masih tersisa setelah penanganan dijalankan.',
+            'words' => 'inheren residual sisa level risiko pengendalian penanganan istilah arti',
+            'route' => null,
+        ],
+        [
+            'title' => 'Target ketersediaan dan rata-rata waktu pemulihan',
+            'text' => 'Target Ketersediaan adalah persentase waktu sebuah layanan harus bisa dipakai, misalnya 99%. Ketersediaan Tercapai adalah hasil nyatanya dalam satu periode. Rata-rata Waktu Pemulihan adalah rata-rata lama layanan pulih setelah gangguan (dalam istilah asing: MTTR). Ketiganya diisi di evaluasi layanan, Manajemen Layanan.',
+            'words' => 'target ketersediaan sla uptime realisasi mttr waktu pemulihan evaluasi layanan istilah arti',
+            'route' => 'services.index',
+        ],
+        [
             'title' => 'Asisten',
-            'text' => 'Asisten ada di pojok kanan bawah setiap halaman. Asisten bisa menjelaskan cara memakai aplikasi, mencarikan data dan berkas (PDF pengetahuan dan bukti dukung), menghitung ringkasan data per modul, menjawab pertanyaan dari isi dokumen pengetahuan, menjelaskan titik integrasi (misalnya "file yang barusan saya unggah nyambung ke mana?"), dan menunjukkan rujukan riset (peraturan, standar, literatur) beserta tautannya. Tautan ke data dan berkas tampil di bawah jawaban. Asisten berjalan di server sendiri dan setiap jawabannya dicatat di log.',
+            'text' => 'Asisten ada di pojok kanan bawah setiap halaman. Asisten bisa menjelaskan cara memakai aplikasi, mencarikan data dan berkas (PDF pengetahuan dan bukti dukung), menghitung ringkasan data per modul, menjawab pertanyaan dari isi dokumen pengetahuan, menjelaskan alur data antarmodul (misalnya "file yang barusan saya unggah nyambung ke mana?" atau "kalau risiko jadi kritis datanya ke mana?"), dan menunjukkan rujukan riset (peraturan, standar, literatur) beserta tautannya. Tautan ke data dan berkas tampil di bawah jawaban. Asisten berjalan di server sendiri dan setiap jawabannya dicatat di log.',
             'words' => 'asisten chatbot bot tanya bantuan bisa apa saja',
             'route' => null,
         ],
@@ -161,42 +191,42 @@ class AppHelp
     private const MODULES = [
         'sdm' => [
             'label' => 'Manajemen SDM',
-            'text' => 'Mencatat risiko yang berhubungan dengan orang: pegawai maupun pihak ketiga yang mengelola TIK. Kolom form: Subjek, Kategori, Ancaman, Level Risiko Inheren, Target Waktu, Status, Penanggung Jawab, dan Data Dinamis. Cara menambah: buka Manajemen SDM, klik Risiko Baru di kanan atas, isi form, lalu klik Simpan.',
+            'text' => 'Mencatat risiko yang berhubungan dengan orang: pegawai maupun pihak ketiga yang mengelola TIK. Tujuan manajemen SDM menurut Perpres 95/2018 Pasal 51: menjamin keberlangsungan dan mutu layanan SPBE serta ketersediaan dan kompetensi SDM. Kolom form: Pegawai atau Pihak Ketiga, Kategori, Ancaman, Level Risiko Inheren, Target Waktu, Status, Penanggung Jawab, dan Kolom Tambahan. Cara menambah: buka Manajemen SDM, klik Risiko Baru di kanan atas, isi form, lalu klik Simpan.',
             'words' => 'sdm pegawai personil pihak ketiga vendor risiko sdm',
         ],
         'pengetahuan' => [
             'label' => 'Manajemen Pengetahuan',
-            'text' => 'Punya 5 tab: Aset Pengetahuan (SOP, manual, dokumentasi beserta PDF-nya), Peta Keahlian pegawai, Aktivitas Berbagi, Risiko KM, dan Tanya Dokumen. Kolom form Aset Pengetahuan: Nama, Aset Terkait, Jenis, Kategori, Unit Pemilik, Tingkat Aksesibilitas, Tanggal Pembaruan Terakhir, Tautan Referensi, dan Lampiran PDF. Cara menambah: buka Manajemen Pengetahuan tab Aset Pengetahuan, klik Tambah Baru di kanan atas, isi form, lalu klik Simpan.',
+            'text' => 'Tujuan manajemen pengetahuan menurut Perpres 95/2018 Pasal 52: meningkatkan kualitas layanan SPBE dan mendukung pengambilan keputusan. Punya 5 tab: Aset Pengetahuan (SOP, manual, dokumentasi beserta PDF-nya), Peta Keahlian pegawai, Aktivitas Berbagi, Risiko KM, dan Tanya Dokumen. Kolom form Aset Pengetahuan: Nama, Aset Terkait, Jenis, Kategori, Unit Pemilik, Tingkat Aksesibilitas, Tanggal Pembaruan Terakhir, Tautan Referensi, dan Lampiran PDF. Cara menambah: buka Manajemen Pengetahuan tab Aset Pengetahuan, klik Tambah Baru di kanan atas, isi form, lalu klik Simpan.',
             'words' => 'pengetahuan sop manual dokumen dokumentasi keahlian ahli aktivitas berbagi km knowledge',
         ],
         'aset' => [
             'label' => 'Manajemen Aset',
-            'text' => 'Pusat data: semua aset TIK (perangkat keras, jaringan, perangkat lunak, sarana pendukung) didaftarkan di sini lebih dulu. Kolom form: Kategori, Kritikalitas, Penilaian CIA, Nama Aset, Sub Klasifikasi, Pemilik, Lokasi, Status, Tahun Referensi, dan Data Dinamis. Cara menambah: buka Manajemen Aset, klik Aset Baru di kanan atas, isi form, lalu klik Simpan.',
+            'text' => 'Pusat data: semua aset TIK (perangkat keras, jaringan, perangkat lunak, sarana pendukung) didaftarkan di sini lebih dulu. Tujuan manajemen aset TIK menurut Perpres 95/2018 Pasal 50: menjamin ketersediaan dan optimalisasi pemanfaatan aset TIK. Kolom form: Kategori, Kritikalitas, Penilaian CIA, Nama Aset, Sub Klasifikasi, Pemilik, Lokasi, Status, Tahun Referensi, dan Kolom Tambahan. Cara menambah: buka Manajemen Aset, klik Aset Baru di kanan atas, isi form, lalu klik Simpan.',
             'words' => 'aset asset inventaris perangkat server jaringan aplikasi hardware software',
         ],
         'keamanan' => [
             'label' => 'Manajemen Keamanan Informasi',
-            'text' => 'Program kerja keamanan informasi SPBE (pedoman, perencanaan, standar teknis). Kolom form: Aset Terkait, Program Kerja, Kegiatan, PIC, serta Target dan Realisasi Tahunan. Program juga terisi otomatis bila ada risiko yang naik menjadi Tinggi atau Kritis. Cara menambah: buka Manajemen Keamanan Informasi, klik Program Baru di kanan atas, isi form, lalu klik Simpan.',
+            'text' => 'Program kerja keamanan informasi SPBE (pedoman, perencanaan, standar teknis). Tujuan manajemen keamanan informasi menurut Perpres 95/2018 Pasal 48: menjamin keberlangsungan SPBE dengan meminimalkan dampak risiko keamanan informasi. Kolom form: Aset Terkait, Program Kerja, Kegiatan, Penanggung Jawab, serta Target dan Realisasi Tahunan. Program juga terisi otomatis bila ada risiko yang naik menjadi Tinggi atau Kritis. Cara menambah: buka Manajemen Keamanan Informasi, klik Program Baru di kanan atas, isi form, lalu klik Simpan.',
             'words' => 'keamanan informasi program kerja kegiatan target realisasi security',
         ],
         'risiko' => [
             'label' => 'Manajemen Risiko',
-            'text' => 'Risiko diidentifikasi dari aset yang sudah terdaftar. Kolom form: Judul Risiko, Aset Terkait, Kategori Risiko, Sumber Ancaman, Kerentanan, Kemungkinan, Dampak, Pemilik Risiko, Strategi Penanganan, Status, Tanggal Identifikasi, dan Tinjauan Berikutnya. Level Risiko dihitung otomatis. Cara menambah: buka Manajemen Risiko, klik Risiko Baru di kanan atas, isi form, lalu klik Simpan.',
+            'text' => 'Risiko diidentifikasi dari aset yang sudah terdaftar. Tujuan manajemen risiko menurut Perpres 95/2018 Pasal 47: menjamin keberlangsungan SPBE dengan meminimalkan dampak risiko, lewat identifikasi, analisis, pengendalian, pemantauan, dan evaluasi. Kolom form: Judul Risiko, Aset Terkait, Kategori Risiko, Sumber Ancaman, Kerentanan, Kemungkinan, Dampak, Pemilik Risiko, Strategi Penanganan, Status, Tanggal Identifikasi, dan Tinjauan Berikutnya. Level Risiko dihitung otomatis. Cara menambah: buka Manajemen Risiko, klik Risiko Baru di kanan atas, isi form, lalu klik Simpan.',
             'words' => 'risiko ancaman kerentanan kemungkinan dampak mitigasi penanganan register',
         ],
         'perubahan' => [
             'label' => 'Manajemen Perubahan',
-            'text' => 'Mencatat revisi dan modifikasi terhadap aset. Kolom form: Judul/Usulan Modifikasi, Aset Terkait, Jenis Perubahan, Kategori (Major/Minor), Prioritas Eksekusi, Level Risiko Inheren, Target Implementasi, Keputusan Penanganan, Status, dan Penanggung Jawab. Cara menambah: buka Manajemen Perubahan, klik Perubahan Baru di kanan atas, isi form, lalu klik Simpan.',
-            'words' => 'perubahan change revisi modifikasi usulan major minor',
+            'text' => 'Mencatat perubahan pada aset TIK, dari usulan sampai selesai. Tujuan manajemen perubahan menurut Perpres 95/2018 Pasal 53: menjamin keberlangsungan dan meningkatkan kualitas layanan SPBE lewat pengendalian perubahan, dengan proses perencanaan, analisis, pengembangan, implementasi, serta pemantauan dan evaluasi. Kolom form: Usulan Perubahan, Aset Terkait, Jenis Perubahan, Kategori (Mayor/Minor), Prioritas Pelaksanaan, Level Risiko Inheren, Target Implementasi, Keputusan Penanganan, Status, dan Penanggung Jawab. Cara menambah: buka Manajemen Perubahan, klik Perubahan Baru di kanan atas, isi form, lalu klik Simpan.',
+            'words' => 'perubahan change revisi modifikasi usulan mayor major minor tujuan',
         ],
         'layanan' => [
             'label' => 'Manajemen Layanan',
-            'text' => 'Punya dua tab: Katalog Layanan (layanan SPBE beserta evaluasi SLA-nya) dan Tiket Helpdesk. Kolom form layanan: Nama Layanan, Deskripsi, Pengelola Layanan, Pengelola Teknis, Cara Akses, Waktu Pelayanan, Target SLA, Status, dan Aset TIK Terkait (boleh lebih dari satu aset). Cara menambah: buka Manajemen Layanan, klik Layanan Baru di kanan atas, isi form, lalu klik Simpan. Untuk tiket, buka tab Tiket Helpdesk lalu klik Tiket Baru.',
+            'text' => 'Tujuan manajemen layanan SPBE menurut Perpres 95/2018 Pasal 54: menjamin keberlangsungan dan meningkatkan kualitas layanan kepada pengguna, termasuk melayani keluhan, gangguan, masalah, permintaan, dan perubahan. Punya dua tab: Katalog Layanan (layanan beserta evaluasinya) dan Tiket Helpdesk. Kolom form layanan: Nama Layanan, Deskripsi, Pengelola Layanan, Pengelola Teknis, Cara Akses, Waktu Pelayanan, Target Ketersediaan, Status, dan Aset TIK Terkait (boleh lebih dari satu aset). Cara menambah: buka Manajemen Layanan, klik Layanan Baru di kanan atas, isi form, lalu klik Simpan. Untuk tiket, buka tab Tiket Helpdesk lalu klik Tiket Baru.',
             'words' => 'layanan service katalog tiket helpdesk sla gangguan aduan',
         ],
         'data_informasi' => [
             'label' => 'Manajemen Data & Informasi',
-            'text' => 'Tata kelola risiko data dan informasi. Kolom form: Ancaman/Kejadian Gangguan Data, Aset Terkait, Jenis Risiko, Kategori Aset Data, Prioritas Penanganan, Level Risiko Inheren, Target Implementasi, Keputusan Penanganan Risiko, Status, dan Penanggung Jawab. Cara menambah: buka Manajemen Data & Informasi, klik Catatan Baru di kanan atas, isi form, lalu klik Simpan.',
+            'text' => 'Catatan pengelolaan data dan informasi, termasuk risiko pada data. Tujuan manajemen data menurut Perpres 95/2018 Pasal 49: data yang akurat, mutakhir, terintegrasi, dan dapat diakses. Kolom form: Ancaman/Kejadian Gangguan Data, Aset Terkait, Jenis Risiko, Kategori Aset Data, Prioritas Penanganan, Level Risiko Inheren, Target Implementasi, Keputusan Penanganan Risiko, Status, dan Penanggung Jawab. Cara menambah: buka Manajemen Data & Informasi, klik Catatan Baru di kanan atas, isi form, lalu klik Simpan.',
             'words' => 'data informasi kebocoran gangguan data catatan',
         ],
     ];
@@ -228,15 +258,27 @@ class AppHelp
                 'page' => $module['label'],
             ];
             if ($map) {
-                $flows = collect($map['flows'])->map(fn ($f) => '(' . ($f['type'] === 'auto' ? 'otomatis' : 'diisi manual') . ', ke ' . $f['to'] . ') ' . $f['text'])->implode(' ');
+                $flows = collect($map['flows'])->map(fn ($f) => '(' . ($f['type'] === 'auto' ? 'otomatis' : 'bila kolomnya diisi') . ', ' . IntegrationMap::direction($f) . ') ' . $f['text'])->implode(' ');
                 $entries[] = [
-                    'title' => 'Titik integrasi ' . $module['label'],
+                    'title' => 'Alur data ' . $module['label'],
                     'text' => $map['intro'] . ' ' . $flows,
-                    'words' => 'integrasi terhubung keterkaitan nyambung ' . $module['words'],
+                    'words' => 'alur data integrasi terhubung keterkaitan nyambung kemana dikirim datang ' . $module['words'],
                     'url' => route(self::MODULE_ROUTES[$key]),
                     'page' => $module['label'],
                 ];
             }
+        }
+
+        foreach (IntegrationMap::EVENTS as $event) {
+            $entries[] = [
+                'title' => 'Setelah ' . lcfirst($event['action']) . ' (' . $event['where'] . ')',
+                'text' => $event['result'],
+                'words' => 'setelah sesudah habis itu kemana ke mana terjadi apa otomatis alur ' . $event['words'],
+                'url' => route('guide.index') . '#alur',
+                'page' => 'Panduan',
+                // Hanya untuk pertanyaan "setelah …, ke mana?", bukan "cara …" (lihat AppAssistant::searchHelp).
+                'event' => true,
+            ];
         }
 
         $aiRoutes = ['bukti' => 'evidence.index', 'tanya' => 'knowledge.index', 'triase' => 'services.index'];

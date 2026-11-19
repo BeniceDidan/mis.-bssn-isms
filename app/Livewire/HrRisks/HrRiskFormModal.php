@@ -9,6 +9,7 @@ use App\Livewire\Concerns\NormalizesEnumInputs;
 use App\Models\HrRisk;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Support\SaveNotice;
 
 class HrRiskFormModal extends Component
 {
@@ -95,6 +96,7 @@ class HrRiskFormModal extends Component
     public function save(): void
     {
         $this->ensureCanWrite();
+        $since = SaveNotice::since();
 
         $validated = $this->validate();
 
@@ -110,14 +112,15 @@ class HrRiskFormModal extends Component
         $payload['verification_status'] = auth()->user()?->canAutoVerify('sdm') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->recordId) {
-            HrRisk::findOrFail($this->recordId)->update($payload);
+            $saved = HrRisk::findOrFail($this->recordId);
+            $saved->update($payload);
         } else {
-            HrRisk::create($payload);
+            $saved = HrRisk::create($payload);
         }
 
         $this->show = false;
         $this->dispatch('hr-risk-saved');
-        $this->dispatch('toast', message: $this->recordId ? 'Risiko diperbarui.' : 'Risiko baru ditambahkan.');
+        $this->dispatch('toast', message: SaveNotice::make($this->recordId ? 'Risiko diperbarui.' : 'Risiko baru ditambahkan.', 'sdm', $saved->refresh(), $since));
     }
 
     public function close(): void

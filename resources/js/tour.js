@@ -6,7 +6,7 @@ import 'driver.js/dist/driver.css';
  *  - startTour(): one continuous walk across all 8 modules (SDM -> Data &
  *    Informasi), same order as the app's own flow.
  *  - startModuleTour(id): just one module's steps, launched from that
- *    module's own "Tutorial Modul Ini" button — same step data, just sliced
+ *    module's own "Tutorial" button — same step data, just sliced
  *    down to one module and started directly on its page.
  *
  * Every module's steps follow the same rhythm: klik tombol tambah (real
@@ -28,17 +28,19 @@ const MODE_KEY = 'bssnTourMode';
 const STEP_KEY = 'bssnTourStep';
 
 const PERSONNEL_DESC =
-    'Ini <b>Kode Personil</b> — jantung dari integrasi antar modul. Isi dengan kode yang <b>sama persis</b> dengan yang dipakai di modul lain (mis. Manajemen SDM) untuk menautkan record ini ke orang/pihak yang sama secara pasti — bukan tebakan berdasarkan nama yang mirip. Kosongkan untuk digenerate otomatis.';
+    'Kode yang sama di modul lain berarti orang yang sama. Sistem tidak mencocokkan nama. Kosongkan untuk dibuat otomatis.';
 
 const DEFAULT_CLOSE_DESC =
-    'Klik tombol <b>X</b> ini untuk menutup form dan lanjut ke langkah berikutnya — data uji coba tidak akan tersimpan. Kalau memang ingin menyimpan data sungguhan, klik <b>Simpan</b> di pojok kanan bawah, datanya langsung muncul di tabel di bawah.';
+    'Tutup form ini untuk lanjut. Isian uji coba tidak tersimpan. Untuk menyimpan data sungguhan, klik <b>Simpan</b>.';
 
-function moduleSteps({ path, title, openDesc, fieldsDesc, closeDesc = DEFAULT_CLOSE_DESC, integration = null }) {
+const FLOW_NOTE = ' Rinciannya ada di tombol <b>Alur Data</b>.';
+
+function moduleSteps({ path, openDesc, fieldsDesc, flowDesc, closeDesc = DEFAULT_CLOSE_DESC, integration = null }) {
     const steps = [
         {
             path,
             el: '[data-tour="add-button"]',
-            title: `${title} — Buka Form`,
+            title: 'Buka form',
             desc: openDesc,
             advanceOnRealClick: true,
             afterClickDelay: 650,
@@ -46,7 +48,7 @@ function moduleSteps({ path, title, openDesc, fieldsDesc, closeDesc = DEFAULT_CL
         {
             path,
             el: '[data-tour="form-body"]',
-            title: `${title} — Kolom-kolom Form`,
+            title: 'Isi form',
             desc: fieldsDesc,
         },
         {
@@ -58,10 +60,16 @@ function moduleSteps({ path, title, openDesc, fieldsDesc, closeDesc = DEFAULT_CL
         {
             path,
             el: '[data-tour="modal-close"]',
-            title: 'Tutup Form',
+            title: 'Tutup form',
             desc: closeDesc,
             advanceOnRealClick: true,
             afterClickDelay: 500,
+        },
+        {
+            path,
+            el: '[data-tour="integration-map"]',
+            title: 'Ke mana datanya',
+            desc: flowDesc + FLOW_NOTE,
         },
     ];
 
@@ -92,14 +100,14 @@ const INTRO_STEPS = [
     {
         path: '/dashboard',
         el: '[data-tour="tiles-grid"]',
-        title: 'Selamat Datang di BSSN ISMS',
-        desc: 'Ini 8 modul manajemen yang saling terhubung. Tur ini akan mengajak Anda berkeliling dari SDM sampai Data &amp; Informasi, urut sesuai alurnya. Di tiap modul, Anda akan benar-benar membuka form, melihat kolom-kolomnya, lalu menutupnya lagi — bukan cuma dibacakan.',
+        title: 'Selamat datang',
+        desc: 'Delapan modul ini saling terhubung. Tur ini membuka form tiap modul, dari SDM sampai Data &amp; Informasi, dan menunjukkan ke mana datanya dikirim.',
     },
     {
         path: '/dashboard',
         el: '[data-tour="tile-sdm"]',
         title: 'Mulai dari SDM',
-        desc: 'SDM adalah langkah pertama — mencatat risiko yang berhubungan dengan orang, pegawai maupun pihak ketiga. Klik "Lanjut" untuk masuk ke modulnya.',
+        desc: 'Modul pertama mencatat risiko pada pegawai dan pihak ketiga pengelola TIK. Klik Lanjut untuk membukanya.',
     },
 ];
 
@@ -109,17 +117,16 @@ const MODULES = [
         label: 'Manajemen SDM',
         steps: moduleSteps({
             path: '/hr-risks',
-            title: 'Manajemen SDM',
-            openDesc: 'Klik tombol ini untuk membuka form Risiko SDM baru — langkah pertama dari alur 8 modul.',
-            fieldsDesc:
-                'Kolom-kolom di form ini: <br>• <b>Subjek</b> — nama pegawai atau pihak ketiga. <br>• <b>Kategori</b> &amp; <b>Ancaman</b> — jenis dan uraian risikonya. <br>• <b>Level Risiko Inheren</b> &amp; <b>Target Waktu</b>. <br>• <b>Status</b> &amp; <b>Penanggung Jawab</b>. <br>• <b>Data Dinamis</b> — kolom bebas tambahan kalau ada atribut khusus yang tidak tertampung kolom baku.',
+            openDesc: 'Klik tombol ini untuk menambah risiko SDM.',
+            fieldsDesc: 'Isi siapa orangnya, kategori dan uraian ancamannya, level risiko, target waktu, status, dan penanggung jawab.',
+            flowDesc: 'Risiko SDM Tinggi atau Kritis menaikkan satu tingkat level risiko di Manajemen Risiko yang memakai Kode Personil yang sama.',
             integration: {
                 triggerEl: 'button[title="Lihat Detail"]',
-                triggerTitle: 'Lihat Keterkaitan',
-                triggerDesc: 'Sekarang klik tombol "Lihat Detail" pada salah satu baris di tabel bawah untuk melihat keterkaitannya dengan modul lain.',
+                triggerTitle: 'Lihat detail',
+                triggerDesc: 'Klik <b>Lihat Detail</b> pada salah satu baris di tabel.',
                 panelEl: '[data-tour="cross-module-panel"]',
-                panelTitle: 'Keterkaitan Lintas Modul',
-                panelDesc: 'Ini bagian paling penting: begitu Kode Personil yang sama dipakai di modul lain, semuanya otomatis terkumpul di sini — tidak perlu dicari manual satu-satu.',
+                panelTitle: 'Data orang yang sama',
+                panelDesc: 'Data di modul lain yang memakai Kode Personil yang sama terkumpul di sini.',
             },
         }),
     },
@@ -128,10 +135,9 @@ const MODULES = [
         label: 'Manajemen Pengetahuan',
         steps: moduleSteps({
             path: '/knowledge',
-            title: 'Manajemen Pengetahuan',
-            openDesc: 'Klik untuk membuka form Aset Pengetahuan baru (pastikan tab "Aset Pengetahuan" di atas yang aktif).',
-            fieldsDesc:
-                'Kolom-kolom di form ini: <br>• <b>Nama Aset Pengetahuan</b> &amp; <b>Aset Terkait</b> (opsional, menaut ke Manajemen Aset). <br>• <b>Jenis</b> &amp; <b>Kategori Pengetahuan</b>. <br>• <b>Unit Pemilik</b> &amp; <b>Tingkat Aksesibilitas</b>. <br>• <b>Tanggal Pembaruan Terakhir</b>. <br>• <b>Tautan Referensi</b> dan/atau <b>Lampiran PDF</b> — boleh isi salah satu atau keduanya.',
+            openDesc: 'Pastikan tab Aset Pengetahuan aktif, lalu klik tombol ini.',
+            fieldsDesc: 'Isi nama dokumen, jenis dan kategori, unit pemilik, lalu tautan, PDF, atau keduanya. Pilih Aset Terkait bila dokumen membahas aset tertentu.',
+            flowDesc: 'PDF yang diunggah bisa dicari di Tanya Dokumen dan Asisten, dan disarankan saat ada tiket helpdesk.',
         }),
     },
     {
@@ -139,17 +145,16 @@ const MODULES = [
         label: 'Manajemen Aset',
         steps: moduleSteps({
             path: '/assets',
-            title: 'Manajemen Aset',
-            openDesc: 'Klik untuk membuka form Aset baru — modul paling banyak dirujuk oleh modul lain (Risiko, Perubahan, Keamanan, dst).',
-            fieldsDesc:
-                'Kolom-kolom di form ini: <br>• <b>Kategori</b> &amp; <b>Kritikalitas</b> — Kritikalitas bisa dihitung otomatis dari Penilaian CIA. <br>• <b>Penilaian CIA</b> (Kerahasiaan/Integritas/Ketersediaan, skala 1-5) — isi ketiganya untuk auto-hitung. <br>• <b>Nama Aset</b> &amp; <b>Sub Klasifikasi</b>. <br>• <b>Pemilik</b> &amp; <b>Lokasi</b>. <br>• <b>Status</b> &amp; <b>Tahun Referensi</b>. <br>• <b>Data Dinamis</b> — atribut spesifik per kategori aset.',
+            openDesc: 'Klik untuk menambah aset. Daftarkan aset lebih dulu karena modul lain menautkan datanya ke sini.',
+            fieldsDesc: 'Isi nama, kategori, pemilik, lokasi, dan status. Isi nilai Kerahasiaan, Integritas, dan Ketersediaan (1–5); kritikalitas dihitung dari nilai tertinggi.',
+            flowDesc: 'Kritikalitas Tinggi atau Kritis menaikkan satu tingkat level risiko yang tertaut ke aset ini.',
             integration: {
                 triggerEl: 'button[title="Lihat Detail"]',
-                triggerTitle: 'Lihat Keterkaitan',
-                triggerDesc: 'Sekarang klik tombol "Lihat Detail" pada salah satu baris di tabel bawah untuk melihat keterkaitannya dengan modul lain.',
+                triggerTitle: 'Lihat detail',
+                triggerDesc: 'Klik <b>Lihat Detail</b> pada salah satu baris di tabel.',
                 panelEl: '[data-tour="related-panel"]',
                 panelTitle: 'Riwayat Terkait',
-                panelDesc: 'Sama seperti panel di SDM tadi, tapi dari sisi Aset — semua Risiko, Perubahan, Keamanan Informasi, SDM, dan lainnya yang menyebut Aset ini otomatis terkumpul di sini.',
+                panelDesc: 'Semua risiko, perubahan, layanan, dokumen pengetahuan, dan program keamanan yang memilih aset ini tampil di sini.',
             },
         }),
     },
@@ -158,10 +163,9 @@ const MODULES = [
         label: 'Manajemen Keamanan Informasi',
         steps: moduleSteps({
             path: '/security-programs',
-            title: 'Manajemen Keamanan Informasi',
-            openDesc: 'Klik untuk membuka form Program Kerja Keamanan baru.',
-            fieldsDesc:
-                'Kolom-kolom di form ini: <br>• <b>Aset Terkait</b> (opsional). <br>• <b>Program Kerja</b> — uraian programnya. <br>• <b>Kegiatan</b> &amp; <b>PIC</b>. <br>• <b>Target &amp; Realisasi Tahunan</b> — kolom dinamis per tahun. <br>Program di sini juga bisa terisi otomatis kalau ada Risiko yang levelnya naik jadi Tinggi/Kritis.',
+            openDesc: 'Klik untuk menambah program kerja keamanan.',
+            fieldsDesc: 'Isi program kerja, kegiatan, penanggung jawab, serta target dan realisasi per tahun.',
+            flowDesc: 'Risiko Tinggi atau Kritis otomatis membuat program tindak lanjut di sini. Angka aset, risiko, dan sosialisasi di halaman ini dihitung dari modul lain.',
         }),
     },
     {
@@ -169,10 +173,9 @@ const MODULES = [
         label: 'Manajemen Risiko',
         steps: moduleSteps({
             path: '/risks',
-            title: 'Manajemen Risiko',
-            openDesc: 'Klik untuk membuka form Risiko baru.',
-            fieldsDesc:
-                'Kolom-kolom di form ini: <br>• <b>Judul Risiko</b> &amp; <b>Aset Terkait</b>. <br>• <b>Kategori Risiko</b>, <b>Sumber Ancaman</b>, <b>Kerentanan</b>. <br>• <b>Kemungkinan</b> &times; <b>Dampak</b> → <b>Level Risiko</b> dihitung otomatis saat disimpan, dan naik satu-dua tingkat kalau aset terkait kritis dan/atau ada SDM berlevel Tinggi/Kritis dengan Kode Personil sama. <br>• <b>Pemilik Risiko</b> &amp; <b>Strategi Penanganan</b>. <br>• <b>Status</b>, <b>Tanggal Identifikasi</b>, <b>Tinjauan Berikutnya</b>.',
+            openDesc: 'Klik untuk menambah risiko.',
+            fieldsDesc: 'Isi judul, aset terkait, kategori, sumber ancaman, dan kerentanan. Pilih Kemungkinan dan Dampak; level risiko dihitung saat disimpan.',
+            flowDesc: 'Risiko Tinggi atau Kritis otomatis membuat tindak lanjut di Keamanan Informasi, Perubahan, dan Data &amp; Informasi, serta tiket untuk layanan yang memakai asetnya.',
         }),
     },
     {
@@ -180,10 +183,9 @@ const MODULES = [
         label: 'Manajemen Perubahan',
         steps: moduleSteps({
             path: '/changes',
-            title: 'Manajemen Perubahan',
-            openDesc: 'Klik untuk membuka form Perubahan baru.',
-            fieldsDesc:
-                'Kolom-kolom di form ini: <br>• <b>Judul/Usulan Modifikasi</b> &amp; <b>Aset Terkait</b>. <br>• <b>Jenis Perubahan</b>, <b>Kategori</b> (Major/Minor), <b>Prioritas Eksekusi</b>. <br>• <b>Level Risiko Inheren</b> &amp; <b>Target Implementasi</b>. <br>• <b>Keputusan Penanganan</b> &amp; <b>Status</b>. <br>• <b>Penanggung Jawab</b> &amp; <b>Data Dinamis</b> (detail penilaian risiko, rollback plan, dst).',
+            openDesc: 'Klik untuk menambah perubahan.',
+            fieldsDesc: 'Isi usulan perubahan, aset terkait, jenis, kategori (Mayor/Minor), prioritas, level risiko, target, keputusan, status, dan penanggung jawab.',
+            flowDesc: 'Usulan dari risiko Tinggi atau Kritis masuk ke sini otomatis. Pilih Aset Terkait supaya perubahan muncul di Riwayat Terkait aset.',
         }),
     },
     {
@@ -191,10 +193,9 @@ const MODULES = [
         label: 'Manajemen Layanan',
         steps: moduleSteps({
             path: '/services',
-            title: 'Manajemen Layanan',
-            openDesc: 'Klik untuk membuka form Layanan baru.',
-            fieldsDesc:
-                'Kolom-kolom di form ini: <br>• <b>Nama Layanan SPBE</b> &amp; <b>Deskripsi</b>. <br>• <b>Pengelola Layanan</b> &amp; <b>Pengelola Teknis</b>. <br>• <b>Cara Akses</b>, <b>Waktu Pelayanan</b>, <b>Target SLA</b>. <br>• <b>Status</b>. <br>• <b>Aset TIK Terkait</b> — centang satu atau lebih Aset, satu-satunya modul yang boleh dikaitkan ke banyak Aset sekaligus.',
+            openDesc: 'Klik untuk menambah layanan.',
+            fieldsDesc: 'Isi nama layanan, deskripsi, pengelola, cara akses, waktu pelayanan, target ketersediaan, dan status. Centang aset yang dipakai layanan ini.',
+            flowDesc: 'Bila ada risiko Tinggi atau Kritis pada aset yang dipakai layanan ini, tiket otomatis dibuat di tab Tiket Helpdesk.',
         }),
     },
     {
@@ -202,12 +203,10 @@ const MODULES = [
         label: 'Manajemen Data & Informasi',
         steps: moduleSteps({
             path: '/data-information',
-            title: 'Manajemen Data &amp; Informasi',
-            openDesc: 'Klik untuk membuka form Catatan baru — modul terakhir dalam alur.',
-            fieldsDesc:
-                'Kolom-kolom di form ini: <br>• <b>Ancaman/Kejadian Gangguan Data</b> &amp; <b>Aset Terkait</b>. <br>• <b>Jenis Risiko</b> &amp; <b>Kategori Aset Data</b>. <br>• <b>Prioritas Penanganan</b> &amp; <b>Level Risiko Inheren</b>. <br>• <b>Target Implementasi</b> &amp; <b>Keputusan Penanganan Risiko</b>. <br>• <b>Status</b> &amp; <b>Penanggung Jawab</b>.',
-            closeDesc:
-                'Klik tombol <b>X</b> ini untuk menutup form. Ini modul terakhir — setelah ini tur selesai. Tombol "Mulai Tutorial" di atas selalu bisa dipakai untuk mengulang semuanya dari awal, dan tiap modul juga punya tombol "Tutorial Modul Ini" sendiri kalau cuma perlu diingatkan satu bagian saja.',
+            openDesc: 'Klik untuk menambah catatan data.',
+            fieldsDesc: 'Isi ancaman atau gangguan data, aset terkait, jenis risiko, kategori data, prioritas, level risiko, target, keputusan, status, dan penanggung jawab.',
+            flowDesc: 'Catatan tinjauan dari risiko Tinggi atau Kritis masuk ke sini otomatis.',
+            closeDesc: 'Tutup form. Ini modul terakhir. Tur bisa diulang lewat <b>Mulai Tutorial</b> di atas, atau tombol <b>Tutorial</b> di tiap modul.',
         }),
     },
 ];

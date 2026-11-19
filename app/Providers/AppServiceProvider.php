@@ -33,6 +33,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Waktu relatif ("1 minggu yang lalu") dalam bahasa Indonesia.
+        // Hanya Carbon; locale aplikasi tetap supaya pesan validasi bawaan
+        // tidak kehilangan berkas terjemahan.
+        \Illuminate\Support\Carbon::setLocale('id');
+
         // Railway (and most PaaS hosts) terminate HTTPS at their edge proxy
         // and forward plain HTTP to the container — without this, Laravel
         // sees the request as http and generates http:// asset/redirect

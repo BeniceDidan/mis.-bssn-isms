@@ -21,18 +21,17 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h1 class="text-xl font-semibold text-gray-900">Manajemen Pengetahuan</h1>
-                <p class="text-sm text-gray-500">Register aset pengetahuan, peta keahlian, aktivitas berbagi, dan risiko KM</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <button
                     type="button"
                     x-ripple
                     onclick="window.startModuleTour && window.startModuleTour('pengetahuan')"
-                    title="Tutorial Modul Ini"
-                    class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-brand-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-brand-50 active:scale-95"
+                    title="Tutorial modul ini"
+                    class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-brand-700 hover:bg-brand-50"
                 >
                     <x-heroicon-o-play class="h-3.5 w-3.5" />
-                    Tutorial Modul Ini
+                    Tutorial
                 </button>
                 <x-integration-map module="pengetahuan" />
                 <div x-show="tab === 'tanya'" x-cloak><x-ai-guide feature="tanya" /></div>
@@ -40,7 +39,7 @@
                     <button
                         x-ripple
                         @click="$dispatch('open-knowledge-importer')"
-                        class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95"
+                        class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-gray-700 hover:bg-slate-50"
                     >
                         <x-heroicon-o-arrow-up-tray class="h-4 w-4" />
                         Impor Excel
@@ -49,7 +48,7 @@
                         x-ripple
                         data-tour="add-button"
                         @click="$dispatch(createEvent())"
-                        class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-3 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95"
+                        class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-3 py-2 text-sm font-medium text-white shadow-lg"
                     >
                         <x-heroicon-o-plus class="h-4 w-4" />
                         Tambah Baru

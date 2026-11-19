@@ -7,18 +7,17 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h1 class="text-xl font-semibold text-gray-900">Manajemen Layanan</h1>
-                <p class="text-sm text-gray-500">Katalog layanan SPBE, tiket helpdesk, dan evaluasi kinerja</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <button
                     type="button"
                     x-ripple
                     onclick="window.startModuleTour && window.startModuleTour('layanan')"
-                    title="Tutorial Modul Ini"
-                    class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-brand-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-brand-50 active:scale-95"
+                    title="Tutorial modul ini"
+                    class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-brand-700 hover:bg-brand-50"
                 >
                     <x-heroicon-o-play class="h-3.5 w-3.5" />
-                    Tutorial Modul Ini
+                    Tutorial
                 </button>
                 <x-integration-map module="layanan" />
                 <div x-show="tab === 'helpdesk'" x-cloak><x-ai-guide feature="triase" /></div>
@@ -27,7 +26,7 @@
                         x-show="tab === 'katalog'"
                         x-ripple
                         @click="$dispatch('open-service-importer')"
-                        class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95"
+                        class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-gray-700 hover:bg-slate-50"
                     >
                         <x-heroicon-o-arrow-up-tray class="h-4 w-4" />
                         Impor Excel
@@ -36,7 +35,7 @@
                         x-ripple
                         data-tour="add-button"
                         @click="tab === 'helpdesk' ? $dispatch('open-service-ticket-form') : $dispatch('open-service-form')"
-                        class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-3 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95"
+                        class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-3 py-2 text-sm font-medium text-white shadow-lg"
                     >
                         <x-heroicon-o-plus class="h-4 w-4" />
                         <span x-text="tab === 'helpdesk' ? 'Tiket Baru' : 'Layanan Baru'">Layanan Baru</span>
@@ -77,10 +76,10 @@
             x-cloak
             data-tour="helpdesk-panel"
             x-data="{ toast: null }"
-            x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)"
+            x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, Math.min(9000, Math.max(3000, $event.detail.message.length * 55)))"
         >
             <livewire:services.helpdesk-queue />
-            <div x-show="toast" x-transition x-cloak class="fixed bottom-6 right-6 z-[60] rounded-full bg-slate-900/90 px-4 py-2 text-sm text-white shadow-xl" x-text="toast"></div>
+            <div x-show="toast" x-transition x-cloak class="fixed bottom-6 right-6 z-[60] max-w-sm rounded-2xl bg-slate-900 px-4 py-2 text-sm leading-snug text-white shadow-xl" x-text="toast"></div>
         </div>
 
         <livewire:services.service-form-modal />

@@ -2,7 +2,7 @@
     <button
         type="button"
         x-ripple
-        class="rounded-lg p-1.5 text-gray-500 transition-all duration-300 ease-spring hover:scale-110 hover:bg-slate-50 hover:text-gray-700 active:scale-90 md:hidden"
+        class="rounded-lg p-1.5 text-gray-500 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-700 active:scale-90 md:hidden"
         @click="sidebarOpen = !sidebarOpen"
     >
         <x-heroicon-o-bars-3 class="h-6 w-6" />
@@ -30,7 +30,7 @@
             x-ripple
             @click="darkMode = ! darkMode"
             :title="darkMode ? 'Ganti ke mode terang' : 'Ganti ke mode gelap'"
-            class="relative rounded-full p-2 text-gray-500 transition-all duration-300 ease-spring hover:scale-110 hover:bg-slate-50 hover:text-brand-600 active:scale-90"
+            class="relative rounded-full p-2 text-gray-500 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-brand-600 active:scale-90"
         >
             <x-heroicon-o-sun
                 class="h-5 w-5 transition-all duration-300 ease-spring"
@@ -54,7 +54,7 @@
             href="{{ \Illuminate\Support\Facades\Route::has('guide.index') ? route('guide.index') : '#' }}"
             x-ripple
             title="Panduan Penggunaan"
-            class="rounded-full p-2 text-gray-500 transition-all duration-300 ease-spring hover:scale-110 hover:bg-slate-50 hover:text-brand-600 active:scale-90"
+            class="rounded-full p-2 text-gray-500 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-brand-600 active:scale-90"
         >
             <x-heroicon-o-question-mark-circle class="h-5 w-5" />
         </a>
@@ -67,7 +67,7 @@
             x-ripple
             onclick="window.startTour && window.startTour()"
             title="Mulai Tutorial"
-            class="hidden items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-medium text-brand-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-brand-100 active:scale-95 sm:flex"
+            class="hidden items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-medium text-brand-700 transition-all duration-300 ease-spring hover:bg-brand-100 sm:flex"
         >
             <x-heroicon-o-play class="h-3.5 w-3.5" />
             Mulai Tutorial
@@ -79,7 +79,7 @@
                     x-ripple
                     @click="createOpen = !createOpen"
                     @click.outside="createOpen = false"
-                    class="flex items-center gap-1.5 rounded-full bg-brand-700 px-3 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95"
+                    class="flex items-center gap-1.5 rounded-full bg-brand-700 px-3 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring"
                 >
                     <x-heroicon-o-plus class="h-4 w-4 transition-transform duration-300 ease-spring" x-bind:class="createOpen ? 'rotate-90' : ''" />
                     Buat Baru
@@ -106,13 +106,13 @@
                          these shortcuts navigate there with a query flag rather
                          than dispatching an event that may have no listener on
                          the current page. --}}
-                    <a href="{{ \Illuminate\Support\Facades\Route::has('assets.index') ? route('assets.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700">Aset Baru</a>
-                    <a href="{{ \Illuminate\Support\Facades\Route::has('risks.index') ? route('risks.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700">Risiko Baru</a>
-                    <a href="{{ \Illuminate\Support\Facades\Route::has('changes.index') ? route('changes.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700">Perubahan Baru</a>
-                    <a href="{{ \Illuminate\Support\Facades\Route::has('data-information.index') ? route('data-information.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700">Catatan Data Baru</a>
-                    <a href="{{ \Illuminate\Support\Facades\Route::has('hr-risks.index') ? route('hr-risks.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700">Risiko SDM Baru</a>
-                    <a href="{{ \Illuminate\Support\Facades\Route::has('knowledge.index') ? route('knowledge.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700">Dokumen Pengetahuan Baru</a>
-                    <a href="{{ \Illuminate\Support\Facades\Route::has('services.index') ? route('services.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700">Layanan Baru</a>
+                    <a href="{{ \Illuminate\Support\Facades\Route::has('assets.index') ? route('assets.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700">Aset Baru</a>
+                    <a href="{{ \Illuminate\Support\Facades\Route::has('risks.index') ? route('risks.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700">Risiko Baru</a>
+                    <a href="{{ \Illuminate\Support\Facades\Route::has('changes.index') ? route('changes.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700">Perubahan Baru</a>
+                    <a href="{{ \Illuminate\Support\Facades\Route::has('data-information.index') ? route('data-information.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700">Catatan Data Baru</a>
+                    <a href="{{ \Illuminate\Support\Facades\Route::has('hr-risks.index') ? route('hr-risks.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700">Risiko SDM Baru</a>
+                    <a href="{{ \Illuminate\Support\Facades\Route::has('knowledge.index') ? route('knowledge.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700">Dokumen Pengetahuan Baru</a>
+                    <a href="{{ \Illuminate\Support\Facades\Route::has('services.index') ? route('services.index', ['create' => 1]) : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700">Layanan Baru</a>
                 </div>
             </div>
         @endif
@@ -122,9 +122,9 @@
                 x-ripple
                 @click="profileOpen = !profileOpen"
                 @click.outside="profileOpen = false"
-                class="flex items-center gap-2 rounded-full p-1 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95"
+                class="flex items-center gap-2 rounded-full p-1 transition-all duration-300 ease-spring hover:bg-slate-50"
             >
-                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-700 text-xs font-semibold text-white shadow-md transition-transform duration-300 ease-spring hover:scale-110">
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-700 text-xs font-semibold text-white shadow-md transition-transform duration-300 ease-spring">
                     {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                 </div>
                 <span class="hidden text-sm font-medium text-gray-700 sm:block">
@@ -144,11 +144,11 @@
                 x-cloak
                 class="absolute right-0 z-50 mt-2 w-44 origin-top-right rounded-xl border border-slate-200 bg-white py-1 shadow-2xl "
             >
-                <a href="{{ \Illuminate\Support\Facades\Route::has('guide.index') ? route('guide.index') : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700">Panduan Penggunaan</a>
-                <a href="{{ \Illuminate\Support\Facades\Route::has('profile.edit') ? route('profile.edit') : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700">Profil</a>
+                <a href="{{ \Illuminate\Support\Facades\Route::has('guide.index') ? route('guide.index') : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700">Panduan Penggunaan</a>
+                <a href="{{ \Illuminate\Support\Facades\Route::has('profile.edit') ? route('profile.edit') : '#' }}" class="block px-4 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700">Profil</a>
                 <form method="POST" action="{{ Illuminate\Support\Facades\Route::has('logout') ? route('logout') : '#' }}">
                     @csrf
-                    <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-red-50 hover:text-red-600">
+                    <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600">
                         Keluar
                     </button>
                 </form>

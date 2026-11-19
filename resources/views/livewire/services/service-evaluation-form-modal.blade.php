@@ -24,7 +24,7 @@
             <form wire:submit.prevent="save">
                 <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
                     <h2 class="text-lg font-semibold text-gray-900">Evaluasi Kinerja Baru</h2>
-                    <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                    <button type="button" wire:click="close" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600">
                         <x-heroicon-o-x-mark class="h-5 w-5" />
                     </button>
                 </div>
@@ -32,12 +32,12 @@
                 <div class="space-y-4 px-6 py-5">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Realisasi Uptime</label>
-                            <input type="text" wire:model="uptime_actual" placeholder="mis. 99.7%" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Ketersediaan Tercapai</label>
+                            <input type="text" wire:model="uptime_actual" placeholder="mis. 99,7%" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
                         </div>
                         <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Target SLA</label>
-                            <input type="text" wire:model="sla_target" placeholder="mis. 99.5%" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Target Ketersediaan</label>
+                            <input type="text" wire:model="sla_target" placeholder="mis. 99,5%" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
                         </div>
                     </div>
 
@@ -57,7 +57,7 @@
                             <input type="number" min="0" wire:model="incident_count" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
                         </div>
                         <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">MTTR</label>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Rata-rata Waktu Pemulihan</label>
                             <input type="text" wire:model="mttr" placeholder="mis. 2 jam" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
                         </div>
                     </div>
@@ -69,10 +69,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">
-                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-slate-50 active:scale-95">
+                    <button type="button" wire:click="close" x-ripple class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:bg-slate-50">
                         Batal
                     </button>
-                    <button type="submit" x-ripple class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring hover:scale-105 active:scale-95">
+                    <button type="submit" x-ripple class="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 ease-spring">
                         <span wire:loading.remove wire:target="save">Simpan</span>
                         <span wire:loading wire:target="save">Menyimpan...</span>
                     </button>

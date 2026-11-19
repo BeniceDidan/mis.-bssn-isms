@@ -1,4 +1,4 @@
-<div class="space-y-4" x-data="{ toast: null }" x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)">
+<div class="space-y-4" x-data="{ toast: null }" x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, Math.min(9000, Math.max(3000, $event.detail.message.length * 55)))">
 
     <div class="glass-panel flex flex-col gap-3 rounded-2xl p-4 shadow-lg md:flex-row md:flex-wrap md:items-center md:justify-center md:gap-6">
         <div class="relative w-full md:max-w-sm" x-data="{ focused: false }">
@@ -10,7 +10,7 @@
                 type="search"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Cari kode, judul, pemilik risiko..."
-                class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
+                class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400"
                 @focus="focused = true"
                 @blur="focused = false"
             >
@@ -58,7 +58,7 @@
                         ] as $field => $label)
                             <th
                                 wire:click="sortBy('{{ $field }}')"
-                                class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 transition-all duration-200 hover:bg-slate-50 hover:text-gray-700"
+                                class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold text-gray-500 transition-all duration-200 hover:bg-slate-50 hover:text-gray-700"
                             >
                                 <span class="inline-flex items-center gap-1">
                                     {{ $label }}
@@ -71,8 +71,8 @@
                                 </span>
                             </th>
                         @endforeach
-                        <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Aset Terkait</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Aksi</th>
+                        <th class="whitespace-nowrap px-4 py-3 text-left text-xs font-semibold text-gray-500">Aset Terkait</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500">Aksi</th>
                     </tr>
                 </thead>
                 <tbody wire:loading wire:target="search,categoryFilter,riskLevelFilter,statusFilter,showArchived,sortBy,previousPage,nextPage,gotoPage" class="divide-y divide-slate-200">
@@ -105,7 +105,7 @@
                                                 'red' => 'bg-red-50 text-red-700',
                                             ][$risk->risk_level->badgeColor()];
                                     @endphp
-                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold transition-transform duration-300 ease-spring hover:scale-110 {{ $badgeClasses }}">
+                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold transition-transform duration-300 ease-spring {{ $badgeClasses }}">
                                         {{ $risk->risk_level->label() }}
                                     </span>
                                 @else
@@ -205,7 +205,7 @@
                             <p class="text-xs font-mono text-gray-400">{{ $viewingRisk->risk_code }}</p>
                             <h2 class="text-lg font-semibold text-gray-900">{{ $viewingRisk->title }}</h2>
                         </div>
-                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600">
                             <x-heroicon-o-x-mark class="h-5 w-5" />
                         </button>
                     </div>
@@ -234,7 +234,7 @@
 
                     @if (! empty($viewingRisk->dynamic_data))
                         <div class="border-t border-slate-200 px-5 py-4">
-                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Data Dinamis</p>
+                            <p class="mb-2 text-xs font-semibold text-gray-400">Kolom Tambahan</p>
                             <dl class="divide-y divide-slate-200">
                                 @foreach ($viewingRisk->dynamic_data as $key => $value)
                                     <div class="grid grid-cols-2 gap-2 py-2.5 text-sm">
@@ -248,7 +248,7 @@
 
                     @if ($viewingRisk->verifications->isNotEmpty())
                         <div class="border-t border-slate-200 px-5 py-4">
-                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Riwayat Verifikasi</p>
+                            <p class="mb-2 text-xs font-semibold text-gray-400">Riwayat Verifikasi</p>
                             <div class="space-y-2">
                                 @foreach ($viewingRisk->verifications as $verification)
                                     <div class="rounded-lg bg-white px-3 py-2 text-xs">
@@ -281,7 +281,7 @@
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 translate-y-4 scale-90"
         x-cloak
-        class="glass-panel-dark fixed bottom-5 right-5 z-50 rounded-full px-4 py-2.5 text-sm text-white shadow-2xl"
+        class="glass-panel-dark fixed bottom-5 right-5 z-50 max-w-sm rounded-2xl px-4 py-2.5 text-sm leading-snug text-white shadow-2xl"
     >
         <span x-text="toast"></span>
     </div>

@@ -19,7 +19,7 @@
         ['label' => 'Manajemen Risiko', 'route' => 'risks.index', 'icon' => 'o-exclamation-triangle', 'enabled' => true],
         ['label' => 'Manajemen Perubahan', 'route' => 'changes.index', 'icon' => 'o-arrow-path', 'enabled' => true],
         ['label' => 'Manajemen Layanan', 'route' => 'services.index', 'icon' => 'o-wrench-screwdriver', 'enabled' => true],
-        ['label' => 'Manajemen Data Informasi', 'route' => 'data-information.index', 'icon' => 'o-circle-stack', 'enabled' => true],
+        ['label' => 'Manajemen Data & Informasi', 'route' => 'data-information.index', 'icon' => 'o-circle-stack', 'enabled' => true],
         // Bukan modul ke-9: alat lintas modul untuk menilai PDF bukti dukung
         // evaluasi kinerja pemerintah digital terhadap rubrik level.
         ['label' => 'Evaluasi Bukti Dukung', 'route' => 'evidence.index', 'icon' => 'o-document-check', 'enabled' => true],
@@ -34,7 +34,7 @@
         {{-- Same logo asset as the login page (public/images/kominfo-logo.png)
              — real Kominfo swirl mark instead of the generic "K" square,
              with the same onerror fallback if the file's ever missing. --}}
-        <div class="relative flex h-9 w-9 shrink-0 items-center justify-center transition-transform duration-300 ease-spring hover:scale-110">
+        <div class="relative flex h-9 w-9 shrink-0 items-center justify-center transition-transform duration-300 ease-spring">
             <img
                 src="{{ asset('images/kominfo-logo.png') }}"
                 alt="Logo Kominfo"
@@ -63,7 +63,7 @@
                     @class([
                         'group relative flex items-center gap-3 overflow-hidden rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 ease-spring',
                         'bg-brand-700 text-white shadow-lg scale-[1.02]' => $isActive,
-                        'text-slate-300 hover:translate-x-1.5 hover:scale-[1.02] hover:bg-white/10 hover:text-white' => ! $isActive,
+                        'text-slate-300.5 hover:bg-white/10 hover:text-white' => ! $isActive,
                     ])
                 >
                     <span
@@ -85,7 +85,7 @@
                         <x-dynamic-component :component="'heroicon-' . $module['icon']" class="h-5 w-5 shrink-0" />
                         {{ $module['label'] }}
                     </span>
-                    <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                    <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
                         Soon
                     </span>
                 </div>

@@ -57,7 +57,7 @@
                 type="button"
                 title="Tutup"
                 @click="$store.search.open = false"
-                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:scale-110 hover:bg-slate-50 hover:text-gray-600 dark:hover:bg-white/10"
+                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600 dark:hover:bg-white/10"
             >
                 <x-heroicon-o-x-mark class="h-4 w-4" />
             </button>
@@ -78,14 +78,14 @@
             <div wire:loading.remove wire:target="query">
                 @forelse ($groups as $group)
                     <div class="mb-1 last:mb-0">
-                        <p class="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                        <p class="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold text-gray-400">
                             <x-dynamic-component :component="'heroicon-' . $group['icon']" class="h-3.5 w-3.5" />
                             {{ $group['label'] }}
                         </p>
                         @foreach ($group['items'] as $item)
                             <a
                                 href="{{ $item['url'] }}"
-                                class="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-gray-700 transition-all duration-200 hover:translate-x-1 hover:bg-brand-50 hover:text-brand-700 dark:text-gray-200 dark:hover:bg-white/10"
+                                class="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-gray-700 transition-all duration-200 hover:bg-brand-50 hover:text-brand-700 dark:text-gray-200 dark:hover:bg-white/10"
                             >
                                 <span class="truncate">{{ $item['title'] }}</span>
                                 @if ($item['meta'])

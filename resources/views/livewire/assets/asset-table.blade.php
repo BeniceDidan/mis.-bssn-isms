@@ -1,4 +1,4 @@
-<div class="space-y-4" x-data="{ toast: null }" x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)">
+<div class="space-y-4" x-data="{ toast: null }" x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, Math.min(9000, Math.max(3000, $event.detail.message.length * 55)))">
 
     {{-- Toolbar: local search + strict dropdown filters (rule 4.4) --}}
     <div class="glass-panel flex flex-col gap-3 rounded-2xl p-4 shadow-lg md:flex-row md:flex-wrap md:items-center md:justify-center md:gap-6">
@@ -11,7 +11,7 @@
                 type="search"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Cari kode, nama, pemilik, atau data lainnya..."
-                class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm transition-all duration-300 ease-spring focus:scale-[1.01] focus:border-brand-400 focus:bg-white focus:ring-brand-400"
+                class="w-full rounded-full border-slate-200 bg-white pl-9 text-sm focus:border-brand-400 focus:bg-white focus:ring-brand-400"
                 @focus="focused = true"
                 @blur="focused = false"
             >
@@ -54,7 +54,7 @@
                         ] as $field => $label)
                             <th
                                 wire:click="sortBy('{{ $field }}')"
-                                class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 transition-all duration-200 hover:bg-slate-50 hover:text-gray-700"
+                                class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left text-xs font-semibold text-gray-500 transition-all duration-200 hover:bg-slate-50 hover:text-gray-700"
                             >
                                 <span class="inline-flex items-center gap-1">
                                     {{ $label }}
@@ -67,8 +67,8 @@
                                 </span>
                             </th>
                         @endforeach
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Terhubung</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Aksi</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">Terhubung</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500">Aksi</th>
                     </tr>
                 </thead>
                 <tbody wire:loading wire:target="search,categoryFilter,criticalityFilter,showArchived,sortBy,previousPage,nextPage,gotoPage" class="divide-y divide-slate-200">
@@ -102,7 +102,7 @@
                                                 'red' => 'bg-red-50 text-red-700',
                                             ][$asset->criticality_level->badgeColor()];
                                     @endphp
-                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold transition-transform duration-300 ease-spring hover:scale-110 {{ $badgeClasses }}">
+                                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold transition-transform duration-300 ease-spring {{ $badgeClasses }}">
                                         {{ $asset->criticality_level->label() }}
                                     </span>
                                 @else
@@ -138,7 +138,7 @@
                                     <div class="flex items-center gap-1">
                                         @foreach ($links as $link)
                                             @if ($link['count'] > 0)
-                                                <span class="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-medium transition-transform duration-300 ease-spring hover:scale-110 {{ $link['class'] }}">
+                                                <span class="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-medium transition-transform duration-300 ease-spring {{ $link['class'] }}">
                                                     <x-dynamic-component :component="'heroicon-' . $link['icon']" class="h-3 w-3" />
                                                     {{ $link['count'] }}
                                                 </span>
@@ -229,7 +229,7 @@
                             <p class="text-xs font-mono text-gray-400">{{ $viewingAsset->asset_code }}</p>
                             <h2 class="text-lg font-semibold text-gray-900">{{ $viewingAsset->name }}</h2>
                         </div>
-                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:rotate-90 hover:scale-110 hover:bg-slate-50 hover:text-gray-600">
+                        <button wire:click="closeDetail" class="rounded-full p-1.5 text-gray-400 transition-all duration-300 ease-spring hover:bg-slate-50 hover:text-gray-600">
                             <x-heroicon-o-x-mark class="h-5 w-5" />
                         </button>
                     </div>
@@ -248,7 +248,7 @@
                                 'ditolak' => 'Ditolak',
                             ][$viewingAsset->verification_status] ?? $viewingAsset->verification_status,
                             'Tahun Referensi' => $viewingAsset->reference_year,
-                            'Kode Legacy (Excel)' => $viewingAsset->legacy_code,
+                            'Kode Lama (Excel)' => $viewingAsset->legacy_code,
                         ] as $label => $value)
                             <div class="grid grid-cols-2 gap-2 py-2.5 text-sm">
                                 <dt class="text-gray-500">{{ $label }}</dt>
@@ -259,7 +259,7 @@
 
                     @if ($viewingAsset->verifications->isNotEmpty())
                         <div class="border-t border-slate-200 px-5 py-4">
-                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Riwayat Verifikasi</p>
+                            <p class="mb-2 text-xs font-semibold text-gray-400">Riwayat Verifikasi</p>
                             <div class="space-y-2">
                                 @foreach ($viewingAsset->verifications as $verification)
                                     <div class="rounded-lg bg-white px-3 py-2 text-xs">
@@ -281,7 +281,7 @@
 
                     @if (! empty($viewingAsset->dynamic_data))
                         <div class="border-t border-slate-200 px-5 py-4">
-                            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Data Dinamis (Spesifik Kategori)</p>
+                            <p class="mb-2 text-xs font-semibold text-gray-400">Kolom Tambahan</p>
                             <dl class="divide-y divide-slate-200">
                                 @foreach ($viewingAsset->dynamic_data as $key => $value)
                                     <div class="grid grid-cols-2 gap-2 py-2.5 text-sm">
@@ -299,7 +299,7 @@
                          Data Informasi → Pengetahuan) is visible from the
                          asset itself instead of only inside each module. --}}
                     <div class="border-t border-slate-200 px-5 py-4" data-tour="related-panel">
-                        <p class="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                        <p class="mb-3 flex items-center gap-1.5 text-xs font-semibold text-gray-400">
                             <x-heroicon-o-link class="h-3.5 w-3.5" /> Riwayat Terkait
                         </p>
 
@@ -309,7 +309,7 @@
                                     <x-heroicon-o-users class="h-3.5 w-3.5" /> SDM ({{ $relatedSdm->count() }})
                                 </p>
                                 @forelse ($relatedSdm as $relatedPerson)
-                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-slate-50/70 px-3 py-2 text-xs transition-all duration-200 hover:translate-x-1 hover:bg-slate-100/70">
+                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-slate-50/70 px-3 py-2 text-xs transition-all duration-200 hover:bg-slate-100/70">
                                         <span class="truncate text-gray-700">{{ $relatedPerson->subject }}</span>
                                         <span class="ml-2 shrink-0 font-mono text-slate-500">{{ $relatedPerson->record_code }}</span>
                                     </div>
@@ -323,7 +323,7 @@
                                     <x-heroicon-o-exclamation-triangle class="h-3.5 w-3.5" /> Risiko ({{ $viewingAsset->risks->count() }})
                                 </p>
                                 @forelse ($viewingAsset->risks as $relatedRisk)
-                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:translate-x-1 hover:bg-brand-100">
+                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:bg-brand-100">
                                         <span class="truncate text-gray-700">{{ $relatedRisk->title }}</span>
                                         <span class="ml-2 shrink-0 font-mono text-brand-500">{{ $relatedRisk->risk_code }}</span>
                                     </div>
@@ -337,7 +337,7 @@
                                     <x-heroicon-o-shield-check class="h-3.5 w-3.5" /> Keamanan Informasi ({{ $viewingAsset->securityPrograms->count() }})
                                 </p>
                                 @forelse ($viewingAsset->securityPrograms as $relatedProgram)
-                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:translate-x-1 hover:bg-brand-100">
+                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:bg-brand-100">
                                         <span class="truncate text-gray-700">{{ $relatedProgram->program_kerja }}</span>
                                         <span class="ml-2 shrink-0 font-mono text-brand-500">{{ $relatedProgram->record_code }}</span>
                                     </div>
@@ -351,7 +351,7 @@
                                     <x-heroicon-o-arrow-path class="h-3.5 w-3.5" /> Perubahan ({{ $viewingAsset->changes->count() }})
                                 </p>
                                 @forelse ($viewingAsset->changes as $relatedChange)
-                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:translate-x-1 hover:bg-brand-100">
+                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:bg-brand-100">
                                         <span class="truncate text-gray-700">{{ $relatedChange->title }}</span>
                                         <span class="ml-2 shrink-0 font-mono text-brand-500">{{ $relatedChange->change_code }}</span>
                                     </div>
@@ -365,7 +365,7 @@
                                     <x-heroicon-o-circle-stack class="h-3.5 w-3.5" /> Data & Informasi ({{ $viewingAsset->dataInformationRecords->count() }})
                                 </p>
                                 @forelse ($viewingAsset->dataInformationRecords as $relatedRecord)
-                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:translate-x-1 hover:bg-brand-100">
+                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:bg-brand-100">
                                         <span class="truncate text-gray-700">{{ $relatedRecord->title }}</span>
                                         <span class="ml-2 shrink-0 font-mono text-brand-500">{{ $relatedRecord->record_code }}</span>
                                     </div>
@@ -379,7 +379,7 @@
                                     <x-heroicon-o-light-bulb class="h-3.5 w-3.5" /> Pengetahuan ({{ $viewingAsset->knowledgeAssets->count() }})
                                 </p>
                                 @forelse ($viewingAsset->knowledgeAssets as $relatedDoc)
-                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:translate-x-1 hover:bg-brand-100">
+                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:bg-brand-100">
                                         <span class="truncate text-gray-700">{{ $relatedDoc->title }}</span>
                                         <span class="ml-2 shrink-0 font-mono text-brand-500">{{ $relatedDoc->record_code }}</span>
                                     </div>
@@ -392,7 +392,7 @@
                                     @if ($viewingAsset->changes->isNotEmpty())
                                         <a
                                             href="{{ route('knowledge.index', ['create' => 1, 'asset_id' => $viewingAsset->id]) }}"
-                                            class="mt-1.5 flex items-center gap-1.5 rounded-lg border border-dashed border-brand-300 bg-brand-50 px-3 py-2 text-xs font-medium text-brand-700 transition-all duration-300 ease-spring hover:translate-x-1 hover:bg-brand-100"
+                                            class="mt-1.5 flex items-center gap-1.5 rounded-lg border border-dashed border-brand-300 bg-brand-50 px-3 py-2 text-xs font-medium text-brand-700 transition-all duration-300 ease-spring hover:bg-brand-100"
                                         >
                                             <x-heroicon-o-sparkles class="h-3.5 w-3.5" />
                                             Ada {{ $viewingAsset->changes->count() }} perubahan tercatat — buat dokumentasi pengetahuannya?
@@ -406,7 +406,7 @@
                                     <x-heroicon-o-wrench-screwdriver class="h-3.5 w-3.5" /> Layanan ({{ $viewingAsset->services->count() }})
                                 </p>
                                 @forelse ($viewingAsset->services as $relatedService)
-                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:translate-x-1 hover:bg-brand-100">
+                                    <div class="mb-1 flex items-center justify-between rounded-lg bg-brand-50 px-3 py-2 text-xs transition-all duration-200 hover:bg-brand-100">
                                         <span class="truncate text-gray-700">{{ $relatedService->name }}</span>
                                         <span class="ml-2 shrink-0 font-mono text-brand-500">{{ $relatedService->service_code }}</span>
                                     </div>
@@ -431,7 +431,7 @@
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 translate-y-4 scale-90"
         x-cloak
-        class="glass-panel-dark fixed bottom-5 right-5 z-50 rounded-full px-4 py-2.5 text-sm text-white shadow-2xl"
+        class="glass-panel-dark fixed bottom-5 right-5 z-50 max-w-sm rounded-2xl px-4 py-2.5 text-sm leading-snug text-white shadow-2xl"
     >
         <span x-text="toast"></span>
     </div>

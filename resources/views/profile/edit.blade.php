@@ -11,7 +11,7 @@
     <div
         class="max-w-2xl space-y-6"
         x-data="{ toast: null }"
-        x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, 3000)"
+        x-on:toast.window="toast = $event.detail.message; setTimeout(() => toast = null, Math.min(9000, Math.max(3000, $event.detail.message.length * 55)))"
     >
         <livewire:profile.update-profile-information />
         <livewire:profile.update-password />
