@@ -144,9 +144,9 @@ class AppHelp
             'route' => 'services.index',
         ],
         [
-            'title' => 'Asal skor bukti dukung',
-            'text' => 'Skor bukti dukung = jumlah unsur rubrik Level 1 sampai level yang diklaim yang ditemukan di PDF, dibagi semua unsur Level 1 sampai level itu, dikali 100. Contoh: pedoman manajemen risiko yang mengklaim Level 3 memuat 6 dari 7 unsur, jadi skornya 86. Hasil (level tercapai) adalah level tertinggi yang semua unsurnya, sampai level itu, ditemukan. Sebuah unsur dianggap ada bila salah satu kata kuncinya ditemukan. PDF hasil scan tidak dinilai. Rincian hitungannya ada di panel bukti dukung, bagian Asal skor dan level.',
-            'words' => 'skor nilai bukti dukung 86 100 penilaian rubrik level hasil klaim unsur dari mana asal hitung',
+            'title' => 'Asal kelengkapan bukti dukung',
+            'text' => 'Kelengkapan bukti dukung = jumlah unsur rubrik Level 1 sampai level yang diklaim yang ditemukan di PDF, dibagi semua unsur Level 1 sampai level itu, dikali 100, ditulis sebagai persen. Contoh: pedoman manajemen risiko yang mengklaim Level 3 memuat 6 dari 7 unsur, jadi kelengkapannya 86%. Angka ini bukan nilai resmi evaluasi; penilaian resmi tetap dilakukan asesor. Hasil (level tercapai) adalah level tertinggi yang semua unsurnya, sampai level itu, ditemukan. Sebuah unsur dianggap ada bila salah satu kata kuncinya ditemukan. PDF hasil scan tidak dinilai. Rincian hitungannya ada di panel bukti dukung, bagian Asal kelengkapan dan level.',
+            'words' => 'kelengkapan persen lengkap skor nilai bukti dukung 86 100 penilaian rubrik level hasil klaim unsur dari mana asal hitung',
             'route' => 'evidence.index',
         ],
         [
@@ -242,7 +242,7 @@ class AppHelp
         $aiRoutes = ['bukti' => 'evidence.index', 'tanya' => 'knowledge.index', 'triase' => 'services.index'];
         $aiParams = ['bukti' => [], 'tanya' => ['tab' => 'tanya'], 'triase' => ['tab' => 'helpdesk']];
         $aiWords = [
-            'bukti' => 'bukti dukung evaluasi unggah pdf nilai skor level rubrik asesor',
+            'bukti' => 'bukti dukung evaluasi unggah pdf nilai skor kelengkapan level rubrik asesor',
             'tanya' => 'tanya dokumen rag pertanyaan jawaban sop isi dokumen pencarian semantik',
             'triase' => 'tiket helpdesk analisis ai triase prioritas kategori draf balasan',
         ];

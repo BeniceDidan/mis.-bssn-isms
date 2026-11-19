@@ -158,7 +158,7 @@ const TOURS = {
         {
             el: '[data-tour="evidence-summary"]',
             title: 'Hasil penilaian',
-            desc: '<b>Klaim</b> adalah level yang diajukan OPD. <b>Hasil</b> adalah level tertinggi yang semua unsurnya ditemukan. <b>Skor</b> adalah persentase unsur rubrik yang ditemukan sampai level yang diklaim, misalnya 6 dari 7 unsur = 86.',
+            desc: '<b>Klaim</b> adalah level yang diajukan OPD. <b>Hasil</b> adalah level tertinggi yang semua unsurnya ditemukan. <b>Kelengkapan</b> adalah persentase unsur rubrik yang ditemukan sampai level yang diklaim, misalnya 6 dari 7 unsur = 86%.',
         },
         {
             el: '[data-tour="evidence-missing"]',
@@ -174,8 +174,8 @@ const TOURS = {
         },
         {
             el: '[data-tour="evidence-details"]',
-            title: 'Asal skor dan catatan AI',
-            desc: 'Buka <b>Asal skor dan level</b> untuk melihat hitungan skornya, kriteria tiap level, dan kata yang ditemukan beserta halamannya. <b>Catatan AI</b> berisi ringkasan dari AI. AI tidak mengubah level atau skor.',
+            title: 'Asal kelengkapan dan catatan AI',
+            desc: 'Buka <b>Asal kelengkapan dan level</b> untuk melihat hitungannya, kriteria tiap level, dan kata yang ditemukan beserta halamannya. <b>Catatan AI</b> berisi ringkasan dari AI. AI tidak mengubah level atau kelengkapan.',
             optional: true,
             side: 'top',
         },

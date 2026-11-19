@@ -60,8 +60,8 @@
                             <dd class="text-xl font-semibold text-brand-700">{{ $record->achieved_level > 0 ? 'Level ' . $record->achieved_level : '—' }}</dd>
                         </div>
                         <div>
-                            <dt class="text-xs text-gray-500">Skor</dt>
-                            <dd class="text-xl font-semibold text-gray-900">{{ $record->score }}</dd>
+                            <dt class="text-xs text-gray-500">Kelengkapan</dt>
+                            <dd class="text-xl font-semibold text-gray-900">{{ $record->completenessLabel() }}</dd>
                             @if (! $unreadable && $breakdown['total'] > 0)
                                 <dd class="text-xs text-gray-500">{{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur</dd>
                             @endif
@@ -100,10 +100,10 @@
                     <div class="space-y-3" data-tour="evidence-details">
                     @if ($levels && ! $unreadable)
                         <details class="group">
-                            <summary class="cursor-pointer text-sm font-medium text-brand-700">Asal skor dan level</summary>
+                            <summary class="cursor-pointer text-sm font-medium text-brand-700">Asal kelengkapan dan level</summary>
                             <div class="mt-3 space-y-3">
                                 <div class="rounded-lg bg-slate-50 px-3 py-2 text-sm text-gray-700">
-                                    <p>Skor {{ $record->score }} = {{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur Level 1–{{ $record->target_level }} ditemukan di PDF.</p>
+                                    <p>Kelengkapan {{ $record->score }}% = {{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur Level 1–{{ $record->target_level }} ditemukan di PDF.</p>
                                     <p>Hasil = level tertinggi yang semua unsurnya, sampai level itu, ditemukan.</p>
                                 </div>
                                 @foreach ($levels as $no => $level)

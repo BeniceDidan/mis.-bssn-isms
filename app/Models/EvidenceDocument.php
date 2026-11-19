@@ -106,6 +106,21 @@ class EvidenceDocument extends Model
         return ['found' => $unsur->where('found', true)->count(), 'total' => $unsur->count()];
     }
 
+    /**
+     * Skor ditampilkan sebagai "Kelengkapan 86%": persentase unsur rubrik yang
+     * ditemukan, bukan nilai resmi evaluasi (PermenPANRB 8/2026 memakai indeks
+     * 1,00–5,00). PDF hasil scan atau tidak terbaca tidak dinilai isinya → "—".
+     */
+    public function completenessLabel(): string
+    {
+        $pdf = $this->checks['pdf'] ?? [];
+        if ($this->score === null || ! ($pdf['readable'] ?? true) || ($pdf['scanned'] ?? false)) {
+            return '—';
+        }
+
+        return $this->score . '%';
+    }
+
     /** Kata kunci rubrik untuk sebuah unsur, supaya tampilan bisa menyebut apa yang dicari. */
     public function keywordsFor(int|string $level, string $label): array
     {

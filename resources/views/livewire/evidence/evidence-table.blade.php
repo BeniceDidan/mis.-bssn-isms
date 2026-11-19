@@ -25,7 +25,7 @@
                         <th class="px-4 py-3 font-medium">Dokumen</th>
                         <th class="px-4 py-3 font-medium">Klaim</th>
                         <th class="px-4 py-3 font-medium">Hasil</th>
-                        <th class="px-4 py-3 font-medium">Skor</th>
+                        <th class="px-4 py-3 font-medium">Kelengkapan</th>
                         <th class="px-4 py-3 font-medium">Keputusan</th>
                     </tr>
                 </thead>
@@ -44,7 +44,7 @@
                             <td class="whitespace-nowrap px-4 py-3 font-medium {{ $record->meetsTarget() ? 'text-brand-700' : 'text-gray-900' }}">
                                 {{ $record->achieved_level > 0 ? 'Level ' . $record->achieved_level : '—' }}
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $record->score }}@php $b = $record->scoreBreakdown(); @endphp @if ($b['total'] && ! ($record->checks['pdf']['scanned'] ?? false))<span class="ml-1 text-xs text-gray-400">({{ $b['found'] }}/{{ $b['total'] }} unsur)</span>@endif</td>
+                            <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $record->completenessLabel() }}@php $b = $record->scoreBreakdown(); @endphp @if ($b['total'] && ! ($record->checks['pdf']['scanned'] ?? false))<span class="ml-1 text-xs text-gray-400">({{ $b['found'] }}/{{ $b['total'] }} unsur)</span>@endif</td>
                             <td class="whitespace-nowrap px-4 py-3 text-gray-500">
                                 {{ $record->reviewer_decision ? \App\Models\EvidenceDocument::DECISIONS[$record->reviewer_decision] : 'Menunggu' }}
                             </td>

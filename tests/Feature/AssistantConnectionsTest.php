@@ -163,7 +163,7 @@ class AssistantConnectionsTest extends TestCase
 
         $evidence = (new AppAssistant())->answer('Berkas yang tadi saya upload gimana?')['answer'];
         $this->assertStringContainsString('sebagai bukti dukung Manajemen Risiko.', $evidence);
-        $this->assertStringContainsString('• Dinilai otomatis: skor 86 (6 dari 7 unsur), hasil Level 2 dari target Level 3.', $evidence);
+        $this->assertStringContainsString('• Dinilai otomatis: kelengkapan 86% (6 dari 7 unsur), hasil Level 2 dari target Level 3.', $evidence);
         $this->assertStringContainsString('• Menunggu keputusan admin Manajemen Risiko: Bu Admin Risiko.', $evidence);
         $this->assertStringContainsString('Tidak menambah atau mengubah data di Manajemen Risiko', $evidence);
         // Bisa juga meminta jenis tertentu.

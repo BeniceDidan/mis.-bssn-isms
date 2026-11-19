@@ -72,8 +72,8 @@ class EvidenceAssessorTest extends TestCase
         Livewire::test(EvidenceDetail::class)
             ->call('open', $record->id)
             ->assertSee('6 dari 7 unsur')
-            ->assertSee('Asal skor dan level')
-            ->assertSee('Skor 86 = 6 dari 7 unsur Level 1–3 ditemukan di PDF.')
+            ->assertSee('Asal kelengkapan dan level')
+            ->assertSee('Kelengkapan 86% = 6 dari 7 unsur Level 1–3 ditemukan di PDF.')
             ->assertSee('ditemukan kata')
             ->assertSee('tidak ada kata:');
     }
@@ -107,6 +107,19 @@ class EvidenceAssessorTest extends TestCase
         $this->assertTrue($result['checks']['pdf']['scanned']);
         $this->assertSame('danger', $result['warnings'][0]['type']);
         $this->assertStringContainsString('hasil pindai', $result['warnings'][0]['text']);
+    }
+
+    public function test_score_is_shown_as_completeness_percentage_and_dash_for_unread_pdfs(): void
+    {
+        $read = (new EvidenceDocument())->forceFill(['score' => 86, 'checks' => ['pdf' => ['readable' => true, 'scanned' => false]]]);
+        $scanned = (new EvidenceDocument())->forceFill(['score' => 20, 'checks' => ['pdf' => ['readable' => true, 'scanned' => true]]]);
+        $unreadable = (new EvidenceDocument())->forceFill(['score' => 0, 'checks' => ['pdf' => ['readable' => false]]]);
+        $notAssessed = (new EvidenceDocument())->forceFill(['score' => null]);
+
+        $this->assertSame('86%', $read->completenessLabel());
+        $this->assertSame('—', $scanned->completenessLabel());
+        $this->assertSame('—', $unreadable->completenessLabel());
+        $this->assertSame('—', $notAssessed->completenessLabel());
     }
 
     public function test_only_the_matching_module_admin_can_record_a_decision(): void
