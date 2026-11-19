@@ -10,6 +10,7 @@ dijadikan bahan presentasi, setiap poin perlu dicek ke sumber aslinya.
 | [02-pengetahuan-rag.md](02-pengetahuan-rag.md) | Cara kerja tanya-jawab dokumen (RAG), pilihan model lokal, dan batasannya | Tab Tanya Dokumen, tag otomatis |
 | [03-triase-helpdesk.md](03-triase-helpdesk.md) | Matriks prioritas dampak × urgensi, kategori tiket, dan target waktu | `config/helpdesk.php`, Tiket Helpdesk |
 | [04-rujukan-per-modul.md](04-rujukan-per-modul.md) | Rujukan resmi untuk setiap aturan dan fitur di 8 modul + audit kesesuaian (sesuai / sebagian / perlu penyesuaian / belum ada rujukan) | Seluruh aplikasi |
+| [05-dasar-angka-penilaian.md](05-dasar-angka-penilaian.md) | Dasar resmi angka penilaian: rumus Indeks Pemdi, skala Peraturan BSSN 10/2023, skor Indeks KAMI 5.0, dan pilihan pengganti "Kelengkapan 86%" | Evaluasi Bukti Dukung |
 
 ## Temuan yang paling perlu diketahui
 
@@ -37,6 +38,10 @@ dijadikan bahan presentasi, setiap poin perlu dicek ke sumber aslinya.
    dampak Mayor/Minor), berbeda dengan matriks P1–P4 di aplikasi. Lihat berkas 04.
 7. **Skala risiko 4 tingkat diperbolehkan** PermenPANRB 5/2020 (boleh 3, 4, atau
    5 level), asalkan matriksnya ditetapkan pimpinan instansi.
+8. **Persentase kelengkapan bukti dukung tidak punya dasar resmi.** Evaluasi
+   Kinerja Pemdi memberi nilai tingkat kematangan 1–5 per indikator, lalu
+   menghitungnya menjadi indeks 1,00–5,00. Persentase resmi hanya ditemukan di
+   modul Suplemen Indeks KAMI 5.0 (BSSN). Lihat berkas 05.
 
 ## Cara meninjau
 
@@ -45,4 +50,4 @@ dijadikan bahan presentasi, setiap poin perlu dicek ke sumber aslinya.
 - Setelah rubrik disetujui, ubah `'status' => 'draf'` di `config/bukti_dukung.php`
   menjadi `'ditinjau'` supaya peringatan "Rubrik masih draf" hilang dari aplikasi.
 
-Riset dilakukan 10 November 2026.
+Riset dilakukan 10 November 2026; berkas 05 ditambahkan 19 November 2026.
