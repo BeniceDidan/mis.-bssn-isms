@@ -31,6 +31,8 @@
                     ->values()
                     ->push(['label' => 'TTE tertanam', 'found' => $pdf['digital_signature'] ?? false]);
                 $breakdown = $record->scoreBreakdown();
+                $ai = $record->aiHighlights();
+                $meets = ! $unreadable && $record->meetsTarget();
             @endphp
             <div
                 x-show="show"
@@ -49,101 +51,122 @@
                     </button>
                 </div>
 
-                <div class="space-y-6 px-6 py-5">
-                    <dl class="grid grid-cols-3 gap-3" data-tour="evidence-summary">
-                        <div>
+                <div class="space-y-5 px-6 py-5">
+                    <dl class="grid grid-cols-3 gap-2" data-tour="evidence-summary">
+                        <div class="rounded-2xl bg-slate-50 px-3 py-3">
                             <dt class="text-xs text-gray-500">Klaim</dt>
-                            <dd class="text-xl font-semibold text-gray-900">Level {{ $record->target_level }}</dd>
+                            <dd class="mt-0.5 text-lg font-semibold text-gray-900">Level {{ $record->target_level }}</dd>
                         </div>
-                        <div>
+                        <div class="rounded-2xl px-3 py-3 {{ $meets ? 'bg-brand-50' : 'bg-slate-50' }}">
                             <dt class="text-xs text-gray-500">Hasil</dt>
-                            <dd class="text-xl font-semibold text-brand-700">{{ $record->achieved_level > 0 ? 'Level ' . $record->achieved_level : '—' }}</dd>
+                            <dd class="mt-0.5 text-lg font-semibold {{ $meets ? 'text-brand-700' : 'text-gray-900' }}">{{ $record->achieved_level > 0 ? 'Level ' . $record->achieved_level : '—' }}</dd>
                         </div>
-                        <div>
+                        <div class="rounded-2xl bg-slate-50 px-3 py-3">
                             <dt class="text-xs text-gray-500">Kelengkapan</dt>
-                            <dd class="text-xl font-semibold text-gray-900">{{ $record->completenessLabel() }}</dd>
+                            <dd class="mt-0.5 text-lg font-semibold text-gray-900">{{ $record->completenessLabel() }}</dd>
                             @if (! $unreadable && $breakdown['total'] > 0)
-                                <dd class="text-xs text-gray-500">{{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur</dd>
+                                <dd class="mt-1.5 h-1 overflow-hidden rounded-full bg-brand-100"><div class="h-full rounded-full bg-brand-500" style="width: {{ $record->score }}%"></div></dd>
+                                <dd class="mt-1 text-xs text-gray-500">{{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur</dd>
                             @endif
                         </div>
                     </dl>
 
                     @if ($unreadable)
-                        <p class="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{{ $unreadableText }}</p>
+                        <p class="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{{ $unreadableText }}</p>
                     @elseif ($missing->isNotEmpty())
                         <div data-tour="evidence-missing">
                             <p class="text-sm font-medium text-gray-900">Belum ada</p>
-                            <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-gray-700">
+                            <div class="mt-2 flex flex-wrap gap-1.5">
                                 @foreach ($missing as $label)
-                                    <li>{{ $label }}</li>
+                                    <span class="rounded-full bg-red-50 px-3 py-1 text-sm text-red-700">{{ $label }}</span>
                                 @endforeach
-                            </ul>
+                            </div>
                         </div>
                     @endif
 
                     @if ($pengesahan)
-                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm" data-tour="evidence-validity">
-                            @foreach ($validity as $item)
-                                <span class="inline-flex items-center gap-1 {{ $item['found'] ? 'text-gray-700' : 'text-gray-400' }}">
-                                    @if ($item['found'])
-                                        <x-heroicon-o-check class="h-4 w-4 text-brand-600" />
-                                    @else
-                                        <x-heroicon-o-minus class="h-4 w-4" />
-                                    @endif
-                                    {{ $item['label'] }}
-                                </span>
-                            @endforeach
+                        <div data-tour="evidence-validity">
+                            <p class="text-sm font-medium text-gray-900">Keabsahan</p>
+                            <div class="mt-2 flex flex-wrap gap-1.5">
+                                @foreach ($validity as $item)
+                                    <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm {{ $item['found'] ? 'bg-brand-50 text-brand-700' : 'bg-slate-50 text-gray-400' }}">
+                                        @if ($item['found'])
+                                            <x-heroicon-o-check class="h-3.5 w-3.5" />
+                                        @else
+                                            <x-heroicon-o-minus class="h-3.5 w-3.5" />
+                                        @endif
+                                        {{ $item['label'] }}
+                                    </span>
+                                @endforeach
+                            </div>
                         </div>
                     @endif
 
-                    @if (($levels && ! $unreadable) || $record->ai_notes)
-                    <div class="space-y-3" data-tour="evidence-details">
-                    @if ($levels && ! $unreadable)
-                        <details class="group">
-                            <summary class="cursor-pointer text-sm font-medium text-brand-700">Asal kelengkapan dan level</summary>
-                            <div class="mt-3 space-y-3">
-                                <div class="rounded-lg bg-slate-50 px-3 py-2 text-sm text-gray-700">
-                                    <p>Kelengkapan {{ $record->score }}% = {{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur Level 1–{{ $record->target_level }} ditemukan di PDF.</p>
-                                    <p>Hasil = level tertinggi yang semua unsurnya, sampai level itu, ditemukan.</p>
-                                </div>
-                                @foreach ($levels as $no => $level)
-                                    @continue($no > max($record->target_level, $record->achieved_level))
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900">Level {{ $no }} &middot; {{ $level['name'] }}</p>
-                                        @if (! empty($level['kriteria']))
-                                            <p class="text-xs text-gray-500">{{ $level['kriteria'] }}</p>
-                                        @endif
-                                        <ul class="mt-1 space-y-1">
-                                            @foreach ($level['unsur'] as $unsur)
-                                                <li class="flex items-start gap-2 text-sm text-gray-600">
-                                                    @if ($unsur['found'])
-                                                        <x-heroicon-o-check class="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
-                                                    @else
-                                                        <x-heroicon-o-x-mark class="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                                                    @endif
-                                                    <span>
-                                                        {{ $unsur['label'] }}
-                                                        @if ($unsur['found'])
-                                                            <span class="block text-xs text-gray-400">ditemukan kata "{{ $unsur['keyword'] }}"@if ($unsur['page']) di hal. {{ $unsur['page'] }}@endif</span>
-                                                        @elseif ($keywords = $record->keywordsFor($no, $unsur['label']))
-                                                            <span class="block text-xs text-gray-400">tidak ada kata: {{ implode(', ', array_slice($keywords, 0, 4)) }}</span>
-                                                        @endif
-                                                    </span>
-                                                </li>
+                    @if (($levels && ! $unreadable) || $ai['summary'] || $ai['gaps'])
+                    <div class="space-y-4" data-tour="evidence-details">
+                        @if ($ai['summary'] || $ai['gaps'])
+                            <div data-tour="evidence-ai">
+                                <div class="max-w-[92%] rounded-2xl rounded-tl-md bg-slate-100 px-4 py-3 text-sm leading-relaxed text-gray-700">
+                                    @if ($ai['summary'])
+                                        <p>{{ $ai['summary'] }}</p>
+                                    @endif
+                                    @if ($ai['gaps'])
+                                        <ul class="{{ $ai['summary'] ? 'mt-2' : '' }} space-y-1">
+                                            @foreach ($ai['gaps'] as $gap)
+                                                <li class="flex gap-2"><span class="text-gray-400">–</span><span>{{ $gap }}</span></li>
                                             @endforeach
                                         </ul>
-                                    </div>
-                                @endforeach
+                                    @endif
+                                </div>
+                                <p class="mt-1 text-[11px] text-gray-400">Ringkasan AI</p>
                             </div>
-                        </details>
-                    @endif
+                        @endif
 
-                    @if ($record->ai_notes)
-                        <details>
-                            <summary class="cursor-pointer text-sm font-medium text-brand-700">Catatan AI</summary>
-                            <p class="mt-2 whitespace-pre-line text-sm text-gray-700">{{ $record->ai_notes }}</p>
-                        </details>
-                    @endif
+                        @if ($levels && ! $unreadable)
+                            <details class="group">
+                                <summary class="flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-brand-700 [&::-webkit-details-marker]:hidden">
+                                    <x-heroicon-o-chevron-right class="h-4 w-4 transition group-open:rotate-90" />
+                                    Asal kelengkapan dan level
+                                </summary>
+                                <div class="mt-3 space-y-2">
+                                    <p class="text-xs text-gray-500">Kelengkapan {{ $record->score }}% = {{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur Level 1–{{ $record->target_level }} ditemukan di PDF.</p>
+                                    @foreach ($levels as $no => $level)
+                                        @continue($no > max($record->target_level, $record->achieved_level))
+                                        @php $lack = collect($level['unsur'])->where('found', false)->count(); @endphp
+                                        <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                                            <div class="flex items-start justify-between gap-3">
+                                                <div class="min-w-0">
+                                                    <p class="text-sm font-medium text-gray-900">Level {{ $no }} &middot; {{ $level['name'] }}</p>
+                                                    @if (! empty($level['kriteria']))
+                                                        <p class="text-xs text-gray-500">{{ $level['kriteria'] }}</p>
+                                                    @endif
+                                                </div>
+                                                <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium {{ $lack ? 'bg-red-50 text-red-700' : 'bg-brand-50 text-brand-700' }}">{{ $lack ? 'Kurang ' . $lack : 'Lengkap' }}</span>
+                                            </div>
+                                            <ul class="mt-2 space-y-1.5">
+                                                @foreach ($level['unsur'] as $unsur)
+                                                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                                                        @if ($unsur['found'])
+                                                            <x-heroicon-o-check class="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                                                        @else
+                                                            <x-heroicon-o-x-mark class="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+                                                        @endif
+                                                        <span class="min-w-0">
+                                                            {{ $unsur['label'] }}
+                                                            @if ($unsur['found'])
+                                                                <span class="block text-xs text-gray-400">“{{ $unsur['keyword'] }}”@if ($unsur['page']) · hal. {{ $unsur['page'] }}@endif</span>
+                                                            @elseif ($keywords = $record->keywordsFor($no, $unsur['label']))
+                                                                <span class="block text-xs text-gray-400">dicari: {{ implode(', ', array_slice($keywords, 0, 3)) }}</span>
+                                                            @endif
+                                                        </span>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </details>
+                        @endif
                     </div>
                     @endif
 

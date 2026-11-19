@@ -74,8 +74,12 @@ class EvidenceAssessorTest extends TestCase
             ->assertSee('6 dari 7 unsur')
             ->assertSee('Asal kelengkapan dan level')
             ->assertSee('Kelengkapan 86% = 6 dari 7 unsur Level 1–3 ditemukan di PDF.')
-            ->assertSee('ditemukan kata')
-            ->assertSee('tidak ada kata:');
+            ->assertSee('“manajemen risiko”')
+            ->assertSee('· hal. 1')
+            ->assertSee('dicari:')
+            ->assertSee('Kurang 1')
+            ->assertSee('Lengkap')
+            ->assertDontSee('Ringkasan AI');
     }
 
     public function test_complete_helpdesk_sop_meets_claimed_level(): void
@@ -120,6 +124,29 @@ class EvidenceAssessorTest extends TestCase
         $this->assertSame('—', $scanned->completenessLabel());
         $this->assertSame('—', $unreadable->completenessLabel());
         $this->assertSame('—', $notAssessed->completenessLabel());
+    }
+
+    public function test_ai_notes_show_only_a_plain_summary_and_new_gaps(): void
+    {
+        // Catatan llama3.2 asli dari data demo 19 Nov 2026.
+        $doc = (new EvidenceDocument())->forceFill([
+            'checks' => ['levels' => [
+                2 => ['unsur' => [['label' => 'Register / daftar risiko', 'found' => true]]],
+                3 => ['unsur' => [['label' => 'Matriks mitigasi / rencana penanganan risiko', 'found' => false]]],
+            ]],
+            'ai_notes' => "Ringkasan: Dokumen ini menyajikan pedoman manajemen risiko untuk layanan SPBE, termasuk penetapan konteks dan analisis risiko.\n\n"
+                . "Catatan: Pedoman ini tidak mencakup matriks mitigasi, sehingga tidak sesuai dengan kriteria Indikator 2. Namun, dokumen ini memenuhi kriteria lainnya.\n\n"
+                . "Kekurangan:\n• Matriks mitigasi/rencana penanganan risiko TIDAK ditemukan\n• Belum ada jadwal reviu tahunan.",
+        ]);
+
+        $this->assertSame([
+            'summary' => 'Pedoman manajemen risiko untuk layanan SPBE, termasuk penetapan konteks dan analisis risiko.',
+            'gaps' => ['Belum ada jadwal reviu tahunan'],
+        ], $doc->aiHighlights());
+
+        $this->assertSame('Kebijakan tentang keamanan informasi di lingkungan dinas.',
+            EvidenceDocument::plainSummary('Dokumen Kebijakan Keamanan Informasi berisi kebijakan tentang keamanan informasi di lingkungan dinas.'));
+        $this->assertSame(['summary' => null, 'gaps' => []], (new EvidenceDocument())->aiHighlights());
     }
 
     public function test_only_the_matching_module_admin_can_record_a_decision(): void

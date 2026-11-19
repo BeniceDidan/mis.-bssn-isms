@@ -153,6 +153,10 @@
 .dark .bg-brand-50,
 .dark .bg-brand-100 { background-color: #16304f; }
 .dark .border-brand-200 { border-color: #24456f; }
+/* Penanda merah (chip "Belum ada", peringatan) tadinya merah muda terang di mode gelap. */
+.dark .bg-red-50,
+.dark .hover\:bg-red-50:hover { background-color: rgb(127 29 29 / 0.35); }
+.dark .text-red-700 { color: #fca5a5; }
 
 /* Form fields (every FormModal across all 8 modules) aren't covered by the
    class overrides above — they're plain <input>/<select>/<textarea> styled

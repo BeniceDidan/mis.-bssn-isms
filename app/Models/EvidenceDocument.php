@@ -7,6 +7,7 @@ use App\Traits\HasFormattedCode;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class EvidenceDocument extends Model
 {
@@ -126,5 +127,71 @@ class EvidenceDocument extends Model
     {
         return collect(config("bukti_dukung.modules.{$this->module_key}.levels.{$level}.unsur", []))
             ->firstWhere('label', $label)['keywords'] ?? [];
+    }
+
+    /**
+     * Bagian catatan LLM yang layak tampil: ringkasan satu kalimat dan
+     * kekurangan yang BELUM disebut mesin aturan (paling banyak 2).
+     *
+     * Bagian "Catatan" dan kekurangan yang mengulang daftar "Belum ada" tidak
+     * ditampilkan: di data demo 19 Nov 2026 semuanya hanya mengulang hasil
+     * aturan, bahkan salah menyebut indikator ("tidak sesuai dengan kriteria
+     * Indikator 2. Namun, dokumen ini memenuhi kriteria lainnya").
+     *
+     * @return array{summary: ?string, gaps: array<int, string>}
+     */
+    public function aiHighlights(): array
+    {
+        $notes = str_replace("\r\n", "\n", (string) $this->ai_notes);
+        if (trim($notes) === '') {
+            return ['summary' => null, 'gaps' => []];
+        }
+
+        $summary = preg_match('/Ringkasan:\s*(.+?)(?:\n\s*\n|$)/su', $notes, $m) ? self::plainSummary($m[1]) : null;
+
+        $ruleGaps = collect($this->checks['levels'] ?? [])
+            ->flatMap(fn ($level) => collect($level['unsur'] ?? [])->where('found', false)->pluck('label'))
+            ->all();
+        $gaps = [];
+        if (preg_match('/Kekurangan:\s*\n(.+)$/su', $notes, $m)) {
+            foreach (preg_split('/\n/u', $m[1]) as $line) {
+                $line = trim(preg_replace('/^[\s•*\-]+/u', '', $line) ?? $line);
+                if ($line !== '' && ! self::repeatsAny($line, $ruleGaps)) {
+                    $gaps[] = Str::ucfirst(Str::limit(rtrim($line, '.'), 160));
+                }
+            }
+        }
+
+        return ['summary' => $summary !== '' ? $summary : null, 'gaps' => array_slice($gaps, 0, 2)];
+    }
+
+    /** "Dokumen ini menyajikan pedoman …" → "Pedoman …". */
+    public static function plainSummary(string $text): string
+    {
+        $text = trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
+        $text = preg_replace(
+            '/^(?:dokumen|berkas)(?:\s+ini|\s+[^,.]{1,90}?)?\s+(?:berisi(?:kan)?|menyajikan|menyatakan|mengatur|menjelaskan|membahas|memuat|merupakan|adalah)\s+(?:tentang\s+)?/iu',
+            '',
+            $text
+        ) ?? $text;
+
+        return Str::ucfirst(Str::limit($text, 220));
+    }
+
+    /** Kekurangan dari LLM yang sama dengan unsur yang sudah tercatat tidak ditemukan. */
+    private static function repeatsAny(string $gap, array $labels): bool
+    {
+        $words = fn (string $s) => collect(preg_split('/[^\p{L}\p{N}]+/u', mb_strtolower($s)))
+            ->filter(fn ($w) => mb_strlen($w) >= 4 && ! in_array($w, ['tidak', 'ditemukan', 'dokumen', 'belum', 'yang', 'dalam', 'tentang', 'informasi', 'disebutkan', 'menyebutkan', 'terdapat'], true))
+            ->unique();
+        $gapWords = $words($gap);
+        foreach ($labels as $label) {
+            $labelWords = $words($label);
+            if ($labelWords->isNotEmpty() && $labelWords->intersect($gapWords)->count() >= min(2, $labelWords->count())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

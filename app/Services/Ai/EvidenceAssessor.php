@@ -245,7 +245,10 @@ class EvidenceAssessor
             . "Level yang diklaim: Level {$doc->target_level} ({$target['name']}). Kriteria: {$target['kriteria']}\n"
             . "Hasil pemeriksaan kata kunci otomatis:\n{$ruleSummary}\n\n"
             . "Isi dokumen \"{$doc->title}\":\n\"\"\"\n{$excerpt}\n\"\"\"\n\n"
-            . 'Jawab dalam JSON: {"ringkasan": "isi dokumen dalam 1-2 kalimat", "catatan": "penilaian kesesuaian dengan kriteria, maksimal 3 kalimat", "kekurangan": ["hal yang belum ada, maksimal 3"]}',
+            // Tanpa "catatan" penilaian: uji 19 Nov 2026 isinya hanya mengulang hasil kata kunci
+            // dan kadang salah menyebut indikator. Yang tampil hanya ringkasan + kekurangan baru.
+            . 'Jawab dalam JSON: {"ringkasan": "isi dokumen dalam satu kalimat pendek (maksimal 25 kata), langsung ke isinya tanpa awalan \"Dokumen ini\"", '
+            . '"kekurangan": ["hal penting lain yang belum ada di dokumen, DI LUAR butir yang TIDAK ditemukan di atas; kosongkan bila tidak ada, maksimal 2"]}',
             true,
             'Anda asesor internal Evaluasi Kinerja Pemerintah Digital di pemerintah daerah Indonesia. '
             . 'Nilai apakah dokumen bukti dukung mendukung kriteria level yang diklaim. Jawab dalam Bahasa Indonesia baku, '
@@ -257,10 +260,9 @@ class EvidenceAssessor
         }
 
         $lines = array_filter([
-            filled($answer['ringkasan'] ?? null) ? 'Ringkasan: ' . Str::limit((string) $answer['ringkasan'], 400) : null,
-            filled($answer['catatan'] ?? null) ? 'Catatan: ' . Str::limit((string) $answer['catatan'], 600) : null,
+            filled($answer['ringkasan'] ?? null) ? 'Ringkasan: ' . EvidenceDocument::plainSummary((string) $answer['ringkasan']) : null,
         ]);
-        $gaps = collect($answer['kekurangan'] ?? [])->filter(fn ($g) => is_string($g) && trim($g) !== '')->take(3)->map(fn ($g) => '• ' . Str::limit(trim($g), 200));
+        $gaps = collect($answer['kekurangan'] ?? [])->filter(fn ($g) => is_string($g) && trim($g) !== '')->take(2)->map(fn ($g) => '• ' . Str::limit(trim($g), 200));
         if ($gaps->isNotEmpty()) {
             $lines[] = "Kekurangan:\n" . $gaps->implode("\n");
         }

@@ -389,6 +389,12 @@ Aturan yang sengaja dipegang:
   dikira nilai resmi (PermenPANRB 8/2026 memakai indeks 1,00–5,00); PDF
   hasil scan/tidak terbaca tampil "—" (`EvidenceDocument::completenessLabel()`).
   Kolom `score` di basis data tidak berubah.
+- **Panel hasil bukti dukung** (19 Nov 2026, keluhan "teks AI slop"): kartu
+  Klaim/Hasil/Kelengkapan, chip "Belum ada" dan "Keabsahan", gelembung
+  "Ringkasan AI", rincian per level dalam kartu berlabel Lengkap/Kurang N.
+  Dari catatan LLM hanya ringkasan satu kalimat + kekurangan yang belum
+  disebut aturan yang tampil (`EvidenceDocument::aiHighlights()`); bagian
+  "Catatan" tidak lagi diminta dari LLM karena hanya mengulang hasil aturan.
 - **Titik integrasi AI ke modul lain.** `TicketTriage::related()` menampilkan
   aset layanan (Manajemen Aset), risiko terbuka pada aset itu (Manajemen
   Risiko), dan SOP terdekat (Manajemen Pengetahuan, lewat

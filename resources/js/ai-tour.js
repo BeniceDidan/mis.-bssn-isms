@@ -174,8 +174,8 @@ const TOURS = {
         },
         {
             el: '[data-tour="evidence-details"]',
-            title: 'Asal kelengkapan dan catatan AI',
-            desc: 'Buka <b>Asal kelengkapan dan level</b> untuk melihat hitungannya, kriteria tiap level, dan kata yang ditemukan beserta halamannya. <b>Catatan AI</b> berisi ringkasan dari AI. AI tidak mengubah level atau kelengkapan.',
+            title: 'Ringkasan AI dan rincian',
+            desc: 'Gelembung abu-abu berisi ringkasan dari AI. Buka <b>Asal kelengkapan dan level</b> untuk melihat unsur yang ditemukan di setiap level beserta halamannya. AI tidak mengubah level atau kelengkapan.',
             optional: true,
             side: 'top',
         },
