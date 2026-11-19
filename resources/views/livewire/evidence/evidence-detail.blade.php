@@ -16,7 +16,7 @@
                 $levels = $record->checks['levels'] ?? [];
                 $pengesahan = $record->checks['pengesahan'] ?? [];
                 $pdf = $record->checks['pdf'] ?? [];
-                $unreadable = ! ($pdf['readable'] ?? true) || ($pdf['scanned'] ?? false);
+                $unreadable = $record->pdfUnreadable();
                 $unreadableText = collect($record->warnings ?? [])->firstWhere('type', 'danger')['text'] ?? 'PDF tidak dapat dibaca.';
                 $missing = collect($levels)
                     ->filter(fn ($level, $no) => $no <= $record->target_level)
@@ -56,17 +56,20 @@
                         <div class="rounded-2xl bg-slate-50 px-3 py-3">
                             <dt class="text-xs text-gray-500">Klaim</dt>
                             <dd class="mt-0.5 text-lg font-semibold text-gray-900">Level {{ $record->target_level }}</dd>
+                            <dd class="text-xs text-gray-500">{{ $record::levelName($record->target_level) }}</dd>
                         </div>
                         <div class="rounded-2xl px-3 py-3 {{ $meets ? 'bg-brand-50' : 'bg-slate-50' }}">
-                            <dt class="text-xs text-gray-500">Hasil</dt>
-                            <dd class="mt-0.5 text-lg font-semibold {{ $meets ? 'text-brand-700' : 'text-gray-900' }}">{{ $record->achieved_level > 0 ? 'Level ' . $record->achieved_level : '—' }}</dd>
+                            <dt class="text-xs text-gray-500">Nilai</dt>
+                            <dd class="mt-0.5 text-lg font-semibold {{ $meets ? 'text-brand-700' : 'text-gray-900' }}">{{ $record->valueLabel() }}</dd>
+                            @if ($record->valueLabel() !== '—')
+                                <dd class="text-xs text-gray-500">{{ $record::levelName($record->achieved_level) }}</dd>
+                            @endif
                         </div>
                         <div class="rounded-2xl bg-slate-50 px-3 py-3">
-                            <dt class="text-xs text-gray-500">Kelengkapan</dt>
-                            <dd class="mt-0.5 text-lg font-semibold text-gray-900">{{ $record->completenessLabel() }}</dd>
-                            @if (! $unreadable && $breakdown['total'] > 0)
-                                <dd class="mt-1.5 h-1 overflow-hidden rounded-full bg-brand-100"><div class="h-full rounded-full bg-brand-500" style="width: {{ $record->score }}%"></div></dd>
-                                <dd class="mt-1 text-xs text-gray-500">{{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur</dd>
+                            <dt class="text-xs text-gray-500">Unsur</dt>
+                            <dd class="mt-0.5 text-lg font-semibold text-gray-900">{{ $record->unsurLabel() }}</dd>
+                            @if ($record->unsurLabel() !== '—')
+                                <dd class="text-xs text-gray-500">ditemukan</dd>
                             @endif
                         </div>
                     </dl>
@@ -126,10 +129,10 @@
                             <details class="group">
                                 <summary class="flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-brand-700 [&::-webkit-details-marker]:hidden">
                                     <x-heroicon-o-chevron-right class="h-4 w-4 transition group-open:rotate-90" />
-                                    Asal kelengkapan dan level
+                                    Asal nilai
                                 </summary>
                                 <div class="mt-3 space-y-2">
-                                    <p class="text-xs text-gray-500">Kelengkapan {{ $record->score }}% = {{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur Level 1–{{ $record->target_level }} ditemukan di PDF.</p>
+                                    <p class="text-xs text-gray-500">Nilai = level tertinggi yang semua unsurnya, dari Level 1, ditemukan di PDF. {{ $breakdown['found'] }} dari {{ $breakdown['total'] }} unsur Level 1–{{ $record->target_level }} ditemukan.</p>
                                     @foreach ($levels as $no => $level)
                                         @continue($no > max($record->target_level, $record->achieved_level))
                                         @php $lack = collect($level['unsur'])->where('found', false)->count(); @endphp

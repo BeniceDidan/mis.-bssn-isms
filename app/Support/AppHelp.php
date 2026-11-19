@@ -144,9 +144,9 @@ class AppHelp
             'route' => 'services.index',
         ],
         [
-            'title' => 'Asal kelengkapan bukti dukung',
-            'text' => 'Kelengkapan bukti dukung = jumlah unsur rubrik Level 1 sampai level yang diklaim yang ditemukan di PDF, dibagi semua unsur Level 1 sampai level itu, dikali 100, ditulis sebagai persen. Contoh: pedoman manajemen risiko yang mengklaim Level 3 memuat 6 dari 7 unsur, jadi kelengkapannya 86%. Angka ini bukan nilai resmi evaluasi; penilaian resmi tetap dilakukan asesor. Hasil (level tercapai) adalah level tertinggi yang semua unsurnya, sampai level itu, ditemukan. Sebuah unsur dianggap ada bila salah satu kata kuncinya ditemukan. PDF hasil scan tidak dinilai. Rincian hitungannya ada di panel bukti dukung, bagian Asal kelengkapan dan level.',
-            'words' => 'kelengkapan persen lengkap skor nilai bukti dukung 86 100 penilaian rubrik level hasil klaim unsur dari mana asal hitung',
+            'title' => 'Asal nilai bukti dukung',
+            'text' => 'Nilai bukti dukung memakai skala tingkat kematangan Level 1–5, sama dengan nilai asesor: Merintis, Membangun, Berkembang, Melembaga, Unggul. Nilai adalah level tertinggi yang semua unsur rubriknya, dari Level 1 sampai level itu, ditemukan di PDF. Sebuah unsur dianggap ada bila salah satu kata kuncinya ditemukan. Contoh: pedoman manajemen risiko yang mengklaim Level 3 memuat 6 dari 7 unsur, tetapi matriks mitigasi Level 3 belum ada, jadi nilainya Level 2 Membangun. Persen kelengkapan tidak dipakai karena aturan evaluasi tidak memakainya. Nilai ini bukan nilai resmi; nilai resmi tetap diberikan asesor. PDF hasil scan tidak dinilai. Rinciannya ada di panel bukti dukung, bagian Asal nilai.',
+            'words' => 'nilai level skala 1 5 merintis membangun berkembang melembaga unggul kelengkapan persen lengkap skor bukti dukung 86 penilaian rubrik hasil klaim unsur dari mana asal hitung',
             'route' => 'evidence.index',
         ],
         [

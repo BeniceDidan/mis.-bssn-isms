@@ -71,9 +71,13 @@ class EvidenceAssessorTest extends TestCase
 
         Livewire::test(EvidenceDetail::class)
             ->call('open', $record->id)
-            ->assertSee('6 dari 7 unsur')
-            ->assertSee('Asal kelengkapan dan level')
-            ->assertSee('Kelengkapan 86% = 6 dari 7 unsur Level 1–3 ditemukan di PDF.')
+            ->assertSee('Nilai')
+            ->assertSee('Membangun')
+            ->assertSee('6 dari 7')
+            ->assertDontSee('86%')
+            ->assertDontSee('Kelengkapan')
+            ->assertSee('Asal nilai')
+            ->assertSee('6 dari 7 unsur Level 1–3 ditemukan.')
             ->assertSee('“manajemen risiko”')
             ->assertSee('· hal. 1')
             ->assertSee('dicari:')
@@ -113,17 +117,31 @@ class EvidenceAssessorTest extends TestCase
         $this->assertStringContainsString('hasil pindai', $result['warnings'][0]['text']);
     }
 
-    public function test_score_is_shown_as_completeness_percentage_and_dash_for_unread_pdfs(): void
+    public function test_main_figure_is_the_official_level_and_dash_for_unread_pdfs(): void
     {
-        $read = (new EvidenceDocument())->forceFill(['score' => 86, 'checks' => ['pdf' => ['readable' => true, 'scanned' => false]]]);
-        $scanned = (new EvidenceDocument())->forceFill(['score' => 20, 'checks' => ['pdf' => ['readable' => true, 'scanned' => true]]]);
-        $unreadable = (new EvidenceDocument())->forceFill(['score' => 0, 'checks' => ['pdf' => ['readable' => false]]]);
+        $unsur = fn (int $found, int $missing) => array_merge(
+            array_fill(0, $found, ['label' => 'x', 'found' => true]),
+            array_fill(0, $missing, ['label' => 'y', 'found' => false]),
+        );
+        $levels = [1 => ['unsur' => $unsur(1, 0)], 2 => ['unsur' => $unsur(3, 0)], 3 => ['unsur' => $unsur(2, 1)]];
+        $read = (new EvidenceDocument())->forceFill(['score' => 86, 'target_level' => 3, 'achieved_level' => 2,
+            'checks' => ['levels' => $levels, 'pdf' => ['readable' => true, 'scanned' => false]]]);
+        $noLevel = (new EvidenceDocument())->forceFill(['score' => 0, 'target_level' => 2, 'achieved_level' => 0,
+            'checks' => ['levels' => [1 => ['unsur' => $unsur(0, 1)], 2 => ['unsur' => $unsur(0, 3)]], 'pdf' => ['readable' => true]]]);
+        $scanned = (new EvidenceDocument())->forceFill(['score' => 20, 'target_level' => 2, 'achieved_level' => 1,
+            'checks' => ['levels' => $levels, 'pdf' => ['readable' => true, 'scanned' => true]]]);
+        $unreadable = (new EvidenceDocument())->forceFill(['score' => 0, 'achieved_level' => 0, 'checks' => ['pdf' => ['readable' => false]]]);
         $notAssessed = (new EvidenceDocument())->forceFill(['score' => null]);
 
-        $this->assertSame('86%', $read->completenessLabel());
-        $this->assertSame('—', $scanned->completenessLabel());
-        $this->assertSame('—', $unreadable->completenessLabel());
-        $this->assertSame('—', $notAssessed->completenessLabel());
+        $this->assertSame('Level 2', $read->valueLabel());
+        $this->assertSame('Membangun', EvidenceDocument::levelName(2));
+        $this->assertSame('6 dari 7', $read->unsurLabel());
+        $this->assertSame('—', $noLevel->valueLabel());
+        $this->assertSame('0 dari 4', $noLevel->unsurLabel());
+        foreach ([$scanned, $unreadable, $notAssessed] as $doc) {
+            $this->assertSame('—', $doc->valueLabel());
+            $this->assertSame('—', $doc->unsurLabel());
+        }
     }
 
     public function test_ai_notes_show_only_a_plain_summary_and_new_gaps(): void

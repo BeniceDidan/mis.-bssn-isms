@@ -381,16 +381,19 @@ Aturan yang sengaja dipegang:
   atribut itu (dijaga `test_ai_pages_carry_the_tutorial_markers`).
 - **Asal skor bukti dukung** tampil di panel detail (permintaan Kominfo 18 Nov
   2026, "skor 86 itu dari mana?"): `EvidenceDocument::scoreBreakdown()` →
-  "6 dari 7 unsur", bagian "Asal kelengkapan dan level" menulis rumusnya, kriteria
+  "6 dari 7 unsur", bagian "Asal nilai" menulis rumusnya, kriteria
   tiap level, kata yang ditemukan + halamannya, dan kata kunci yang tidak
   ditemukan (`keywordsFor()`). Skor = unsur Level 1 s.d. level klaim yang
-  ditemukan ÷ semua unsur Level 1 s.d. level klaim × 100. Sejak 19 Nov
-  2026 tampil sebagai **"Kelengkapan 86%"**, bukan "Skor 86", supaya tidak
-  dikira nilai resmi (PermenPANRB 8/2026 memakai indeks 1,00–5,00); PDF
-  hasil scan/tidak terbaca tampil "—" (`EvidenceDocument::completenessLabel()`).
-  Kolom `score` di basis data tidak berubah.
+  ditemukan ÷ semua unsur Level 1 s.d. level klaim × 100.
+- **Angka utama bukti dukung = Nilai Level 1–5** (19 Nov 2026, pilihan 1 di
+  `docs/riset/05-dasar-angka-penilaian.md`): persen kelengkapan tidak punya
+  dasar resmi; PermenPANRB 8/2026 menilai tiap indikator dengan tingkat
+  kematangan 1–5. Kartu/kolom: Klaim · Nilai (`valueLabel()` + nama level
+  `levelName()`) · Unsur (`unsurLabel()` → "6 dari 7"). PDF hasil
+  scan/tidak terbaca → "—" (`pdfUnreadable()`). Kolom `score` di basis data
+  tetap dihitung dan dicatat di ai_logs, tetapi tidak ditampilkan.
 - **Panel hasil bukti dukung** (19 Nov 2026, keluhan "teks AI slop"): kartu
-  Klaim/Hasil/Kelengkapan, chip "Belum ada" dan "Keabsahan", gelembung
+  Klaim/Nilai/Unsur, chip "Belum ada" dan "Keabsahan", gelembung
   "Ringkasan AI", rincian per level dalam kartu berlabel Lengkap/Kurang N.
   Dari catatan LLM hanya ringkasan satu kalimat + kekurangan yang belum
   disebut aturan yang tampil (`EvidenceDocument::aiHighlights()`); bagian

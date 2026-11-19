@@ -3,8 +3,8 @@
 Disusun 19 November 2026 dari teks peraturan (JDIH BPK) dan instrumen resmi di
 bssn.go.id, untuk memeriksa angka pada kartu Kelengkapan.
 
-**Belum ada kode yang diubah berdasarkan dokumen ini.** Pilihan penyesuaian di
-bagian akhir menunggu keputusan peninjau.
+**Pilihan 1 sudah diterapkan 19 November 2026.** Isi riset tetap draf sampai
+ditinjau.
 
 ## Sumber
 
@@ -20,7 +20,7 @@ bagian akhir menunggu keputusan peninjau.
   Tidak ada aturan Evaluasi Kinerja Pemdi yang memakainya. Angka resmi adalah **nilai tingkat kematangan
   1–5 per indikator** yang diberikan asesor berdasarkan bukti pendukung, lalu
   dihitung menjadi Indeks Pemdi 1,00–5,00 (N1).
-- Angka 86% di aplikasi = 6 dari 7 unsur rubrik ditemukan di PDF. Unsurnya
+- Angka 86% yang dulu tampil di aplikasi = 6 dari 7 unsur rubrik ditemukan di PDF. Unsurnya
   tafsiran kita (berkas 01), jadi persentasenya **ukuran internal**, bukan nilai
   resmi.
 - Ada dua contoh resmi angka skor yang bisa ditiru polanya:
@@ -118,7 +118,7 @@ bagian akhir menunggu keputusan peninjau.
 
 | Bagian | Aplikasi sekarang | Dasar resmi | Status |
 |---|---|---|---|
-| Angka utama | Kelengkapan 86% (unsur ditemukan ÷ semua unsur) | Nilai tingkat kematangan 1–5 per indikator (N1) | 🔶 Perlu penyesuaian |
+| Angka utama | Nilai Level 1–5 dan jumlah unsur, mis. Level 2 Membangun, 6 dari 7 unsur (sebelum 19 Nov 2026: Kelengkapan 86%) | Nilai tingkat kematangan 1–5 per indikator (N1) | ✅ Sesuai sejak 19 Nov 2026 |
 | Level hasil | Level tertinggi yang semua unsurnya ditemukan | Kriteria berjenjang (N1); syarat berjenjang juga dipakai Indeks KAMI (N3) | 🟡 Sesuai sebagian |
 | Bobot unsur | Semua unsur sama, ada atau tidak | Indeks KAMI: 4 status (0–3) × tahap 1–3 | ⚪ Belum ada rujukan resmi |
 | Keabsahan dokumen | Dicek, tetapi tidak memengaruhi level | Disusun tetapi belum ditetapkan = ciri level 2 (N2) | 🟡 Sesuai sebagian |
@@ -126,7 +126,7 @@ bagian akhir menunggu keputusan peninjau.
 
 ## Pilihan penyesuaian
 
-1. **Angka resmi jadi angka utama (disarankan).** Kartu menampilkan "Nilai 2 ·
+1. **Angka resmi jadi angka utama (disarankan, sudah diterapkan).** Kartu menampilkan "Nilai 2 ·
    Membangun" pada skala 1–5, sama dengan nilai yang diberikan asesor untuk
    indikator (N1). "6 dari 7 unsur" tetap tampil sebagai rincian, dan persen
    dihapus. Perubahannya kecil dan tidak mengarang rumus baru.

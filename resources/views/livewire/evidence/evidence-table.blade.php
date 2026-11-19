@@ -24,8 +24,8 @@
                     <tr class="text-left text-xs font-medium text-gray-500">
                         <th class="px-4 py-3 font-medium">Dokumen</th>
                         <th class="px-4 py-3 font-medium">Klaim</th>
-                        <th class="px-4 py-3 font-medium">Hasil</th>
-                        <th class="px-4 py-3 font-medium">Kelengkapan</th>
+                        <th class="px-4 py-3 font-medium">Nilai</th>
+                        <th class="px-4 py-3 font-medium">Unsur</th>
                         <th class="px-4 py-3 font-medium">Keputusan</th>
                     </tr>
                 </thead>
@@ -42,9 +42,9 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 text-gray-700">Level {{ $record->target_level }}</td>
                             <td class="whitespace-nowrap px-4 py-3 font-medium {{ $record->meetsTarget() ? 'text-brand-700' : 'text-gray-900' }}">
-                                {{ $record->achieved_level > 0 ? 'Level ' . $record->achieved_level : '—' }}
+                                {{ $record->valueLabel() }}@if ($record->valueLabel() !== '—')<span class="ml-1 text-xs font-normal text-gray-400">{{ $record::levelName($record->achieved_level) }}</span>@endif
                             </td>
-                            <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $record->completenessLabel() }}@php $b = $record->scoreBreakdown(); @endphp @if ($b['total'] && ! ($record->checks['pdf']['scanned'] ?? false))<span class="ml-1 text-xs text-gray-400">({{ $b['found'] }}/{{ $b['total'] }} unsur)</span>@endif</td>
+                            <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $record->unsurLabel() }}</td>
                             <td class="whitespace-nowrap px-4 py-3 text-gray-500">
                                 {{ $record->reviewer_decision ? \App\Models\EvidenceDocument::DECISIONS[$record->reviewer_decision] : 'Menunggu' }}
                             </td>

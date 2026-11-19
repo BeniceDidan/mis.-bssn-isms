@@ -184,11 +184,12 @@ trait AnswersConnections
 
         if ($doc->score !== null) {
             ['found' => $found, 'total' => $total] = $doc->scoreBreakdown();
-            $result = $doc->achieved_level ? "hasil Level {$doc->achieved_level}" : 'belum mencapai Level 1';
-            $completeness = $doc->completenessLabel();
-            $lines[] = $completeness === '—'
+            $value = $doc->achieved_level
+                ? "nilai Level {$doc->achieved_level} (" . EvidenceDocument::levelName($doc->achieved_level) . ')'
+                : 'belum mencapai Level 1';
+            $lines[] = $doc->pdfUnreadable()
                 ? '• Isi PDF tidak bisa dibaca (kemungkinan hasil scan), jadi belum dinilai otomatis.'
-                : "• Dinilai otomatis: kelengkapan {$completeness}" . ($total ? " ({$found} dari {$total} unsur)" : '') . ", {$result} dari target Level {$doc->target_level}.";
+                : "• Dinilai otomatis: {$value} dari klaim Level {$doc->target_level}" . ($total ? ", {$found} dari {$total} unsur ditemukan" : '') . '.';
         } else {
             $lines[] = '• Belum dinilai otomatis.';
         }

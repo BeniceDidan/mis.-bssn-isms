@@ -41,7 +41,8 @@ dijadikan bahan presentasi, setiap poin perlu dicek ke sumber aslinya.
 8. **Persentase kelengkapan bukti dukung tidak punya dasar resmi.** Evaluasi
    Kinerja Pemdi memberi nilai tingkat kematangan 1–5 per indikator, lalu
    menghitungnya menjadi indeks 1,00–5,00. Persentase resmi hanya ditemukan di
-   modul Suplemen Indeks KAMI 5.0 (BSSN). Lihat berkas 05.
+   modul Suplemen Indeks KAMI 5.0 (BSSN). Sejak 19 November 2026 aplikasi
+   menampilkan Nilai Level 1–5. Lihat berkas 05.
 
 ## Cara meninjau
 

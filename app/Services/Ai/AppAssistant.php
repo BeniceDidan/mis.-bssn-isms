@@ -795,7 +795,7 @@ class AppAssistant
             $key === 'keahlian' ? $row->jabatan_unit : null,
             $key === 'keahlian' ? Str::limit((string) $row->keahlian_spesifik, 60) : null,
             $key === 'bukti' ? $row->moduleLabel() : null,
-            $key === 'bukti' && $row->achieved_level !== null ? "hasil Level {$row->achieved_level}" . ($row->completenessLabel() !== '—' ? ', kelengkapan ' . $row->completenessLabel() : '') : null,
+            $key === 'bukti' && $row->achieved_level !== null ? ($row->valueLabel() !== '—' ? 'nilai ' . $row->valueLabel() . ' ' . EvidenceDocument::levelName($row->achieved_level) : 'nilai —') . ($row->unsurLabel() !== '—' ? ', ' . $row->unsurLabel() . ' unsur' : '') : null,
             $key === 'bukti' ? ($row->reviewer_decision ? EvidenceDocument::DECISIONS[$row->reviewer_decision] ?? $row->reviewer_decision : 'belum diputuskan') : null,
         ])->filter()->implode(' · ');
 

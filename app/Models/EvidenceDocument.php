@@ -107,19 +107,39 @@ class EvidenceDocument extends Model
         return ['found' => $unsur->where('found', true)->count(), 'total' => $unsur->count()];
     }
 
-    /**
-     * Skor ditampilkan sebagai "Kelengkapan 86%": persentase unsur rubrik yang
-     * ditemukan, bukan nilai resmi evaluasi (PermenPANRB 8/2026 memakai indeks
-     * 1,00–5,00). PDF hasil scan atau tidak terbaca tidak dinilai isinya → "—".
-     */
-    public function completenessLabel(): string
+    /** PDF hasil scan atau tidak terbaca: isinya tidak dinilai. */
+    public function pdfUnreadable(): bool
     {
         $pdf = $this->checks['pdf'] ?? [];
-        if ($this->score === null || ! ($pdf['readable'] ?? true) || ($pdf['scanned'] ?? false)) {
+
+        return ! ($pdf['readable'] ?? true) || ($pdf['scanned'] ?? false);
+    }
+
+    /**
+     * Angka utama penilaian = nilai tingkat kematangan 1–5 (achieved_level),
+     * skala yang sama dengan nilai asesor per indikator (PermenPANRB 8/2026,
+     * lihat docs/riset/05). Persentase kelengkapan tidak ditampilkan lagi
+     * karena tidak punya dasar resmi; jumlah unsur tetap jadi rincian.
+     * "—" bila belum dinilai, PDF tidak terbaca, atau Level 1 belum tercapai.
+     */
+    public function valueLabel(): string
+    {
+        if ($this->score === null || $this->pdfUnreadable() || ! $this->achieved_level) {
             return '—';
         }
 
-        return $this->score . '%';
+        return 'Level ' . $this->achieved_level;
+    }
+
+    /** "6 dari 7": unsur Level 1 s.d. level klaim yang ditemukan; "—" bila isi PDF tidak dinilai. */
+    public function unsurLabel(): string
+    {
+        ['found' => $found, 'total' => $total] = $this->scoreBreakdown();
+        if ($this->score === null || $this->pdfUnreadable() || $total === 0) {
+            return '—';
+        }
+
+        return "{$found} dari {$total}";
     }
 
     /** Kata kunci rubrik untuk sebuah unsur, supaya tampilan bisa menyebut apa yang dicari. */
