@@ -106,14 +106,16 @@ bagian 2.
   kapital di awal kalimat, nama, dan judul, bukan gaya huruf antarmuka.
   Penghapusan huruf kapital semua adalah pilihan keterbacaan.
 
+## Keputusan
+
+- 19 November 2026: bagian "Model Korelasi 4 Lapisan" dan "Contoh Alur
+  Kerja: Peninjauan Aplikasi" di Panduan lama tidak dikembalikan. Keduanya
+  tidak menjelaskan alur data yang benar-benar terjadi di aplikasi.
+
 Pertanyaan untuk peninjau:
 
 1. Apakah Diskominfo punya rancang bangun atau manual aplikasi yang harus
    diikuti formatnya (D2 Pasal 9 dan 19)? Halaman Panduan bisa disesuaikan
    dengan format itu.
-2. Bagian "Model Korelasi 4 Lapisan" dan "Contoh Alur Kerja: Peninjauan
-   Aplikasi" di Panduan lama dihapus karena tidak menjelaskan alur data yang
-   benar-benar terjadi di aplikasi. Apakah keduanya berasal dari materi
-   Kominfo dan perlu dikembalikan?
-3. Apakah istilah "Level Risiko Inheren" perlu diganti? Istilah ini
+2. Apakah istilah "Level Risiko Inheren" perlu diganti? Istilah ini
    dipertahankan karena berasal dari templat Excel resmi instansi.
