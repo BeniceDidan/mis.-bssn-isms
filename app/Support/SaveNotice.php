@@ -23,8 +23,8 @@ use Illuminate\Support\Carbon;
  *
  * Hanya menyebut hal yang benar-benar terjadi pada penyimpanan ini (dicek di
  * basis data sejak $since), bukan aturan umum. Aturan umumnya ada di
- * IntegrationMap. Dasar: Permenkomdigi 6/2025 Pasal 9 ayat (5) huruf b dan g
- * (alur proses dan rancangan integrasi aplikasi), lihat docs/riset/06.
+ * IntegrationMap. Dasar: Permenkomdigi 6/2025 Pasal 9 ayat (5) huruf b dan c
+ * (alur proses dan keterhubungan fungsi dan basis data), lihat docs/riset/06.
  */
 class SaveNotice
 {

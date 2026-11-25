@@ -23,9 +23,10 @@ ditanya.
   Rancang bangun aplikasi SPBE paling kurang memuat alur proses aplikasi,
   keterhubungan fungsi dan basis data, rancangan antarmuka dan navigasi
   layar, kendali validasi dan otorisasi, serta rancangan integrasi dengan
-  aplikasi lain (D2 Pasal 9 ayat (5)). Karena itu setiap modul kini punya
-  tombol Alur Data, dan Panduan memuat tabel "Setelah Anda menyimpan,
-  datanya ke mana".
+  aplikasi lain (D2 Pasal 9 ayat (5)). Huruf g (aplikasi lain) belum ada di
+  aplikasi ini; alur antarmodul memakai huruf b dan c. Karena itu setiap
+  modul kini punya tombol Alur Data, dan Panduan memuat tabel "Setelah Anda
+  menyimpan, datanya ke mana".
 - **Bahasa di layar wajib bahasa Indonesia yang baik dan benar.** Bahasa
   Indonesia wajib dipakai dalam sistem informasi pelayanan dan komunikasi
   resmi di lingkungan kerja pemerintah. Bahasa asing hanya boleh sebagai
@@ -84,10 +85,10 @@ bagian 2.
 
 | Perubahan | Dasar | Status |
 |---|---|---|
-| Tombol Alur Data di tiap modul: "Dikirim ke modul lain" dan "Datang dari modul lain", masing-masing ditandai Otomatis atau Bila kolomnya diisi | D2 Pasal 9 ayat (5) huruf b, c, g; D1 Pasal 2 (keterpaduan, interoperabilitas) | ✅ Sesuai |
+| Tombol Alur Data di tiap modul: "Dikirim ke modul lain" dan "Datang dari modul lain", masing-masing ditandai Otomatis atau Bila kolomnya diisi | D2 Pasal 9 ayat (5) huruf b dan c; D1 Pasal 2 (keterpaduan, interoperabilitas) | ✅ Sesuai |
 | Halaman Panduan: urutan kerja, tabel "Setelah Anda menyimpan, datanya ke mana", alur per modul, verifikasi dan peran | D2 Pasal 19 ayat (2) huruf d (manual penggunaan); D2 Pasal 9 ayat (5) huruf b, d | ✅ Sesuai |
-| Pesan setelah menyimpan menyebut status verifikasi, aset tujuan, dan tindak lanjut yang benar-benar dibuat | D2 Pasal 9 ayat (5) huruf f (kendali validasi, otorisasi, pencatatan) dan huruf g; D4 Pasal 4 huruf l (kemudahan) | 🟡 Tafsiran: aturan meminta rancangannya ada, bukan cara menampilkannya |
-| Daftar aktivitas menulis asal kejadian ("dari Manajemen Risiko") | D2 Pasal 9 ayat (5) huruf f (pencatatan aktivitas) dan huruf g | 🟡 Tafsiran |
+| Pesan setelah menyimpan menyebut status verifikasi, aset tujuan, dan tindak lanjut yang benar-benar dibuat | D2 Pasal 9 ayat (5) huruf f (kendali validasi, otorisasi, pencatatan); D4 Pasal 4 huruf l (kemudahan) | 🟡 Tafsiran: aturan meminta rancangannya ada, bukan cara menampilkannya |
+| Daftar aktivitas menulis asal kejadian ("dari Manajemen Risiko") | D2 Pasal 9 ayat (5) huruf f (pencatatan aktivitas) | 🟡 Tafsiran |
 | Tutorial tiap modul ditutup dengan langkah "Ke mana datanya" | D2 Pasal 19 ayat (2) huruf d | 🟡 Tafsiran |
 | Asisten menjawab alur data, istilah, dan dasar aturan; contoh pertanyaan di Panduan | D2 Pasal 17 ayat (4)–(6) (helpdesk, banyak saluran, pertanyaan yang sering diajukan) | 🟡 Asisten bukan pengganti helpdesk petugas |
 | Istilah asing diganti: Kemungkinan, Dampak, Unit Pemilik, Pengelola Layanan, Tingkat Risiko Sisa, Ketersediaan Tercapai, Rata-rata Waktu Pemulihan, Penanggung Jawab, Kode Lama, Kolom Tambahan, waktu relatif berbahasa Indonesia | D3 Pasal 25 ayat (2) huruf d, Pasal 28; istilah asing boleh tetap muncul sebagai padanan di penjelasan (D3 Pasal 25 ayat (3)) | ✅ Sesuai |
