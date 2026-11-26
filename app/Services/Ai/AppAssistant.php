@@ -18,6 +18,7 @@ use App\Models\ServiceTicket;
 use App\Models\User;
 use App\Services\Ai\Concerns\AnswersConnections;
 use App\Services\Ai\Concerns\AnswersFromResearch;
+use App\Services\Ai\Concerns\GuidesConversation;
 use App\Support\AdminModules;
 use App\Support\AppHelp;
 use BackedEnum;
@@ -61,7 +62,7 @@ use Throwable;
  */
 class AppAssistant
 {
-    use AnswersConnections, AnswersFromResearch;
+    use AnswersConnections, AnswersFromResearch, GuidesConversation;
 
     /**
      * Urutan penting: yang lebih spesifik dicek dulu ("risiko sdm" sebelum
@@ -156,6 +157,7 @@ class AppAssistant
         'diubah', 'hari', 'minggu', 'bulan', 'tahun', 'lalu', 'kemarin', 'sekarang', 'saat', 'menunggu', 'keputusan', 'diputuskan',
         'verifikasi', 'diverifikasi', 'ditangani', 'admin', 'dulu', 'apa saja', 'the', 'are', 'there', 'for', 'any', 'all', 'with', 'that',
         'this', 'have', 'has', 'from', 'about', 'please', 'which', 'many',
+        'semuanya', 'seluruhnya', 'lengkap', 'lengkapnya', 'selengkapnya', 'lainnya', 'iya', 'yaa', 'boleh', 'sekarang', 'kirim', 'kirimkan',
         ...self::MONTHS,
     ];
 
@@ -174,7 +176,11 @@ class AppAssistant
     {
         $startedAt = microtime(true);
         $question = Str::limit(trim($question), 500, '');
+        $this->resolved = null;
         $result = $this->respond($question, $page, $history);
+        // Pertanyaan yang sudah dipahami ("yang tinggi?" → "berapa risiko kritis yang tinggi"),
+        // disimpan komponen Assistant sebagai riwayat supaya pesan berikutnya tetap nyambung.
+        $result['topic'] = $this->resolved;
 
         AiLog::record('asisten', $result['engine'], null, $question, $result['answer'], $startedAt);
 
@@ -185,6 +191,47 @@ class AppAssistant
     {
         $flat = self::normalize($question);
 
+        // 0. Percakapan dan penunjuk jalan (Concerns\GuidesConversation).
+        if (($talk = $this->smallTalk($flat)) !== null) {
+            return $talk;
+        }
+        // Pokok bahasan terakhir, bukan sekadar pertanyaan terakhir: "tampilkan"
+        // lalu "yang tinggi?" tetap tentang risiko (masukan pengguna 26 Nov 2026).
+        $topic = $this->topic($history);
+        $this->wantAll = self::wantsAll($flat);
+        if ($history !== [] && self::isContinuation($flat)) {
+            if ($topic === null) {
+                return $this->chat('Boleh. Tulis saja apa yang ingin Anda cari atau lakukan, misalnya "risiko kritis" atau "dokumen di Manajemen Layanan".', self::STARTERS);
+            }
+            // "semuanya", "iya kasih ke aku": ulangi permintaan terakhir, kali ini lengkap.
+            $flat = $topic;
+            $history = [];
+            $this->wantAll = true;
+        }
+        // "Modul SDM terhubung ke modul apa?" dan "PDF dipakai di mana?" adalah pertanyaan alur data.
+        $navigate = self::wantsNavigation($flat) && ! self::wantsConnection($flat);
+        if ($navigate || ($this->asksWhere($flat) && ! self::wantsConnection($flat))) {
+            $target = $this->pageKey($flat) ?? ($topic !== null && $navigate ? $this->pageKey($topic) : null);
+            if ($target !== null) {
+                $this->resolved = $this->pageKey($flat) !== null ? $flat : $topic;
+
+                return $this->navigationAnswer($target, $navigate);
+            }
+        }
+        if (self::wantsReport($flat)) {
+            return $this->reportAnswer($flat);
+        }
+        if (($add = $this->howToAddAnswer($flat)) !== null) {
+            return $add;
+        }
+        // Penjelasan baku (alur, istilah, AI, keamanan) dan penjelasan tiap modul seperti di slide.
+        if (($faq = $this->faqAnswer($flat)) !== null) {
+            return $faq;
+        }
+        if (($explain = $this->moduleExplainAnswer($flat)) !== null) {
+            return $explain;
+        }
+
         // Pertanyaan lanjutan pendek ("yang tinggi saja?") mewarisi modul dan
         // maksud pertanyaan sebelumnya; kata cari & saringan dari yang terbaru.
         // Pertanyaan riset/integrasi/unggahan berdiri sendiri: "Referensi apa saja?" sesudah
@@ -192,11 +239,17 @@ class AppAssistant
         $followUp = $history !== [] && count(self::terms($flat)) <= 2 && $this->detectModule($flat) === null
             && ! preg_match('/\b(cara|bagaimana|apa itu|siapa)\b/u', $flat)
             && self::researchIntent($flat, false) !== 'strong' && ! self::wantsConnection($flat) && ! self::mentionsOwnUpload($flat);
-        $context = $followUp ? self::normalize(end($history)['q']) . ' ' . $flat : $flat;
+        $context = $followUp ? ($topic ?? self::normalize(end($history)['q'])) . ' ' . $flat : $flat;
+        $this->resolved = $context;
 
         $intent = $this->intent($context, $followUp ? $context : $flat, $flat);
         $moduleKey = $this->detectModule($context);
         $terms = $this->searchTerms($flat, $moduleKey, $intent);
+
+        // "Kasih aku dokumen di manajemen layanan": PDF yang berhubungan dengan modul itu.
+        if ($intent['file'] && $moduleKey !== null && $moduleKey !== 'bukti' && $terms === [] && ! $intent['count'] && ! $intent['howto']) {
+            return $this->moduleDocumentsAnswer($moduleKey);
+        }
 
         // 1. Admin modul dan riwayat perubahan: langsung dari basis data.
         if ($intent['admin']) {
@@ -243,7 +296,7 @@ class AppAssistant
             if ($records->isEmpty() && ! $narrowed && ! $intent['count'] && ! $intent['list']) {
                 $exact = null;
             } else {
-                return $this->dataAnswer($exact, $records, $intent);
+                return $this->dataAnswer($exact, $records, $intent, $moduleKey);
             }
         } elseif ($moduleKey === null && ! empty($intent['filters']['pending'])) {
             return ['answer' => $this->pendingSummary(), 'engine' => 'Hitungan langsung dari basis data', 'links' => []];
@@ -593,12 +646,19 @@ class AppAssistant
         $count = (clone $query)->count();
         $what = Str::lower($def['label']) . ($applied ? ' ' . implode(' ', $applied) : '');
         $exact = $count === 0 ? "Tidak ada {$what}." : "Ada {$count} {$what}.";
+        // Enam teratas cukup untuk dibaca; "semua" / "semuanya" menampilkan sampai 30.
+        $take = $this->wantAll ? 30 : 6;
+        if ($count > $take) {
+            $exact .= $this->wantAll
+                ? " Yang tampil {$take} teratas. Buka halamannya untuk melihat sisanya."
+                : " Yang tampil {$take} teratas. Tulis \"semua\" untuk melihat semuanya.";
+        }
 
         $rows = $query->limit(60)->get();
         $rows = $terms === [] ? $this->sortBySeverity($rows, $def) : $this->rankByTerms($rows, $def, $terms);
         $narrowed = count($applied) > ($terms === [] ? 0 : 1);
 
-        return [$rows->take(6)->map(fn ($row) => $this->describe($key, $row))->values(), $exact, $narrowed];
+        return [$rows->take($take)->map(fn ($row) => $this->describe($key, $row))->values(), $exact, $narrowed];
     }
 
     /** Apakah pertanyaan menyebut status, keputusan, atau verifikasi untuk modul ini. */
@@ -839,7 +899,7 @@ class AppAssistant
         };
     }
 
-    private function dataAnswer(string $exact, Collection $records, array $intent): array
+    private function dataAnswer(string $exact, Collection $records, array $intent, ?string $moduleKey = null): array
     {
         $answer = $exact;
         if ($records->isNotEmpty()) {
@@ -853,7 +913,13 @@ class AppAssistant
         $label = Str::before((string) ($records->first()['meta'] ?? ''), ' · ');
         $records = $records->map(fn ($r) => ['meta' => Str::after($r['meta'], $label . ' · ')] + $r);
 
-        return ['answer' => $answer, 'engine' => 'Hitungan langsung dari basis data', 'links' => $this->links($records, collect(), collect())];
+        return [
+            'answer' => $answer,
+            'engine' => 'Hitungan langsung dari basis data',
+            'links' => $this->links($records, collect(), collect(), $this->wantAll ? 30 : 8),
+            'actions' => $this->moduleAction($moduleKey),
+            'expand' => $this->wantAll,
+        ];
     }
 
     private function pendingSummary(): string
@@ -1157,7 +1223,7 @@ class AppAssistant
     // Menyusun jawaban
     // ------------------------------------------------------------------
 
-    private function links(Collection $records, Collection $files, Collection $help): array
+    private function links(Collection $records, Collection $files, Collection $help, int $limit = 8): array
     {
         $helpLinks = $help->filter(fn ($h) => $h['url'] ?? null)->unique('url')->take(1)->map(fn ($h) => [
             'kind' => 'page', 'title' => 'Buka ' . ($h['page'] ?? 'halaman'), 'meta' => null, 'url' => $h['url'],
@@ -1165,7 +1231,7 @@ class AppAssistant
 
         return $files->unique('title')->concat($records)->concat($helpLinks)
             ->unique('url')
-            ->take(8)
+            ->take($limit)
             ->map(fn ($l) => ['kind' => $l['kind'], 'title' => $l['title'], 'meta' => $l['meta'], 'url' => $l['url']])
             ->values()
             ->all();
@@ -1231,6 +1297,16 @@ class AppAssistant
         preg_match_all('/\b(?:[A-Z]{2,5}-[A-Z0-9]{2,6}-\d{3,6}|TKT-\d{6})\b/u', $answer, $codes);
         foreach ($codes[0] as $code) {
             if (! str_contains($material, $code)) {
+                return true;
+            }
+        }
+
+        // Nama tombol atau menu dalam tanda kutip harus ada di bahan. Uji 26 Nov
+        // 2026: "saya mau lapor gangguan website" dijawab dengan tombol "Laporkan"
+        // dan "Kirim" yang tidak ada di aplikasi.
+        preg_match_all('/["“]([^"“”]{2,40})["”]/u', $answer, $quoted);
+        foreach ($quoted[1] as $phrase) {
+            if (! str_contains(mb_strtolower($material), mb_strtolower(trim($phrase)))) {
                 return true;
             }
         }

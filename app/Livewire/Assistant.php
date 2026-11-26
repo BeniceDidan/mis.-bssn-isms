@@ -72,17 +72,36 @@ class Assistant extends Component
             if ($message['role'] === 'user') {
                 $pending = $message['text'];
             } elseif ($pending !== null) {
-                $history[] = ['q' => $pending, 'a' => $message['text']];
+                // 'topic': pertanyaan yang sudah dipahami Asisten ("yang tinggi?" → risiko tinggi).
+                $history[] = ['q' => $message['topic'] ?? $pending, 'a' => $message['text']];
                 $pending = null;
             }
         }
 
-        $result = app(AppAssistant::class)->answer(mb_substr($text, 0, 500), $this->page, array_slice($history, -2));
+        // Empat tanya-jawab terakhir: cukup untuk "semuanya", "iya", "buka halamannya"
+        // yang merujuk ke pokok bahasan beberapa pesan sebelumnya.
+        $result = app(AppAssistant::class)->answer(mb_substr($text, 0, 500), $this->page, array_slice($history, -4));
 
         $this->messages[] = ['role' => 'user', 'text' => mb_substr($text, 0, 500)];
-        $this->messages[] = ['role' => 'assistant', 'text' => $result['answer'], 'links' => $result['links'], 'quote' => $result['quote'] ?? null, 'ai' => $result['ai'] ?? null, 'draft' => $result['draft'] ?? null];
+        $this->messages[] = [
+            'role' => 'assistant',
+            'text' => $result['answer'],
+            'links' => $result['links'],
+            'quote' => $result['quote'] ?? null,
+            'ai' => $result['ai'] ?? null,
+            'draft' => $result['draft'] ?? null,
+            'actions' => $result['actions'] ?? [],
+            'suggestions' => $result['suggestions'] ?? [],
+            'expand' => $result['expand'] ?? false,
+            'topic' => $result['topic'] ?? null,
+        ];
         $this->messages = array_slice($this->messages, -20);
         session([self::SESSION_KEY => $this->messages]);
+
+        // "Bawa saya ke …": jawaban tampil dulu, lalu halaman berpindah (lihat assistant.blade.php).
+        if (! empty($result['go'])) {
+            $this->dispatch('assistant-go', url: $result['go']);
+        }
     }
 
     public function clear(): void

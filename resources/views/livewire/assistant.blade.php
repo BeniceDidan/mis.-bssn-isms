@@ -32,9 +32,19 @@
                 this.$nextTick(() => this.scroll());
             });
         },
+        // Pindah halaman dari tombol jawaban. Di layar kecil panel menutupi
+        // hampir seluruh layar, jadi ditutup; tombol 'tunjukkan' selalu menutup
+        // panel supaya tombol yang disorot di halaman tujuan terlihat.
+        follow(url, point) {
+            if (point || window.innerWidth < 640) {
+                try { localStorage.setItem('bssn_assistant_open', '0') } catch (e) {}
+            }
+            window.location.href = url;
+        },
     }"
     @keydown.escape.window="open && toggle(false)"
     @open-assistant.window="toggle(true)"
+    @assistant-go.window="setTimeout(() => follow($event.detail.url, false), 900)"
     class="print:hidden"
 >
     <button
@@ -86,8 +96,12 @@
                         <p class="max-w-[85%] whitespace-pre-line break-words rounded-2xl rounded-br-md bg-brand-700 px-3.5 py-2 text-sm text-white">{{ $message['text'] }}</p>
                     </div>
                 @else
-                    @php $links = $message['links'] ?? []; @endphp
-                    <div wire:key="m-{{ $loop->index }}" data-tour="assistant-answer" x-data="{ all: false }">
+                    @php
+                        $links = $message['links'] ?? [];
+                        $actions = $message['actions'] ?? [];
+                        $suggestions = $loop->last ? ($message['suggestions'] ?? []) : [];
+                    @endphp
+                    <div wire:key="m-{{ $loop->index }}" data-tour="assistant-answer" x-data="{ all: @js((bool) ($message['expand'] ?? false)) }">
                         <p class="whitespace-pre-line break-words text-sm leading-relaxed text-gray-800" data-tour="assistant-text">{{ $message['text'] }}</p>
 
                         @if (! empty($message['quote']))
@@ -100,6 +114,25 @@
 
                         @if (! empty($message['draft']))
                             <p class="mt-1.5 text-[11px] text-gray-400" data-tour="assistant-draft-label">Riset draf, belum ditinjau</p>
+                        @endif
+
+                        @if ($actions)
+                            <div class="mt-3 flex flex-wrap gap-2" data-tour="assistant-actions">
+                                @foreach ($actions as $action)
+                                    <a
+                                        href="{{ $action['url'] }}"
+                                        @click.prevent="follow(@js($action['url']), @js((bool) ($action['point'] ?? false)))"
+                                        @class([
+                                            'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium',
+                                            'bg-brand-700 text-white hover:bg-brand-800' => $loop->first,
+                                            'border border-slate-200 bg-white text-brand-700 hover:border-brand-300 hover:bg-slate-50' => ! $loop->first,
+                                        ])
+                                    >
+                                        {{ $action['label'] }}
+                                        <x-heroicon-o-arrow-right class="h-3.5 w-3.5" />
+                                    </a>
+                                @endforeach
+                            </div>
                         @endif
 
                         @if ($links)
@@ -136,6 +169,14 @@
                                     </li>
                                 @endif
                             </ul>
+                        @endif
+
+                        @if ($suggestions)
+                            <div x-show="! pending" class="mt-3 flex flex-wrap gap-2">
+                                @foreach ($suggestions as $suggestion)
+                                    <button type="button" @click="ask(@js($suggestion))" class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-left text-sm text-gray-700 hover:border-brand-300 hover:bg-slate-50">{{ $suggestion }}</button>
+                                @endforeach
+                            </div>
                         @endif
                     </div>
                 @endif

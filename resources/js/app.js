@@ -1,5 +1,6 @@
 import { startTour, startModuleTour, resumeTourIfActive } from './tour';
 import { startAiTour } from './ai-tour';
+import { pointFromUrl } from './point';
 
 // Exposed globally so the topbar's plain onclick="startTour()" (and each
 // module page's "Tutorial Modul Ini" button) can reach these without needing
@@ -11,8 +12,10 @@ window.startModuleTour = startModuleTour;
 window.startAiTour = startAiTour;
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', resumeTourIfActive);
+    document.addEventListener('DOMContentLoaded', pointFromUrl);
 } else {
     resumeTourIfActive();
+    pointFromUrl();
 }
 
 // Material-style click "wave" for icon buttons — usage: add x-ripple to any
