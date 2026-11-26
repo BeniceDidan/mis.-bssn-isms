@@ -41,6 +41,8 @@
         </div>
     </div>
 
+    <x-module-flow module="sdm" />
+
     @if (auth()->user()?->admin_module === 'sdm')
         <livewire:admin-verification-queue />
     @endif

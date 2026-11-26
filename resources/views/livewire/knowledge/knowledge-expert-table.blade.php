@@ -141,7 +141,7 @@
                                 <p class="mt-0.5 text-gray-500">{{ $risk->title }}</p>
                             </div>
                         @empty
-                            <p class="text-xs text-gray-400">Belum ada record di Manajemen SDM dengan Kode Personil yang sama.</p>
+                            <p class="text-xs text-gray-400">Belum ada data di Manajemen SDM dengan Kode Personil yang sama.</p>
                         @endforelse
                     </div>
 

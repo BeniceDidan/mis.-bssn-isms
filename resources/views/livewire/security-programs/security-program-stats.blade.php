@@ -12,7 +12,7 @@
          of a fake link, this pulls live counts as evidence the plan is
          actually being carried out. --}}
     <div class="glass-panel rounded-2xl px-5 py-4">
-        <h2 class="text-sm font-semibold text-gray-900">Dihitung otomatis dari modul lain</h2>
+        <h2 class="text-sm font-semibold text-gray-900">Dari modul lain</h2>
         <dl class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div class="rounded-xl bg-slate-50 px-3 py-2.5">
                 <dd class="text-xl font-semibold text-gray-900">{{ number_format($assetCount) }}</dd>
@@ -31,7 +31,6 @@
                 <dt class="text-xs text-gray-500">Sosialisasi &amp; pelatihan</dt>
             </div>
         </dl>
-        <p class="mt-3 text-xs text-gray-500">Dari Manajemen Aset, Manajemen Risiko, dan Aktivitas Berbagi di Manajemen Pengetahuan.</p>
     </div>
 
     <x-activity-feed :items="$recentActivity" title="Aktivitas terbaru" />

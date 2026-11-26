@@ -33,6 +33,8 @@
         </div>
     </div>
 
+    <x-module-flow module="risiko" />
+
     @if (auth()->user()?->admin_module === 'risiko')
         <livewire:admin-verification-queue />
     @endif

@@ -62,6 +62,8 @@
             @endforeach
         </div>
 
+        <x-module-flow module="layanan" />
+
         @if (auth()->user()?->admin_module === 'layanan')
             <livewire:admin-verification-queue />
         @endif

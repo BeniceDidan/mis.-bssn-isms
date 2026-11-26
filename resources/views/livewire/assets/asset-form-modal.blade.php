@@ -97,7 +97,7 @@
 
                     <div class="rounded-md border border-brand-100 bg-brand-50 p-3">
                         <p class="mb-2 text-xs font-medium text-brand-800">
-                            Penilaian CIA (opsional) — isi ketiganya untuk menghitung Kritikalitas otomatis
+                            Nilai 1–5 (opsional). Isi ketiganya, kritikalitas dihitung otomatis.
                         </p>
                         <div class="grid grid-cols-3 gap-3">
                             <div>
@@ -179,7 +179,7 @@
                                 <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
                             @endforeach
                         </datalist>
-                        <p class="mt-1 text-[11px] text-gray-400">Kode yang sama di modul lain berarti orang yang sama. Kosongkan untuk dibuat otomatis.</p>
+                        <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -234,7 +234,6 @@
                             @endforeach
 
                             @if (empty($dynamicRows))
-                                <p class="text-xs text-gray-400">Belum ada kolom tambahan.</p>
                             @endif
                         </div>
                     </div>

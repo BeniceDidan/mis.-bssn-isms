@@ -41,6 +41,8 @@
         </div>
     </div>
 
+    <x-module-flow module="aset" />
+
     @if (auth()->user()?->admin_module === 'aset')
         <livewire:admin-verification-queue />
     @endif

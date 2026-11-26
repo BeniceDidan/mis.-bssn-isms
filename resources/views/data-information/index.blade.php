@@ -41,6 +41,8 @@
         </div>
     </div>
 
+    <x-module-flow module="data_informasi" />
+
     @if (auth()->user()?->admin_module === 'data_informasi')
         <livewire:admin-verification-queue />
     @endif

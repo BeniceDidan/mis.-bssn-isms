@@ -478,6 +478,24 @@ Aturan yang sengaja dipegang:
   Asisten, tidak ditempel di halaman lain.
 - Pencarian Tiket Helpdesk kini mengenali nomor tiket tampilan `TKT-000123`
   (id), dipakai tautan Asisten.
+- **Asisten: percakapan dan penunjuk jalan** (`Concerns\GuidesConversation`,
+  `App\Support\AppFaq`, `resources/js/point.js`; masukan 26 Nov 2026). Tanpa
+  LLM: sapaan/terima kasih/"kamu bisa apa"; "semuanya" / "iya kasih ke aku"
+  mengulang pokok bahasan terakhir dengan semua hasil (`topic` disimpan
+  komponen sebagai riwayat, 4 tanya-jawab terakhir); "bawa saya ke …"
+  mengembalikan `go` (panel pindah halaman setelah 0,9 detik); "cara menambah
+  X", "lapor gangguan", "dokumen di Manajemen X" (PDF pengetahuan lewat aset
+  modul itu + bukti dukung modul itu); penjelasan baku `AppFaq::ENTRIES` (alur,
+  SPBE, modul, urutan isi, AI, keamanan, P1–P4, level 1–5, arsip, dll.) dan
+  `AppFaq::MODULES` (teks sama dengan slide presentasi). Jawaban boleh membawa
+  `actions` (tombol); `?tunjuk=<data-tour>` di alamat tujuan menyorot tombol
+  itu sekali (daftar yang dikenal di `point.js`). `invents()` juga menolak
+  nama tombol dalam tanda kutip yang tidak ada di bahan.
+- **Tampilan modul** (26 Nov 2026): `<x-module-flow>` di bawah judul tiap
+  modul menampilkan titik integrasi dari `IntegrationMap` (datang dari →
+  modul → dikirim ke, petir = otomatis, kotak bisa diklik). Aktivitas terbaru
+  hanya 3 baris + "N lainnya". Pesan validasi berbahasa Indonesia
+  (`lang/id/validation.php`, `APP_LOCALE=id`).
 
 **Dua Ollama di PC ini.** Port 11434 dilayani Ollama di **WSL** (`llama3.2`
 dan `bge-m3`, yang terakhir terpasang 10 Nov). Ollama Windows

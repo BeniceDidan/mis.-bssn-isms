@@ -126,7 +126,7 @@
                                 <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
                             @endforeach
                         </datalist>
-                        <p class="mt-1 text-[11px] text-gray-400">Kode yang sama di modul lain berarti orang yang sama. Kosongkan untuk dibuat otomatis.</p>
+                        <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
                     </div>
 
                     <div class="border-t border-slate-200 pt-4">
@@ -149,7 +149,6 @@
                             @endforeach
 
                             @if (empty($dynamicRows))
-                                <p class="text-xs text-gray-400">Belum ada kolom tambahan.</p>
                             @endif
                         </div>
                     </div>

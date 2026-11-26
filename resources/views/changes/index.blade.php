@@ -41,6 +41,8 @@
         </div>
     </div>
 
+    <x-module-flow module="perubahan" />
+
     @if (auth()->user()?->admin_module === 'perubahan')
         <livewire:admin-verification-queue />
     @endif

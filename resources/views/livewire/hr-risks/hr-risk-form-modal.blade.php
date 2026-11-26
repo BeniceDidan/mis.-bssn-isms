@@ -88,7 +88,7 @@
                     <div data-tour="personnel-field">
                         <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
                         <input type="text" wire:model="personnel_ref" placeholder="Dikosongkan = digenerate otomatis" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                        <p class="mt-1 text-[11px] text-gray-400">Kode yang sama di modul lain berarti orang yang sama. Kosongkan untuk dibuat otomatis.</p>
+                        <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
                     </div>
 
                     <div class="border-t border-slate-200 pt-4">
@@ -111,7 +111,6 @@
                             @endforeach
 
                             @if (empty($dynamicRows))
-                                <p class="text-xs text-gray-400">Belum ada kolom tambahan.</p>
                             @endif
                         </div>
                     </div>

@@ -261,7 +261,7 @@
                                 @endforeach
                             </div>
                         @empty
-                            <p class="text-xs text-gray-400">Belum ada record di modul lain dengan Kode Personil yang sama.</p>
+                            <p class="text-xs text-gray-400">Belum ada data lain dengan Kode Personil yang sama.</p>
                         @endforelse
                     </div>
 
