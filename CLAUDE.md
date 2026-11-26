@@ -237,3 +237,345 @@ Adjust if it turns out to be something else.
 - Appreciates concrete, verified proof of a fix (a live screenshot, a
   measured pixel offset, an actual query result) over a claim that
   something is fixed.
+
+
+## Setup aktual di PC Windows (benic) — 2026-09-08
+
+Bagian "First-time setup on a new machine" di atas ditulis untuk macOS +
+Homebrew. Pindahnya ternyata tidak ke MacBook: proyek ini sekarang berjalan di
+PC Windows (pengguna `benic`, ASRock B760M / i5-13400F). Yang di bawah ini
+adalah keadaan sebenarnya di mesin itu — ikuti ini, bukan langkah Homebrew.
+
+**Tidak ada hak admin di mesin ini.** Semua dipasang portabel di folder
+pengguna, pola yang sama dengan Node dan Postgres yang sudah ada di sana.
+
+| Perkakas | Jalur |
+|---|---|
+| PHP 8.4.25 (NTS x64) | `C:\Users\benic\AppData\Local\Programs\php-8.4` |
+| Composer 2.10.3 | `C:\Users\benic\AppData\Local\Programs\composer\composer.phar` |
+| Node 22.14.0 | `C:\Users\benic\AppData\Local\Programs\nodejs-22.14.0` |
+| PostgreSQL 16 | `C:\Users\benic\AppData\Local\Programs\pgsql-16`, data di `AppData\Local\pgsql-16-data` |
+| Proyek | `C:\Users\benic\mis-bssn-isms` |
+
+Ekstensi PHP yang diaktifkan di `php.ini`: `pdo_pgsql`, `pgsql`, `mbstring`,
+`openssl`, `fileinfo`, `zip`, `curl`, `gd`, `intl`. `extension_dir` disetel ke
+jalur mutlak — tanpa itu PHP mencari `ext/` di folder kerja saat ini.
+
+**JANGAN percaya `DB_CONNECTION=sqlite` di `.env.example`.** Itu bawaan Laravel
+yang tidak pernah diedit, dan aplikasinya TIDAK jalan di SQLite: migrasi
+`2026_07_14_000002_create_assets_table` membuat
+`CREATE INDEX ... USING GIN (dynamic_data)`, dan `USING GIN` khas PostgreSQL —
+SQLite gagal dengan `near "USING": syntax error`. Bagian "Stack" di atas benar;
+berkas contohnya yang menyesatkan.
+
+Database lokalnya `bssn_isms`, satu cluster dengan `bakoel`, `bioverse`, dan
+`englishify` di port 5432. Cluster itu **dipakai bersama proyek lain** — jangan
+matikan atau reset servernya demi proyek ini saja.
+
+Postgres di sini bukan layanan Windows; dinyalakan lewat pintasan di folder
+Startup yang memanggil `C:\Users\benic\bioverse bajol\start-bioverse-pg.cmd`.
+Skrip itu sudah menangani `postmaster.pid` basi — masalah yang disebut di
+catatan gotcha di atas, dan di mesin ini terulang pada 19 Agustus dan
+8 September.
+
+Menjalankan aplikasinya: klik dua kali `start-dev-benic.cmd` di akar proyek.
+`start-dev.bat` yang asli dibiarkan apa adanya sebagai catatan sejarah —
+jalurnya menunjuk ke `C:\Users\user\...` dan PostgreSQL port 5433, keduanya
+tidak ada di mesin ini.
+
+**Akun login dibuat ulang secara lokal.** `DatabaseSeeder` di repo ini hanya
+berisi factory bawaan Laravel; sembilan akun yang disebut di bagian Deployment
+tidak ada di dalamnya, hanya ada di database Railway. Yang lokal dibuat manual
+dengan kata sandi yang sama seperti yang didokumentasikan.
+
+**Railway sudah mati** (per 10 November 2026 URL-nya membalas "Application
+not found"), jadi dataset 26 aset di sana tidak bisa diambil lagi. Sebagai
+gantinya ada data demo fiktif:
+
+```
+php artisan migrate --force
+php artisan db:seed --class=DemoDataSeeder --force
+php artisan pengetahuan:indeks
+php artisan storage:link
+```
+
+`.env` di PC ini berisi `APP_ENV=production`, jadi perintah artisan yang
+mengubah database butuh `--force`. `APP_URL` menunjuk ke alamat Tailscale
+(https) sehingga URL yang dibuat Laravel ikut https; untuk mencoba di
+localhost, jalankan server dengan `APP_URL=http://localhost:8001` di
+lingkungan prosesnya (lihat `D:\kominfo\.claude\launch.json`, config
+`bssn-isms`).
+
+Tes otomatis memakai database `kominfo_isms_test` di cluster yang sama;
+host/user/kata sandi diambil dari `.env` (tidak lagi ditulis di
+`phpunit.xml`). Jalankan `php artisan test`.
+
+## Fitur AI (cabang `fitur-ai`, dibangun 10 November 2026)
+
+Permintaan mentor Kominfo: (1) AI Assessor bukti dukung, (2) Manajemen
+Pengetahuan jadi pencarian semantik + RAG + tag otomatis, (3) triase tiket
+Helpdesk. Ketiganya:
+
+- jalan **lokal lewat Ollama** (`config/ai.php`: `llama3.2` untuk teks,
+  `bge-m3` untuk embedding) — tidak ada data yang dikirim ke layanan awan;
+- punya **jalur cadangan tanpa AI** (mesin aturan / pencarian kata kunci
+  Postgres berbahasa Indonesia), sehingga aplikasi tidak pernah macet karena
+  model mati; tes otomatis selalu memakai jalur ini (`AI_PROVIDER=none`);
+- menandai keluaran sebagai draf dan mencatat setiap keluaran di tabel
+  `ai_logs` (mesin apa yang dipakai, masukan, keluaran, durasi).
+
+| Fitur | Di mana | Kode inti | Data yang bisa diedit |
+|---|---|---|---|
+| Evaluasi Bukti Dukung | menu samping "Evaluasi Bukti Dukung" (`/bukti-dukung`) | `App\Services\Ai\EvidenceAssessor`, `PdfReader` | `config/bukti_dukung.php` (rubrik, **DRAF**) |
+| Tanya Dokumen + tag | Manajemen Pengetahuan → tab "Tanya Dokumen" | `KnowledgeIndexer`, `KnowledgeSearch`, job `IndexKnowledgeDocument`, perintah `pengetahuan:indeks` | kosakata tag di `KnowledgeIndexer::VOCABULARY` |
+| Triase Helpdesk | Manajemen Layanan → tab "Tiket Helpdesk"; tombol "Analisis AI" di form tiket | `TicketTriage` | `config/helpdesk.php` (kategori, matriks prioritas, target waktu — DRAF) |
+| Asisten (chatbot) | tombol "Asisten" di pojok kanan bawah semua halaman | `AppAssistant`, `App\Support\AppHelp`, `App\Livewire\Assistant` | teks panduan di `AppHelp` (label tombol disalin persis) |
+
+Aturan yang sengaja dipegang:
+
+- **Skor/level bukti dukung dan prioritas tiket hanya dari mesin aturan.**
+  LLM hanya memberi catatan, memilih kategori bila kata kunci lemah (dampak &
+  urgensi lalu dihitung ulang dari aturan kategori itu), dan menulis kalimat
+  pembuka draf balasan. LLM tidak lagi boleh menaikkan dampak/urgensi: pada uji
+  13 November 2026 permintaan API dan permintaan data biasa naik ke P2 tanpa
+  alasan yang masuk akal. Alasannya: hasil harus bisa dijelaskan dan diaudit.
+- Kata kunci triase (`TicketTriage::contains`) boleh diselingi sampai dua kata
+  ("akun saya terkunci" cocok dengan "akun terkunci").
+- Tanya Dokumen hanya memakai potongan yang skornya paling banyak 0,08 di bawah
+  potongan terbaik (`KnowledgeSearch::RELEVANCE_MARGIN`), bukan lagi maksimal
+  2 potongan per dokumen; nomor halaman tidak dikirim ke model, dan kebiasaan
+  format model kecil dirapikan di `KnowledgeSearch::tidy()`.
+- **Kapasitas Tanya Dokumen.** Vektor disimpan sebagai jsonb (pgvector tidak
+  terpasang di Postgres portabel PC ini); memindai semua potongan butuh
+  ±0,25 ms per potongan (uji 17 Nov 2026: 25.000 potongan ≈ 6 detik). Di atas
+  `ai.full_scan_limit` (3.000 potongan) pencarian jadi dua tahap: dokumen
+  kandidat dipilih dari `knowledge_assets.doc_embedding` (rata-rata vektor
+  potongan, diisi `KnowledgeIndexer`) + kata kunci, baru potongannya diperiksa.
+  Untuk server produksi Linux, pgvector + indeks HNSW tetap pilihan terbaik.
+- Banyak PDF sekaligus: `php artisan pengetahuan:impor <folder> [--kategori=]
+  [--unit=] [--akses=Internal]` (subfolder ikut, berkas yang nama aslinya sudah
+  ada dilewati).
+- Bukti dukung disimpan di disk privat (`storage/app/private/bukti-dukung`),
+  dibuka lewat route ber-login `evidence.file`. Keputusan asesor hanya oleh
+  admin modul yang bersangkutan (`canAutoVerify`).
+- Cap basah tidak terbaca dari teks PDF; yang dideteksi: tanda tangan digital
+  tertanam (`/Sig` + `/ByteRange`), blok NIP, keterangan TTE, dan gambar di
+  halaman terakhir.
+- Riset dasar (PermenPANRB 8/2026 menggantikan 59/2020, pemetaan modul ke
+  indikator, matriks prioritas) ada di `docs/riset/` dan **belum ditinjau
+  pengguna** — jangan anggap rubrik itu final.
+- `docs/riset/04-rujukan-per-modul.md` memetakan setiap aturan aplikasi ke
+  peraturan (Perpres 95/2018 Pasal 46–54, PermenPANRB 5/2020, BSSN 4/2021,
+  Permen PPN 16/2020, **Permenkomdigi 12/2026** pedoman aset TIK & layanan,
+  BRIN 2/2024) dan mencatat yang perlu disesuaikan — terutama prioritas
+  helpdesk (pedoman resmi: Pk/Pe/Pn dari klasifikasi layanan × Mayor/Minor,
+  bukan P1–P4) dan register risiko (16 kategori, area dampak, selera risiko).
+  Belum ada kode yang diubah berdasarkan temuan itu; tunggu keputusan pengguna.
+- Panduan AI: pop-out `<x-ai-guide feature="bukti|tanya|triase">` (isi di
+  `App\Support\AiGuide`). Tombol "Mulai tutorial" di dalamnya menjalankan
+  tutorial interaktif `resources/js/ai-tour.js` (driver.js, terpisah dari tur
+  modul `tour.js`): menekan tombol aslinya, mengisi contoh bila isian kosong
+  (PDF contoh dari route `evidence.sample`), dan menunggu permintaan Livewire
+  selesai sebelum menjelaskan hasil AI. Elemen yang disorot ditandai
+  `data-tour="..."`; kalau mengubah tampilan tiga fitur AI, pertahankan
+  atribut itu (dijaga `test_ai_pages_carry_the_tutorial_markers`).
+- **Asal skor bukti dukung** tampil di panel detail (permintaan Kominfo 18 Nov
+  2026, "skor 86 itu dari mana?"): `EvidenceDocument::scoreBreakdown()` →
+  "6 dari 7 unsur", bagian "Asal nilai" menulis rumusnya, kriteria
+  tiap level, kata yang ditemukan + halamannya, dan kata kunci yang tidak
+  ditemukan (`keywordsFor()`). Skor = unsur Level 1 s.d. level klaim yang
+  ditemukan ÷ semua unsur Level 1 s.d. level klaim × 100.
+- **Angka utama bukti dukung = Nilai Level 1–5** (19 Nov 2026, pilihan 1 di
+  `docs/riset/05-dasar-angka-penilaian.md`): persen kelengkapan tidak punya
+  dasar resmi; PermenPANRB 8/2026 menilai tiap indikator dengan tingkat
+  kematangan 1–5. Kartu/kolom: Klaim · Nilai (`valueLabel()` + nama level
+  `levelName()`) · Unsur (`unsurLabel()` → "6 dari 7"). PDF hasil
+  scan/tidak terbaca → "—" (`pdfUnreadable()`). Kolom `score` di basis data
+  tetap dihitung dan dicatat di ai_logs, tetapi tidak ditampilkan.
+- **Panel hasil bukti dukung** (19 Nov 2026, keluhan "teks AI slop"): kartu
+  Klaim/Nilai/Unsur, chip "Belum ada" dan "Keabsahan", gelembung
+  "Ringkasan AI", rincian per level dalam kartu berlabel Lengkap/Kurang N.
+  Dari catatan LLM hanya ringkasan satu kalimat + kekurangan yang belum
+  disebut aturan yang tampil (`EvidenceDocument::aiHighlights()`); bagian
+  "Catatan" tidak lagi diminta dari LLM karena hanya mengulang hasil aturan.
+- **Titik integrasi AI ke modul lain.** `TicketTriage::related()` menampilkan
+  aset layanan (Manajemen Aset), risiko terbuka pada aset itu (Manajemen
+  Risiko), dan SOP terdekat (Manajemen Pengetahuan, lewat
+  `KnowledgeSearch::retrieve`, ambang `SOP_MIN_SCORE` 0,45) di form tiket
+  ("Terkait di modul lain"); risiko teratas mengisi "Risiko TIK Terkait" bila
+  kosong. Pop-out "Titik Integrasi" tiap modul memuat alur AI dari
+  `IntegrationMap::AI_FLOWS` + `SHARED_AI_FLOWS`.
+- **Asisten** (`AppAssistant`). Bahan jawaban dikumpulkan kode dari panduan
+  aplikasi (`AppHelp`, ditambah otomatis dari `AiGuide` dan `IntegrationMap`),
+  data 11 jenis catatan modul, riwayat (`activity_logs`), admin modul, berkas
+  (PDF pengetahuan + bukti dukung), dan potongan isi dokumen. Pertanyaan
+  dinormalkan dulu (`normalize()`: bahasa santai "brp/yg/blm kelar" dan
+  bahasa Inggris dasar → baku). Saringan yang dikenali: level, prioritas
+  P1–P4, terbuka, status per modul (nilai diambil dari basis data),
+  keputusan bukti dukung, verifikasi, waktu ("minggu ini", "bulan November",
+  WIB), dan relasi (risiko pada aset X, layanan yang bergantung pada aset X,
+  tiket untuk layanan X, aset yang menopang layanan X; jangkar harus cocok
+  ≥60% kata). Aturan yang dipegang, semuanya dari uji 29 pertanyaan
+  18 Nov 2026 dengan llama3.2 (sebelum perbaikan: separuh salah/mengarang):
+  - data, hitungan, relasi, riwayat, dan admin dijawab langsung dari basis
+    data dengan kalimat templat (model sempat mengarang kode risiko dan nama
+    layanan);
+  - pertanyaan cara pakai dijawab dengan teks panduan apa adanya (model
+    sempat memparafrasekan rumus skor jadi salah);
+  - permintaan berkas dijawab daftar berkas, tanpa LLM;
+  - LLM hanya untuk isi dokumen: diberi potongan teratas saja (selisih
+    ≤0,04), jawabannya dibuang bila menyebut kode/angka yang tidak ada di
+    bahan (`invents()`), dicoba sekali lagi bila menyerah padahal potongannya
+    sangat cocok (≥0,6), dan selalu disertai kutipan kalimat asli dokumen
+    (`quote()`, dipilih dengan bge-m3) — model sempat membaca SOP backup
+    "penuh harian + inkremental tiap 4 jam" sebagai "2 kali sehari";
+  - pertanyaan tanpa bahan sama sekali (mis. cuaca) ditolak tanpa LLM.
+  Uji ulang 29 pertanyaan: semua benar. Batasan: model 3B masih bisa salah
+  baca dokumen, makanya kutipan wajib tampil. Vektor panduan disimpan di
+  cache (`ai.apphelp.vectors.*`). Percakapan disimpan di sesi (20 pesan),
+  dibatasi 20 pertanyaan/menit/pengguna, tercatat di `ai_logs` (fitur
+  `asisten`). Tombol disembunyikan lewat CSS `body:has(...)` selama modal
+  terbuka. Bila mengubah label tombol atau alur, perbarui `AppHelp` juga.
+  Tampilan (permintaan pengguna 18 Nov 2026, kurangi "AI slop"): tanpa label
+  mesin, tanpa "periksa kembali", tanpa kalimat pembuka; jawaban teks polos,
+  kutipan dokumen sebagai blok bergaris tepi (`quote` dikembalikan terpisah),
+  tautan dalam satu daftar ringkas (4 teratas + "N lainnya"), kalimat baku
+  singkat `AppAssistant::NOT_FOUND` / `OUT_OF_SCOPE`. Mesin tetap tercatat di
+  `ai_logs`.
+  Satu-satunya penanda AI: "Dirangkum AI dari dokumen/panduan" (kunci `ai` di
+  hasil), hanya pada jawaban yang disusun LLM; jawaban dari basis data dan
+  teks panduan apa adanya tidak diberi label.
+- **Asisten: titik integrasi** (`Concerns\AnswersConnections`, tanpa LLM;
+  uji 18 Nov 2026 llama3.2 menjawab "SDM terhubung ke Asisten").
+  - "File yang barusan saya unggah nyambung ke mana?" → unggahan terakhir
+    milik penanya: bukti dukung (`uploaded_by`), PDF pengetahuan (jejak
+    `activity_logs` dengan `document_path`), atau impor Excel (`import_logs`,
+    dicatat trait `Livewire\Concerns\RecordsImports` di 7 importer; data yang
+    masuk = log aktivitas pengguna itu antara `started_at`..`finished_at`).
+    Jawaban menyebut yang sudah tersambung **dan** yang belum (aset kosong,
+    isi PDF belum terbaca, Kode Personil kosong). "Kalau saya unggah …" =
+    skenario, bukan unggahan sendiri.
+  - Data tertentu (kode atau nama aset/layanan ≥60% cocok): daftar catatan
+    tertaut, termasuk tindak lanjut otomatis risiko
+    (`dynamic_data->auto_generated_from_risk`) dan Kode Personil yang sama.
+  - Modul: alur dari `IntegrationMap` apa adanya (sama dengan pop-out),
+    disaring untuk skenario (kritis/tinggi → alur otomatis; arsip →
+    peringatan; impor; unggah PDF). Ubah `IntegrationMap`, jawaban ikut.
+- **Asisten: riset rujukan** (`Concerns\AnswersFromResearch` +
+  `App\Support\ResearchLibrary`). Membaca `docs/riset/README.md` dan
+  `NN-*.md` (bukan `referensi-simantik.md`): tabel sumber berkode jadi daftar
+  rujukan (judul, status, tautan), baris tabel/butir/paragraf jadi potongan
+  yang dicari dengan bge-m3 (vektor di cache `ai.riset.vectors.*`). Kode
+  sumber diganti nama pendek per berkas ("P2" → "PermenPANRB 5/2020"; "P1–P4"
+  prioritas tiket tidak ikut diganti). Jawaban diambil apa adanya, tanpa
+  LLM (uji: model menjawab "dasar aturan manajemen risiko" dengan karangan).
+  Jenis jawaban: daftar semua sumber; rujukan per modul/topik + ringkasan
+  status audit; status peraturan ("Perpres 95/2018 masih berlaku?");
+  potongan paling cocok untuk "kenapa …". Selama judul berkas memuat "DRAF"
+  jawaban diberi label kecil "Riset draf, belum ditinjau" (kunci `draft`);
+  ganti judulnya jadi "… — DITINJAU" setelah ditinjau. Tautan sumber
+  (`kind` `web`) dibuka di tab baru. Rujukan hanya muncul bila ditanya di
+  Asisten, tidak ditempel di halaman lain.
+- Pencarian Tiket Helpdesk kini mengenali nomor tiket tampilan `TKT-000123`
+  (id), dipakai tautan Asisten.
+- **Asisten: percakapan dan penunjuk jalan** (`Concerns\GuidesConversation`,
+  `App\Support\AppFaq`, `resources/js/point.js`; masukan 26 Nov 2026). Tanpa
+  LLM: sapaan/terima kasih/"kamu bisa apa"; "semuanya" / "iya kasih ke aku"
+  mengulang pokok bahasan terakhir dengan semua hasil (`topic` disimpan
+  komponen sebagai riwayat, 4 tanya-jawab terakhir); "bawa saya ke …"
+  mengembalikan `go` (panel pindah halaman setelah 0,9 detik); "cara menambah
+  X", "lapor gangguan", "dokumen di Manajemen X" (PDF pengetahuan lewat aset
+  modul itu + bukti dukung modul itu); penjelasan baku `AppFaq::ENTRIES` (alur,
+  SPBE, modul, urutan isi, AI, keamanan, P1–P4, level 1–5, arsip, dll.) dan
+  `AppFaq::MODULES` (teks sama dengan slide presentasi). Jawaban boleh membawa
+  `actions` (tombol); `?tunjuk=<data-tour>` di alamat tujuan menyorot tombol
+  itu sekali (daftar yang dikenal di `point.js`). `invents()` juga menolak
+  nama tombol dalam tanda kutip yang tidak ada di bahan.
+- **Tampilan modul** (26 Nov 2026): `<x-module-flow>` di bawah judul tiap
+  modul menampilkan titik integrasi dari `IntegrationMap` (datang dari →
+  modul → dikirim ke, petir = otomatis, kotak bisa diklik). Aktivitas terbaru
+  hanya 3 baris + "N lainnya". Pesan validasi berbahasa Indonesia
+  (`lang/id/validation.php`, `APP_LOCALE=id`).
+
+**Dua Ollama di PC ini.** Port 11434 dilayani Ollama di **WSL** (`llama3.2`
+dan `bge-m3`, yang terakhir terpasang 10 Nov). Ollama Windows
+(`AppData\Local\Programs\Ollama`, model di `~\.ollama\models`: bge-m3,
+qwen2.5, qwen3.5, gemma2, sahabatai-9b, nomic-embed-text) tidak bisa
+memakai port yang sama. Bila ingin memakai model Windows (mis. Sahabat-AI
+yang lebih fasih berbahasa Indonesia), jalankan servernya di port lain dan
+setel `AI_OLLAMA_URL` + `AI_CHAT_MODEL` di `.env`.
+
+## Gaya tampilan (diubah 10 November 2026 atas permintaan pengguna)
+
+Pengguna meminta gaya **situs pemerintahan profesional berwarna biru tua**:
+satu warna dominan, tidak transparan, tanpa hiasan "AI slop". Tata letak
+tidak diubah. Aturannya:
+
+- **Satu warna aksen** `brand-*` (biru tua, didefinisikan di `@theme` pada
+  `resources/css/app.css`). Warna per modul (amber, teal, emerald, ungu,
+  rose, dst.) sudah dihapus — jangan dikembalikan. Merah hanya untuk galat,
+  tombol hapus, dan level Kritis.
+- **Tanpa transparansi/kaca:** `.glass-panel` sekarang putih solid bergaris
+  tipis (nama kelas dipertahankan). Jangan pakai `bg-white/NN`,
+  `backdrop-blur`, gradien (`bg-gradient-*`), atau bayangan berwarna.
+  Sidebar dan toast biru tua solid (`.glass-panel-dark`).
+- **Notifikasi tidak berwarna-warni:** kotak info/peringatan memakai biru
+  netral; hanya bahaya yang merah.
+- **Tingkat Rendah→Kritis** memakai tangga biru (abu-biru, biru sedang,
+  biru tua) dan merah untuk Kritis — lihat `Level::accentHex()` dan
+  `config/helpdesk.php`.
+- Gumpalan warna latar per modul dan ilustrasi `module-ornament` dihapus.
+- Konversi massal dilakukan dengan skrip regex (bukan disimpan di repo);
+  view baru cukup memakai kelas `brand-*`, `slate-*`, `gray-*`, `red-*`.
+
+## Alur data dan bahasa tampilan (19 November 2026)
+
+Permintaan pengguna: kata-kata di 8 modul lebih manusiawi, alur antarmodul
+"ini ke mana, habis ini ke mana" sangat jelas, semua bisa ditanyakan ke
+Asisten, tampilan rapi tanpa teks pengisi, dan **setiap hal punya dasar
+resmi**. Dasarnya di `docs/riset/06-alur-dan-bahasa.md` (DRAF): Permenkomdigi
+6/2025 Pasal 9 ayat (5) (rancang bangun memuat alur proses, keterhubungan
+fungsi, antarmuka, kendali validasi, integrasi), Pasal 17 (helpdesk + FAQ),
+Pasal 19 (manual pengguna); Perpres 63/2019 Pasal 2, 25, 28 (bahasa
+Indonesia di sistem informasi pelayanan); Perpres 95/2018 Pasal 2, 47–54.
+
+- **Satu sumber alur: `App\Support\IntegrationMap`.** `MAP[modul]['flows']`
+  punya `dir` (`out` dikirim ke / `in` datang dari) dan `type` (`auto` /
+  `manual` = "Bila kolomnya diisi"); `EVENTS` = tabel "Setelah Anda
+  menyimpan, datanya ke mana". Dipakai pop-out **Alur Data**
+  (`components/integration-map`, dulu "Titik Integrasi"), halaman Panduan
+  (`guide/index`, ditulis ulang), `AppHelp` (entri "Setelah …" ditandai
+  `event` dan hanya ikut dicari bila pertanyaan menyebut setelah/alur/ke
+  mana), dan `AnswersConnections`. Ubah perilaku → ubah kalimat di sini.
+- **Pesan setelah simpan** (`App\Support\SaveNotice`) di 8 form utama:
+  status verifikasi, aset tujuan, dan tindak lanjut yang **benar-benar**
+  dibuat pada penyimpanan itu (dicek di DB sejak `SaveNotice::since()`).
+  Toast kini `max-w-sm rounded-2xl`, lama tampil mengikuti panjang pesan.
+- **Tampilan bersama:** kotak isian diberi garis lewat `@layer base` di
+  `app.css` (view memakai `border-gray-300` tanpa lebar garis, jadi dulu
+  tak bergaris); kartu angka putih polos; daftar aktivitas lewat
+  `x-activity-feed` (menulis "dari Manajemen …" untuk kejadian lintas
+  modul); waktu relatif Bahasa Indonesia (`Carbon::setLocale('id')` di
+  AppServiceProvider); huruf kapital semua, subjudul modul, label AKTIF,
+  dan efek tombol membesar/berputar dihapus.
+- **Istilah:** Kemungkinan, Dampak, Unit Pemilik, Pengelola Layanan,
+  Tingkat Risiko Sisa, Target Ketersediaan, Ketersediaan Tercapai, Rata-rata
+  Waktu Pemulihan, Penanggung Jawab, Kode Lama, Kolom Tambahan (dulu Data
+  Dinamis), Mayor/Minor, "Manajemen Data & Informasi". Nama kolom DB tidak
+  berubah.
+- **Asisten:** pertanyaan "X itu apa?" dijawab teks panduan apa adanya
+  (`definitionAnswer`, juga mencocokkan frasa yang semuanya kata umum
+  seperti "riwayat terkait"); "habis simpan X ke mana" dijawab dari
+  `EVENTS`; "dasar resmi …" ke riset, bukan ke peta alur; "riwayat
+  terkait" bukan pertanyaan riwayat aktivitas. Teks modul di `AppHelp`
+  memuat tujuan resmi Perpres 95/2018. Tes: `tests/Feature/DataFlowTest.php`.
+
+## Konteks lintas proyek
+
+Ada di vault Obsidian di `C:\Users\benic\Documents\Obsidian Vault`. Mulai dari `MOC - Memori Bos Didan.md`; catatan repo ini di `02-Projects/Lainnya/BSSN ISMS.md`.
+
+Yang relevan:
+
+- `02-Projects/Sekolah-Rakyat-Nganjuk/Anggaran Internal Eduriens.md` berisi satu temuan pengerasan server yang berlaku di sini juga: **Docker menembus ufw**. Menjalankan `docker run -p 5432:5432` setelah memasang firewall membuat Docker menulis langsung ke iptables dan melewati aturan ufw. `ufw status` tetap bilang port itu tertutup padahal terbuka ke seluruh internet. Untuk aplikasi ISMS, itu kelas risiko yang jelas tidak boleh terjadi.
+
+Vault adalah potret 22 September 2026. Kuat pada *kenapa*, menua pada *apa*. Verifikasi hal yang menentukan ke kode.

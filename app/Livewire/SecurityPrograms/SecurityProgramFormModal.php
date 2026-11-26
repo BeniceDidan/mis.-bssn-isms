@@ -9,6 +9,7 @@ use App\Models\HrRisk;
 use App\Models\SecurityProgram;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Support\SaveNotice;
 
 class SecurityProgramFormModal extends Component
 {
@@ -82,6 +83,7 @@ class SecurityProgramFormModal extends Component
     public function save(): void
     {
         $this->ensureCanWrite();
+        $since = SaveNotice::since();
 
         $validated = $this->validate();
 
@@ -96,14 +98,15 @@ class SecurityProgramFormModal extends Component
         $payload['verification_status'] = auth()->user()?->canAutoVerify('keamanan') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->recordId) {
-            SecurityProgram::findOrFail($this->recordId)->update($payload);
+            $saved = SecurityProgram::findOrFail($this->recordId);
+            $saved->update($payload);
         } else {
-            SecurityProgram::create($payload);
+            $saved = SecurityProgram::create($payload);
         }
 
         $this->show = false;
         $this->dispatch('security-program-saved');
-        $this->dispatch('toast', message: $this->recordId ? 'Program kerja diperbarui.' : 'Program kerja baru ditambahkan.');
+        $this->dispatch('toast', message: SaveNotice::make($this->recordId ? 'Program kerja diperbarui.' : 'Program kerja baru ditambahkan.', 'keamanan', $saved->refresh(), $since));
     }
 
     public function close(): void

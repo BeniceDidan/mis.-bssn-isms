@@ -32,14 +32,14 @@ class Dashboard extends Component
     public function render()
     {
         $modules = [
-            ['label' => 'Manajemen SDM', 'route' => 'hr-risks.index', 'icon' => 's-users', 'color' => 'slate', 'description' => 'Risiko SDM & pihak ketiga', 'count' => HrRisk::count()],
-            ['label' => 'Manajemen Pengetahuan', 'route' => 'knowledge.index', 'icon' => 's-light-bulb', 'color' => 'amber', 'description' => 'Manual book & dokumentasi', 'count' => KnowledgeAsset::count()],
-            ['label' => 'Manajemen Aset', 'route' => 'assets.index', 'icon' => 's-archive-box', 'color' => 'teal', 'description' => 'Inventaris aset TIK', 'count' => Asset::count()],
-            ['label' => 'Manajemen Keamanan Informasi', 'route' => 'security-programs.index', 'icon' => 's-shield-check', 'color' => 'emerald', 'description' => 'Program kerja keamanan SPBE', 'count' => SecurityProgram::count()],
-            ['label' => 'Manajemen Risiko', 'route' => 'risks.index', 'icon' => 's-exclamation-triangle', 'color' => 'purple', 'description' => 'Risk register terpusat', 'count' => Risk::count()],
-            ['label' => 'Manajemen Perubahan', 'route' => 'changes.index', 'icon' => 's-arrow-path', 'color' => 'indigo', 'description' => 'Register perubahan TIK', 'count' => Change::count()],
-            ['label' => 'Manajemen Layanan', 'route' => 'services.index', 'icon' => 's-wrench-screwdriver', 'color' => 'rose', 'description' => 'Katalog layanan SPBE', 'count' => Service::count()],
-            ['label' => 'Manajemen Data Informasi', 'route' => 'data-information.index', 'icon' => 's-circle-stack', 'color' => 'sky', 'description' => 'Tata kelola data & informasi', 'count' => DataInformation::count()],
+            ['label' => 'Manajemen SDM', 'route' => 'hr-risks.index', 'icon' => 's-users', 'color' => 'slate', 'description' => 'risiko pegawai & pihak ketiga', 'count' => HrRisk::count()],
+            ['label' => 'Manajemen Pengetahuan', 'route' => 'knowledge.index', 'icon' => 's-light-bulb', 'color' => 'amber', 'description' => 'dokumen SOP & manual', 'count' => KnowledgeAsset::count()],
+            ['label' => 'Manajemen Aset', 'route' => 'assets.index', 'icon' => 's-archive-box', 'color' => 'teal', 'description' => 'aset TIK terdaftar', 'count' => Asset::count()],
+            ['label' => 'Manajemen Keamanan Informasi', 'route' => 'security-programs.index', 'icon' => 's-shield-check', 'color' => 'emerald', 'description' => 'program kerja keamanan', 'count' => SecurityProgram::count()],
+            ['label' => 'Manajemen Risiko', 'route' => 'risks.index', 'icon' => 's-exclamation-triangle', 'color' => 'purple', 'description' => 'risiko TIK tercatat', 'count' => Risk::count()],
+            ['label' => 'Manajemen Perubahan', 'route' => 'changes.index', 'icon' => 's-arrow-path', 'color' => 'indigo', 'description' => 'perubahan aset TIK', 'count' => Change::count()],
+            ['label' => 'Manajemen Layanan', 'route' => 'services.index', 'icon' => 's-wrench-screwdriver', 'color' => 'rose', 'description' => 'layanan TIK', 'count' => Service::count()],
+            ['label' => 'Manajemen Data & Informasi', 'route' => 'data-information.index', 'icon' => 's-circle-stack', 'color' => 'sky', 'description' => 'catatan pengelolaan data', 'count' => DataInformation::count()],
         ];
 
         foreach ($modules as &$module) {

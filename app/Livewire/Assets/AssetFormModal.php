@@ -11,6 +11,7 @@ use App\Models\HrRisk;
 use App\Services\KritikalitasService;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Support\SaveNotice;
 
 class AssetFormModal extends Component
 {
@@ -163,6 +164,7 @@ class AssetFormModal extends Component
     public function save(): void
     {
         $this->ensureCanWrite();
+        $since = SaveNotice::since();
 
         $validated = $this->validate();
 
@@ -190,14 +192,15 @@ class AssetFormModal extends Component
         $payload['verification_status'] = auth()->user()?->canAutoVerify('aset') ? 'tervalidasi' : 'menunggu_verifikasi';
 
         if ($this->assetId) {
-            Asset::findOrFail($this->assetId)->update($payload);
+            $saved = Asset::findOrFail($this->assetId);
+            $saved->update($payload);
         } else {
-            Asset::create($payload);
+            $saved = Asset::create($payload);
         }
 
         $this->show = false;
         $this->dispatch('asset-saved');
-        $this->dispatch('toast', message: $this->assetId ? 'Aset diperbarui.' : 'Aset baru ditambahkan.');
+        $this->dispatch('toast', message: SaveNotice::make($this->assetId ? 'Aset diperbarui.' : 'Aset baru ditambahkan.', 'aset', $saved->refresh(), $since));
     }
 
     public function close(): void

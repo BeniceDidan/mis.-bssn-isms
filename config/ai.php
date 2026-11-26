@@ -1,0 +1,47 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Asisten AI
+|--------------------------------------------------------------------------
+| Model dijalankan on-premise lewat Ollama supaya isi dokumen OPD, tiket,
+| dan kebijakan internal tidak dikirim ke layanan pihak ketiga. Kalau
+| Ollama mati atau provider = none, setiap fitur tetap jalan memakai mesin
+| aturan (deterministik) — hasil AI selalu draf yang diputuskan manusia.
+*/
+
+return [
+
+    'provider' => env('AI_PROVIDER', 'ollama'), // ollama | none
+
+    'ollama_url' => env('AI_OLLAMA_URL', 'http://127.0.0.1:11434'),
+
+    // Model teks untuk ringkasan, penilaian, triase, dan draf balasan.
+    'chat_model' => env('AI_CHAT_MODEL', 'llama3.2'),
+
+    // Model embedding untuk pencarian semantik. bge-m3 multibahasa,
+    // jauh lebih paham Bahasa Indonesia daripada nomic-embed-text.
+    'embed_model' => env('AI_EMBED_MODEL', 'bge-m3'),
+
+    // Server Ollama untuk embedding bila berbeda dari server teks (mis. PC
+    // dengan dua Ollama: WSL di 11434 dan Windows di port lain).
+    'embed_url' => env('AI_EMBED_URL', env('AI_OLLAMA_URL', 'http://127.0.0.1:11434')),
+
+    'timeout' => (int) env('AI_TIMEOUT', 120),
+
+    // Batas teks dokumen yang dikirim ke model per permintaan (karakter).
+    'max_prompt_chars' => (int) env('AI_MAX_PROMPT_CHARS', 6000),
+
+    'chunk_chars' => 900,
+    'chunk_overlap' => 150,
+
+    // Tanya Dokumen: di atas jumlah potongan ini, pencarian memakai dua
+    // tahap (pilih dokumen kandidat lewat vektor rata-rata per dokumen, baru
+    // periksa potongannya). Di bawahnya semua potongan diperiksa. Memindai
+    // semua potongan butuh ±0,25 ms per potongan (uji 17 Nov 2026).
+    'full_scan_limit' => (int) env('AI_FULL_SCAN_LIMIT', 3000),
+    'candidate_documents' => (int) env('AI_CANDIDATE_DOCUMENTS', 25),
+
+    // Asisten: folder riset rujukan yang bisa ditanyakan (App\Support\ResearchLibrary).
+    'research_path' => base_path('docs/riset'),
+];

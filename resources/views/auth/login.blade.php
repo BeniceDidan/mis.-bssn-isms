@@ -10,11 +10,11 @@
 
     <style>[x-cloak] { display: none !important; }</style>
 </head>
-<body class="relative h-full overflow-hidden bg-gradient-to-br from-sky-100 via-white to-indigo-100 font-sans antialiased">
+<body class="relative h-full overflow-hidden bg-brand-50 via-white font-sans antialiased">
     <div class="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
-        <div class="blob-float absolute -left-24 -top-24 h-96 w-96 rounded-full bg-sky-300/50 blur-3xl"></div>
-        <div class="blob-float-delay absolute -right-20 top-1/4 h-80 w-80 rounded-full bg-purple-300/40 blur-3xl"></div>
-        <div class="blob-float-slow absolute bottom-0 left-1/3 h-96 w-96 rounded-full bg-teal-200/50 blur-3xl"></div>
+        <div class="blob-float absolute -left-24 -top-24 h-96 w-96 rounded-full bg-brand-300/50 blur-3xl"></div>
+        <div class="blob-float-delay absolute -right-20 top-1/4 h-80 w-80 rounded-full bg-brand-300/40 blur-3xl"></div>
+        <div class="blob-float-slow absolute bottom-0 left-1/3 h-96 w-96 rounded-full bg-brand-200 blur-3xl"></div>
     </div>
 
     {{-- Interactive particle field — see interactiveBackground() in app.js. --}}
@@ -24,7 +24,7 @@
 
     <div class="relative z-10 flex h-full items-center justify-center p-4">
         <div
-            class="relative flex h-full w-full max-w-5xl overflow-hidden rounded-3xl bg-white/90 shadow-2xl lg:h-[640px] lg:max-h-[85vh]"
+            class="relative flex h-full w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl lg:h-[640px] lg:max-h-[85vh]"
             x-data="{ shown: false, mode: 'signin' }"
             x-init="setTimeout(() => shown = true, 50)"
         >
@@ -40,7 +40,7 @@
                 x-transition:enter-start="opacity-0 -translate-x-16"
                 x-transition:enter-end="opacity-100 translate-x-0"
                 :class="mode === 'signin' ? '' : 'lg:translate-x-full'"
-                class="relative hidden w-1/2 shrink-0 flex-col justify-between overflow-hidden bg-gradient-to-br from-sky-500 via-indigo-600 to-purple-600 p-10 transition-transform duration-[850ms] ease-spring lg:flex lg:absolute lg:inset-y-0 lg:left-0"
+                class="relative hidden w-1/2 shrink-0 flex-col justify-between overflow-hidden bg-brand-700 p-10 transition-transform duration-[850ms] ease-spring lg:flex lg:absolute lg:inset-y-0 lg:left-0"
             >
                 {{-- A few contained floating accent icons — same icon-float
                      bob used elsewhere on this page, just scoped to this
@@ -57,7 +57,7 @@
 
                 <div class="relative z-10">
                     <h2 class="text-2xl font-semibold text-white">BSSN ISMS</h2>
-                    <p class="mt-2 max-w-[24ch] text-sm text-sky-100/90">
+                    <p class="mt-2 max-w-[24ch] text-sm text-brand-100/90">
                         Sistem manajemen keamanan informasi &mdash; aset, risiko, dan layanan TIK dalam satu tempat.
                     </p>
                 </div>
@@ -110,14 +110,14 @@
                             stroke-width="2"
                         />
 
-                        <path d="M180 195 V170 a20 20 0 0 1 40 0 V195" fill="none" stroke="#0369a1" stroke-width="10" stroke-linecap="round" />
-                        <rect x="168" y="195" width="64" height="52" rx="10" fill="#0369a1" />
+                        <path d="M180 195 V170 a20 20 0 0 1 40 0 V195" fill="none" stroke="#183f70" stroke-width="10" stroke-linecap="round" />
+                        <rect x="168" y="195" width="64" height="52" rx="10" fill="#183f70" />
                         <circle cx="200" cy="215" r="6.5" fill="white" />
                         <rect x="196.5" y="219" width="7" height="13" rx="2" fill="white" />
                     </svg>
                 </div>
 
-                <p class="relative z-10 text-xs text-sky-100/70">Badan Siber dan Sandi Negara</p>
+                <p class="relative z-10 text-xs text-brand-100/70">Badan Siber dan Sandi Negara</p>
 
                 {{-- Wavy divider — the signature shape from the reference,
                      recreated as a plain formulaic SVG wave (not traced),
@@ -131,7 +131,7 @@
                 >
                     <path
                         d="M0 0 L30 0 Q48 50 30 100 Q12 150 30 200 Q48 250 30 300 Q12 350 30 400 Q48 450 30 500 Q12 550 30 600 Q48 650 30 700 Q12 750 30 800 L0 800 Z"
-                        fill="#4f46e5"
+                        fill="#1f4f8a"
                     />
                 </svg>
             </div>

@@ -12,33 +12,34 @@
                     keahlian: 'open-knowledge-expert-form',
                     aktivitas: 'open-knowledge-activity-form',
                     risiko: 'open-knowledge-risk-form',
+                    tanya: 'open-knowledge-form',
                 }[this.tab];
             },
         }"
         class="space-y-4"
     >
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h1 class="text-xl font-semibold text-gray-900">Manajemen Pengetahuan</h1>
-                <p class="text-sm text-gray-500">Register aset pengetahuan, peta keahlian, aktivitas berbagi, dan risiko KM</p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
                 <button
                     type="button"
                     x-ripple
                     onclick="window.startModuleTour && window.startModuleTour('pengetahuan')"
-                    title="Tutorial Modul Ini"
-                    class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-amber-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-amber-50 active:scale-95"
+                    title="Tutorial modul ini"
+                    class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium text-brand-700 hover:bg-brand-50"
                 >
                     <x-heroicon-o-play class="h-3.5 w-3.5" />
-                    Tutorial Modul Ini
+                    Tutorial
                 </button>
                 <x-integration-map module="pengetahuan" />
+                <div x-show="tab === 'tanya'" x-cloak><x-ai-guide feature="tanya" /></div>
                 @if (auth()->user()?->canWrite())
                     <button
                         x-ripple
                         @click="$dispatch('open-knowledge-importer')"
-                        class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-300 ease-spring hover:scale-105 hover:bg-white/80 active:scale-95"
+                        class="glass-panel inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-gray-700 hover:bg-slate-50"
                     >
                         <x-heroicon-o-arrow-up-tray class="h-4 w-4" />
                         Impor Excel
@@ -47,7 +48,7 @@
                         x-ripple
                         data-tour="add-button"
                         @click="$dispatch(createEvent())"
-                        class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-3 py-2 text-sm font-medium text-white shadow-lg shadow-amber-500/30 transition-all duration-300 ease-spring hover:scale-105 hover:shadow-amber-500/50 active:scale-95"
+                        class="inline-flex items-center gap-1.5 rounded-full bg-brand-700 px-3 py-2 text-sm font-medium text-white shadow-lg"
                     >
                         <x-heroicon-o-plus class="h-4 w-4" />
                         Tambah Baru
@@ -66,11 +67,13 @@
                 ['key' => 'keahlian', 'label' => 'Peta Keahlian', 'icon' => 'o-user-group'],
                 ['key' => 'aktivitas', 'label' => 'Aktivitas Berbagi', 'icon' => 'o-microphone'],
                 ['key' => 'risiko', 'label' => 'Risiko KM', 'icon' => 'o-exclamation-triangle'],
+                ['key' => 'tanya', 'label' => 'Tanya Dokumen', 'icon' => 'o-chat-bubble-left-right'],
             ] as $t)
                 <button
                     x-ripple
+                    data-tour="tab-{{ $t['key'] }}"
                     @click="tab = '{{ $t['key'] }}'"
-                    :class="tab === '{{ $t['key'] }}' ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md' : 'text-gray-600 hover:bg-white/60'"
+                    :class="tab === '{{ $t['key'] }}' ? 'bg-brand-700 text-white shadow-md' : 'text-gray-600 hover:bg-slate-50'"
                     class="flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300 ease-spring"
                 >
                     <x-dynamic-component :component="'heroicon-' . $t['icon']" class="h-4 w-4" />
@@ -78,6 +81,8 @@
                 </button>
             @endforeach
         </div>
+
+        <x-module-flow module="pengetahuan" />
 
         @if (auth()->user()?->admin_module === 'pengetahuan')
             <livewire:admin-verification-queue />
@@ -98,6 +103,10 @@
 
         <div x-show="tab === 'risiko'" x-cloak>
             <livewire:knowledge.knowledge-risk-table />
+        </div>
+
+        <div x-show="tab === 'tanya'" x-cloak>
+            <livewire:knowledge.knowledge-ask />
         </div>
 
         <livewire:knowledge.knowledge-form-modal />

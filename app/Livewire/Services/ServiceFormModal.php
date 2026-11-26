@@ -9,6 +9,7 @@ use App\Models\HrRisk;
 use App\Models\Service;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use App\Support\SaveNotice;
 
 class ServiceFormModal extends Component
 {
@@ -108,6 +109,7 @@ class ServiceFormModal extends Component
     public function save(): void
     {
         $this->ensureCanWrite();
+        $since = SaveNotice::since();
 
         $validated = $this->validate();
 
@@ -133,7 +135,7 @@ class ServiceFormModal extends Component
 
         $this->show = false;
         $this->dispatch('service-saved');
-        $this->dispatch('toast', message: $this->recordId ? 'Layanan diperbarui.' : 'Layanan baru ditambahkan.');
+        $this->dispatch('toast', message: SaveNotice::make($this->recordId ? 'Layanan diperbarui.' : 'Layanan baru ditambahkan.', 'layanan', $service->refresh(), $since));
     }
 
     public function close(): void

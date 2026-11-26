@@ -4,6 +4,7 @@ namespace App\Livewire\Knowledge;
 
 use App\Imports\KnowledgeImport;
 use App\Livewire\Concerns\GuardsWriteAccess;
+use App\Livewire\Concerns\RecordsImports;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -15,7 +16,7 @@ use Livewire\WithFileUploads;
  */
 class KnowledgeImporter extends Component
 {
-    use WithFileUploads, GuardsWriteAccess;
+    use WithFileUploads, GuardsWriteAccess, RecordsImports;
 
     public bool $show = false;
 
@@ -44,10 +45,12 @@ class KnowledgeImporter extends Component
             'file' => ['required', 'file', 'mimes:xlsx,xls', 'max:10240'],
         ]);
 
+        $startedAt = now();
         $import = new KnowledgeImport();
         $import->run($this->file->getRealPath());
 
         $summary = $import->summary();
+        $this->recordImport('pengetahuan', $this->file->getClientOriginalName(), $summary, $startedAt);
 
         $this->result = [
             'created' => $summary->created,

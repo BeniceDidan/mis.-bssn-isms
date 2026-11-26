@@ -3,6 +3,7 @@
 namespace App\Livewire\Knowledge;
 
 use App\Enums\KnowledgeType;
+use App\Jobs\IndexKnowledgeDocument;
 use App\Livewire\Concerns\GeneratesPersonnelRef;
 use App\Livewire\Concerns\GuardsWriteAccess;
 use App\Livewire\Concerns\NormalizesEnumInputs;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use App\Support\SaveNotice;
 
 class KnowledgeFormModal extends Component
 {
@@ -140,6 +142,7 @@ class KnowledgeFormModal extends Component
     public function save(): void
     {
         $this->ensureCanWrite();
+        $since = SaveNotice::since();
 
         $validated = $this->validate();
 
@@ -168,14 +171,26 @@ class KnowledgeFormModal extends Component
         }
 
         if ($this->recordId) {
-            KnowledgeAsset::findOrFail($this->recordId)->update($payload);
+            $record = KnowledgeAsset::findOrFail($this->recordId);
+            $needsIndex = $record->document_path !== $payload['document_path']
+                || $record->title !== $payload['title']
+                || ($payload['document_path'] && $record->index_status === null);
+            $record->update($payload);
         } else {
-            KnowledgeAsset::create($payload);
+            $record = KnowledgeAsset::create($payload);
+            $needsIndex = true;
+        }
+
+        // Isi PDF diindeks (potongan + embedding + tag otomatis) setelah
+        // respons terkirim, supaya simpan tetap terasa cepat.
+        if ($needsIndex) {
+            $record->updateQuietly(['index_status' => $record->document_path ? 'menunggu' : null]);
+            IndexKnowledgeDocument::dispatchAfterResponse($record->id);
         }
 
         $this->show = false;
         $this->dispatch('knowledge-saved');
-        $this->dispatch('toast', message: $this->recordId ? 'Dokumen diperbarui.' : 'Dokumen baru ditambahkan.');
+        $this->dispatch('toast', message: SaveNotice::make($this->recordId ? 'Dokumen diperbarui.' : 'Dokumen baru ditambahkan.', 'pengetahuan', $record->refresh(), $since));
     }
 
     public function close(): void
