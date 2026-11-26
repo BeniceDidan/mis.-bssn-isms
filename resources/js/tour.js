@@ -297,6 +297,16 @@ function renderStep(mode, index) {
     const isLast = index === total - 1;
     const d = getDriver();
 
+    // Kolom yang dilipat di "Isian lain" (components/form-more) dibuka dulu supaya
+    // bisa disorot; Alpine menampilkannya sesaat kemudian, jadi langkah diulang.
+    const target = document.querySelector(step.el);
+    const fold = target?.closest('[data-form-more]');
+    if (fold && fold.offsetParent !== null && target.offsetParent === null) {
+        fold.querySelector('[data-form-more-toggle]')?.click();
+        setTimeout(() => renderStep(mode, index), 120);
+        return;
+    }
+
     // Guards against both the real click AND the popover's own "Lanjut"
     // button firing for the same step (e.g. user clicks the real element,
     // then also happens to hit Enter) — first one wins, the rest are no-ops.

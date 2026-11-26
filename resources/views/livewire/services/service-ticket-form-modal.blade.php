@@ -178,10 +178,6 @@
                                 <option value="ditutup">Ditutup</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Risiko TIK Terkait <span class="text-gray-400">(opsional)</span></label>
-                            <input type="text" wire:model="related_risk_text" placeholder="mis. RSK-2026-0006" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500">
-                        </div>
                     </div>
 
                     <div>
@@ -189,10 +185,18 @@
                         <textarea wire:model="resolution" rows="2" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500"></textarea>
                     </div>
 
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Kode Lama <span class="text-gray-400">(opsional)</span></label>
-                        <input type="text" wire:model="legacy_code" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500">
-                    </div>
+                    <x-form-more>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Risiko Terkait <span class="text-gray-400">(opsional)</span></label>
+                            <input type="text" wire:model="related_risk_text" placeholder="mis. RSK-2026-0006" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500">
+                        </div>
+
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Kode dari Excel Lama <span class="text-gray-400">(opsional)</span></label>
+                            <input type="text" wire:model="legacy_code" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500">
+                        </div>
+
+                    </x-form-more>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4" data-tour="ticket-actions">

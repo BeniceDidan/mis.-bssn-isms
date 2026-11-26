@@ -33,7 +33,7 @@
 
                 <div class="space-y-4 px-6 py-5" data-tour="form-body">
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Ancaman / Kejadian Gangguan Data</label>
+                        <label class="mb-1 block text-sm font-medium text-gray-700">Kejadian atau Ancaman pada Data</label>
                         <input type="text" wire:model="title" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                         @error('title') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
@@ -80,23 +80,9 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Level Risiko Inheren</label>
-                            <select wire:model="inherent_risk_level" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:border-brand-400 focus:ring-brand-400">
-                                <option value="">Pilih tingkat...</option>
-                                @foreach ($levels as $levelOption)
-                                    <option value="{{ $levelOption->value }}">{{ $levelOption->label() }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Target Implementasi</label>
                             <input type="date" wire:model="target_date" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                         </div>
-                    </div>
-
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Keputusan Penanganan Risiko</label>
-                        <input type="text" wire:model="decision" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -118,40 +104,57 @@
                         </div>
                     </div>
 
-                    <div data-tour="personnel-field">
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
-                        <input type="text" list="data-information-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                        <datalist id="data-information-personnel-suggestions">
-                            @foreach ($hrRisks as $hrRisk)
-                                <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
-                            @endforeach
-                        </datalist>
-                        <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
-                    </div>
-
-                    <div class="border-t border-slate-200 pt-4">
-                        <div class="mb-2 flex items-center justify-between">
-                            <label class="text-sm font-medium text-gray-700">Kolom Tambahan</label>
-                            <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700">
-                                <x-heroicon-o-plus class="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-90" /> Tambah Kolom
-                            </button>
+                    <x-form-more>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Tingkat Risiko</label>
+                            <select wire:model="inherent_risk_level" class="w-full rounded-lg border-slate-200 bg-white text-sm transition-all duration-300 ease-spring focus:border-brand-400 focus:ring-brand-400">
+                                <option value="">Pilih tingkat...</option>
+                                @foreach ($levels as $levelOption)
+                                    <option value="{{ $levelOption->value }}">{{ $levelOption->label() }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
-                        <div class="space-y-2">
-                            @foreach ($dynamicRows as $index => $row)
-                                <div class="flex items-center gap-2" wire:key="di-dynamic-row-{{ $index }}">
-                                    <input type="text" placeholder="Nama Kolom" wire:model="dynamicRows.{{ $index }}.key" class="w-2/5 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                                    <input type="text" placeholder="Nilai" wire:model="dynamicRows.{{ $index }}.value" class="flex-1 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                                    <button type="button" wire:click="removeDynamicRow({{ $index }})" class="rounded p-1.5 text-gray-400 transition-all duration-150 hover:bg-red-50 hover:text-red-600 active:scale-90">
-                                        <x-heroicon-o-trash class="h-4 w-4" />
-                                    </button>
-                                </div>
-                            @endforeach
-
-                            @if (empty($dynamicRows))
-                            @endif
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Keputusan</label>
+                            <input type="text" wire:model="decision" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                         </div>
-                    </div>
+
+                        <div data-tour="personnel-field">
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
+                            <input type="text" list="data-information-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                            <datalist id="data-information-personnel-suggestions">
+                                @foreach ($hrRisks as $hrRisk)
+                                    <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
+                                @endforeach
+                            </datalist>
+                            <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
+                        </div>
+
+                        <div class="border-t border-slate-200 pt-4">
+                            <div class="mb-2 flex items-center justify-between">
+                                <label class="text-sm font-medium text-gray-700">Kolom Tambahan</label>
+                                <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700">
+                                    <x-heroicon-o-plus class="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-90" /> Tambah Kolom
+                                </button>
+                            </div>
+
+                            <div class="space-y-2">
+                                @foreach ($dynamicRows as $index => $row)
+                                    <div class="flex items-center gap-2" wire:key="di-dynamic-row-{{ $index }}">
+                                        <input type="text" placeholder="Nama Kolom" wire:model="dynamicRows.{{ $index }}.key" class="w-2/5 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                                        <input type="text" placeholder="Nilai" wire:model="dynamicRows.{{ $index }}.value" class="flex-1 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                                        <button type="button" wire:click="removeDynamicRow({{ $index }})" class="rounded p-1.5 text-gray-400 transition-all duration-150 hover:bg-red-50 hover:text-red-600 active:scale-90">
+                                            <x-heroicon-o-trash class="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                @endforeach
+
+                                @if (empty($dynamicRows))
+                                @endif
+                            </div>
+                        </div>
+                    </x-form-more>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">

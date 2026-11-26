@@ -129,16 +129,6 @@
                             <label class="mb-1 block text-sm font-medium text-gray-700">Pemilik Risiko</label>
                             <input type="text" wire:model="risk_owner" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
                         </div>
-                        <div data-tour="personnel-field">
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
-                            <input type="text" list="risk-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
-                            <datalist id="risk-personnel-suggestions">
-                                @foreach ($hrRisks as $hrRisk)
-                                    <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
-                                @endforeach
-                            </datalist>
-                            <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
-                        </div>
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Strategi Penanganan</label>
                             <select wire:model="treatment_strategy" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
@@ -150,7 +140,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-4">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Status</label>
                             <select wire:model="status" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
@@ -159,50 +149,65 @@
                                 @endforeach
                             </select>
                         </div>
+                    </div>
+
+                    <x-form-more>
+                        <div data-tour="personnel-field">
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
+                            <input type="text" list="risk-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
+                            <datalist id="risk-personnel-suggestions">
+                                @foreach ($hrRisks as $hrRisk)
+                                    <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
+                                @endforeach
+                            </datalist>
+                            <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
+                        </div>
+
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Tanggal Identifikasi</label>
                             <input type="date" wire:model="identified_at" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
                         </div>
+
                         <div>
                             <label class="mb-1 block text-sm font-medium text-gray-700">Tinjauan Berikutnya</label>
                             <input type="date" wire:model="review_due_at" class="w-full rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150">
                             @error('review_due_at') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
-                    </div>
 
-                    <div class="border-t border-gray-200 pt-4">
-                        <div class="mb-2 flex items-center justify-between">
-                            <label class="text-sm font-medium text-gray-700">Kolom Tambahan</label>
-                            <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700">
-                                <x-heroicon-o-plus class="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-90" /> Tambah Kolom
-                            </button>
+                        <div>
+                            <div class="mb-2 flex items-center justify-between">
+                                <label class="text-sm font-medium text-gray-700">Kolom Tambahan</label>
+                                <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700">
+                                    <x-heroicon-o-plus class="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-90" /> Tambah Kolom
+                                </button>
+                            </div>
+
+                            <div class="space-y-2">
+                                @foreach ($dynamicRows as $index => $row)
+                                    <div class="flex items-center gap-2" wire:key="risk-dynamic-row-{{ $index }}">
+                                        <input
+                                            type="text"
+                                            placeholder="Nama Kolom (mis. Risiko Residual)"
+                                            wire:model="dynamicRows.{{ $index }}.key"
+                                            class="w-2/5 rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150"
+                                        >
+                                        <input
+                                            type="text"
+                                            placeholder="Nilai"
+                                            wire:model="dynamicRows.{{ $index }}.value"
+                                            class="flex-1 rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150"
+                                        >
+                                        <button type="button" wire:click="removeDynamicRow({{ $index }})" class="rounded p-1.5 text-gray-400 transition-all duration-150 hover:bg-red-50 hover:text-red-600 active:scale-90">
+                                            <x-heroicon-o-trash class="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                @endforeach
+
+                                @if (empty($dynamicRows))
+                                @endif
+                            </div>
                         </div>
-
-                        <div class="space-y-2">
-                            @foreach ($dynamicRows as $index => $row)
-                                <div class="flex items-center gap-2" wire:key="risk-dynamic-row-{{ $index }}">
-                                    <input
-                                        type="text"
-                                        placeholder="Nama Kolom (mis. Risiko Residual)"
-                                        wire:model="dynamicRows.{{ $index }}.key"
-                                        class="w-2/5 rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150"
-                                    >
-                                    <input
-                                        type="text"
-                                        placeholder="Nilai"
-                                        wire:model="dynamicRows.{{ $index }}.value"
-                                        class="flex-1 rounded-md border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500 transition-colors duration-150"
-                                    >
-                                    <button type="button" wire:click="removeDynamicRow({{ $index }})" class="rounded p-1.5 text-gray-400 transition-all duration-150 hover:bg-red-50 hover:text-red-600 active:scale-90">
-                                        <x-heroicon-o-trash class="h-4 w-4" />
-                                    </button>
-                                </div>
-                            @endforeach
-
-                            @if (empty($dynamicRows))
-                            @endif
-                        </div>
-                    </div>
+                    </x-form-more>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">

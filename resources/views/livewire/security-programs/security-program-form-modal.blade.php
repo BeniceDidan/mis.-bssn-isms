@@ -59,16 +59,19 @@
                         </div>
                     </div>
 
-                    <div data-tour="personnel-field">
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
-                        <input type="text" list="security-program-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                        <datalist id="security-program-personnel-suggestions">
-                            @foreach ($hrRisks as $hrRisk)
-                                <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
-                            @endforeach
-                        </datalist>
-                        <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
-                    </div>
+                    <x-form-more>
+                        <div data-tour="personnel-field">
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
+                            <input type="text" list="security-program-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                            <datalist id="security-program-personnel-suggestions">
+                                @foreach ($hrRisks as $hrRisk)
+                                    <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
+                                @endforeach
+                            </datalist>
+                            <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
+                        </div>
+
+                    </x-form-more>
 
                     <div class="border-t border-slate-200 pt-4">
                         <div class="mb-2 flex items-center justify-between">

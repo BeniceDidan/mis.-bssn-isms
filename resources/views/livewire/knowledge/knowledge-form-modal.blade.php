@@ -71,40 +71,6 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Tingkat Aksesibilitas</label>
-                            <input
-                                type="text"
-                                list="knw-access-suggestions"
-                                wire:model="access_level"
-                                class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400"
-                            >
-                            <datalist id="knw-access-suggestions">
-                                <option value="Publik"><option value="Internal"><option value="Terbatas"><option value="Rahasia">
-                            </datalist>
-                        </div>
-                        <div>
-                            <label class="mb-1 block text-sm font-medium text-gray-700">Tanggal Pembaruan Terakhir</label>
-                            <input type="date" wire:model="last_reviewed_at" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                        </div>
-                    </div>
-
-                    <div data-tour="personnel-field">
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
-                        <input type="text" list="knowledge-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                        <datalist id="knowledge-personnel-suggestions">
-                            @foreach ($hrRisks as $hrRisk)
-                                <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
-                            @endforeach
-                        </datalist>
-                        <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
-                    </div>
-
-                    <div class="border-t border-slate-200 pt-4">
-                        <label class="mb-1 block text-sm font-medium text-gray-700">Tautan Referensi</label>
-                        <input type="url" wire:model="external_link" placeholder="https://..." class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                        @error('external_link') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                        <p class="mt-1 text-xs text-gray-400">Isi tautan, unggah PDF, atau keduanya.</p>
                     </div>
 
                     <div>
@@ -133,29 +99,67 @@
                         <div wire:loading wire:target="document" class="mt-1 text-xs text-gray-400">Mengunggah...</div>
                     </div>
 
-                    <div class="border-t border-slate-200 pt-4">
-                        <div class="mb-2 flex items-center justify-between">
-                            <label class="text-sm font-medium text-gray-700">Kolom Tambahan</label>
-                            <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700">
-                                <x-heroicon-o-plus class="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-90" /> Tambah Kolom
-                            </button>
+                    <x-form-more>
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Siapa yang Boleh Membaca</label>
+                            <input
+                                type="text"
+                                list="knw-access-suggestions"
+                                wire:model="access_level"
+                                class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400"
+                            >
+                            <datalist id="knw-access-suggestions">
+                                <option value="Publik"><option value="Internal"><option value="Terbatas"><option value="Rahasia">
+                            </datalist>
                         </div>
 
-                        <div class="space-y-2">
-                            @foreach ($dynamicRows as $index => $row)
-                                <div class="flex items-center gap-2" wire:key="knw-dynamic-row-{{ $index }}">
-                                    <input type="text" placeholder="Nama Kolom" wire:model="dynamicRows.{{ $index }}.key" class="w-2/5 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                                    <input type="text" placeholder="Nilai" wire:model="dynamicRows.{{ $index }}.value" class="flex-1 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
-                                    <button type="button" wire:click="removeDynamicRow({{ $index }})" class="rounded p-1.5 text-gray-400 transition-all duration-150 hover:bg-red-50 hover:text-red-600 active:scale-90">
-                                        <x-heroicon-o-trash class="h-4 w-4" />
-                                    </button>
-                                </div>
-                            @endforeach
-
-                            @if (empty($dynamicRows))
-                            @endif
+                        <div>
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Tanggal Pembaruan Terakhir</label>
+                            <input type="date" wire:model="last_reviewed_at" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
                         </div>
-                    </div>
+
+                        <div data-tour="personnel-field">
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Kode Personil <span class="font-normal text-gray-400">(opsional)</span></label>
+                            <input type="text" list="knowledge-personnel-suggestions" wire:model="personnel_ref" placeholder="Pilih atau ketik kode" class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                            <datalist id="knowledge-personnel-suggestions">
+                                @foreach ($hrRisks as $hrRisk)
+                                    <option value="{{ $hrRisk->personnel_ref }}">{{ $hrRisk->subject }} — {{ $hrRisk->record_code }}</option>
+                                @endforeach
+                            </datalist>
+                            <p class="mt-1 text-[11px] text-gray-400">Kosongkan untuk dibuat otomatis.</p>
+                        </div>
+
+                        <div class="border-t border-slate-200 pt-4">
+                            <label class="mb-1 block text-sm font-medium text-gray-700">Tautan Referensi</label>
+                            <input type="url" wire:model="external_link" placeholder="https://..." class="w-full rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                            @error('external_link') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            <p class="mt-1 text-xs text-gray-400">Isi tautan, unggah PDF, atau keduanya.</p>
+                        </div>
+
+                        <div class="border-t border-slate-200 pt-4">
+                            <div class="mb-2 flex items-center justify-between">
+                                <label class="text-sm font-medium text-gray-700">Kolom Tambahan</label>
+                                <button type="button" wire:click="addDynamicRow" class="group inline-flex items-center gap-1 text-xs font-medium text-brand-600 transition-colors duration-150 hover:text-brand-700">
+                                    <x-heroicon-o-plus class="h-3.5 w-3.5 transition-transform duration-150 group-hover:rotate-90" /> Tambah Kolom
+                                </button>
+                            </div>
+
+                            <div class="space-y-2">
+                                @foreach ($dynamicRows as $index => $row)
+                                    <div class="flex items-center gap-2" wire:key="knw-dynamic-row-{{ $index }}">
+                                        <input type="text" placeholder="Nama Kolom" wire:model="dynamicRows.{{ $index }}.key" class="w-2/5 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                                        <input type="text" placeholder="Nilai" wire:model="dynamicRows.{{ $index }}.value" class="flex-1 rounded-lg border-slate-200 bg-white text-sm focus:border-brand-400 focus:ring-brand-400">
+                                        <button type="button" wire:click="removeDynamicRow({{ $index }})" class="rounded p-1.5 text-gray-400 transition-all duration-150 hover:bg-red-50 hover:text-red-600 active:scale-90">
+                                            <x-heroicon-o-trash class="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                @endforeach
+
+                                @if (empty($dynamicRows))
+                                @endif
+                            </div>
+                        </div>
+                    </x-form-more>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 border-t border-slate-200 px-6 py-4">

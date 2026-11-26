@@ -10,8 +10,9 @@ enum ChangeType: string
     public function label(): string
     {
         return match ($this) {
-            self::Positif => 'Positif',
-            self::Negatif => 'Negatif',
+            // Kata dalam kurung supaya awam paham (masukan 26 Nov 2026: "Positif/Negatif" membingungkan).
+            self::Positif => 'Positif (peluang)',
+            self::Negatif => 'Negatif (ancaman)',
         };
     }
 }
